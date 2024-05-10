@@ -4,19 +4,17 @@ import { GoogleAuthProvider, signInWithPopup } from '@firebase/auth';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import axios from 'axios';
+import Toast from '../notification/ToastNotification';
+import { userDetail } from '@/interface/user';
+import { ToastData } from '@/interface/notification';
 
-interface userDetail {
-  username?: string;
-  fullName?: string;
-  email: string | null;
-  location?: string;
-  isGoogleAuth?: boolean;
-  isAppleAuth?: boolean;
-  isEmailAuth?: boolean;
-  status?: boolean;
-}
 const SignUpStep1: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<userDetail>({
+  const [toastData, setToastData] = useState<ToastData>({
+    status: 'success',
+    message: '',
+    show: false,
+  });
+  const initialValueOfUser: userDetail = {
     username: '',
     fullName: '',
     email: '',
@@ -25,34 +23,48 @@ const SignUpStep1: React.FC = () => {
     isAppleAuth: false,
     isEmailAuth: false,
     status: true,
-  });
+  };
+  const [userDetails, setUserDetails] =
+    useState<userDetail>(initialValueOfUser);
 
   const handleGoogleSignUp = async () => {
     const googleProvider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const { user } = result;
       // const uid = user.uid;
-      const email = user.email;
+      const { email } = user;
       const token = await user.getIdToken();
-      const userData = { ...userDetails };
-      userData.email = email;
-      userData.isGoogleAuth = true;
+      const userData = {
+        ...userDetails,
+        email,
+        isGoogleAuth: true,
+      };
 
       const formData = new FormData();
       formData.append('userDetails', JSON.stringify(userData));
       formData.append('token', token);
       const response = await axios.post('/api/sign-up', formData);
       console.log(response, 'response');
-
       setUserDetails({ ...userDetails, email: email });
-    } catch (error) {
+      setToastData({
+        status: 'success',
+        message: 'Login Successfully',
+        show: true,
+      });
+    } catch (error: any) {
       console.log('Error in sign up with google', error);
+      const { message } = error.response.data;
+      setToastData({
+        status: 'error',
+        message,
+        show: true,
+      });
     }
   };
-
   return (
     <div className="flex flex-col justify-center items-center h-screen">
+      <div></div>
       <div>
         <Link
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -116,6 +128,7 @@ const SignUpStep1: React.FC = () => {
           </div>
         </button>
       </div>
+      <Toast {...toastData} />
     </div>
   );
 };
