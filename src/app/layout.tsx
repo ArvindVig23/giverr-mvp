@@ -4,6 +4,7 @@ import './globals.scss';
 import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
+console.log(inter, 'interfont');
 
 export const metadata: Metadata = {
   title: 'Giverr',
@@ -17,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>
+        {/* <Header/> */}
+        {children}
+      </body>
     </html>
   );
 }

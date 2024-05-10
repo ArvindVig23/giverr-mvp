@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
@@ -9,7 +10,7 @@ import leftshape from '../../public/images/left-shapes.svg';
 import rightshape from '../../public/images/right-shapes.svg';
 import back from '../../public/images/arrow-left.svg';
 
-const SignInStep2: React.FC = () => {
+const ResetPasswordForm: React.FC = () => {
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
@@ -23,14 +24,20 @@ const SignInStep2: React.FC = () => {
         <form className="flex gap-4 w-full flex-col relative">
           <div className="relative w-full">
             <input
-              type="email"
+              type="text"
               id="floating_filled"
-              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+              className="block rounded-2xl px-5 pb-3 pt-6 pr-12 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "
             />
             <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-              Email
+              New Password
             </label>
+
+            <Image
+              src={eye}
+              alt="eye"
+              className="cursor-pointer absolute right-5 top-5"
+            />
           </div>
 
           <div className="relative w-full">
@@ -41,7 +48,7 @@ const SignInStep2: React.FC = () => {
               placeholder=" "
             />
             <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-              Password
+              New Password
             </label>
 
             <Image
@@ -52,14 +59,8 @@ const SignInStep2: React.FC = () => {
           </div>
 
           <button className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]">
-            Join
+            Reset
           </button>
-
-          <p className="mt-2 text-center w-full text-[#1E1E1E] ">
-            <Link className="hover:underline" href="#">
-              Forgot password?
-            </Link>
-          </p>
 
           <div className="w-full text-center md:absolute mt-6 md:m-0 left-0 right-0 -bottom-32">
             <Link
@@ -93,4 +94,4 @@ const SignInStep2: React.FC = () => {
   );
 };
 
-export default SignInStep2;
+export default ResetPasswordForm;
