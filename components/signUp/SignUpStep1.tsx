@@ -1,9 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { auth } from '@/firebase/config';
-import { GoogleAuthProvider, signInWithPopup } from '@firebase/auth';
 import Link from 'next/link';
-import axios from 'axios';
 import Toast from '../notification/ToastNotification';
 import { userDetail } from '@/interface/user';
 import { ToastData } from '@/interface/notification';
@@ -15,6 +12,7 @@ import mobleftshape from '../../public/images/left-mob-shape.svg';
 import mobrightshape from '../../public/images/right-mob-shape.svg';
 import leftshape from '../../public/images/left-shapes.svg';
 import rightshape from '../../public/images/right-shapes.svg';
+import { handleGoogleSignUp } from '@/utils/signUpEvent';
 
 const SignUpStep1: React.FC = () => {
   const [toastData, setToastData] = useState<ToastData>({
@@ -35,41 +33,6 @@ const SignUpStep1: React.FC = () => {
   const [userDetails, setUserDetails] =
     useState<userDetail>(initialValueOfUser);
 
-  const handleGoogleSignUp = async () => {
-    const googleProvider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const { user } = result;
-      // const uid = user.uid;
-      const { email } = user;
-      const token = await user.getIdToken();
-      const userData = {
-        ...userDetails,
-        email,
-        isGoogleAuth: true,
-      };
-
-      const formData = new FormData();
-      formData.append('userDetails', JSON.stringify(userData));
-      formData.append('token', token);
-      const response = await axios.post('/api/sign-up', formData);
-      console.log(response, 'response');
-      setUserDetails({ ...userDetails, email: email });
-      setToastData({
-        status: 'success',
-        message: 'Login Successfully',
-        show: true,
-      });
-    } catch (error: any) {
-      console.log('Error in sign up with google', error);
-      const { message } = error.response.data;
-      setToastData({
-        status: 'error',
-        message,
-        show: true,
-      });
-    }
-  };
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
@@ -86,7 +49,9 @@ const SignUpStep1: React.FC = () => {
           </button>
           <button
             className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
-            onClick={handleGoogleSignUp}
+            onClick={() =>
+              handleGoogleSignUp(userDetails, setUserDetails, setToastData)
+            }
           >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>
@@ -104,8 +69,8 @@ const SignUpStep1: React.FC = () => {
         <form className="flex gap-4 w-full flex-col">
           <div className="relative w-full">
             <input
-              type="text"
-              id="floating_filled"
+              type="email"
+              id="email"
               className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "
             />
