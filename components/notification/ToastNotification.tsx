@@ -20,7 +20,7 @@ const Toast: React.FC<ToastProps> = ({ status, message, show }) => {
     }
   }, [show, status, message]);
 
-  return <ToastContainer />;
+  return <ToastContainer limit={1} />;
 };
 
 export default Toast;

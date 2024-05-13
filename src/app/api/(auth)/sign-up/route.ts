@@ -15,8 +15,7 @@ export async function POST(req: NextRequest) {
       userData = JSON.parse(userDetailsString);
     }
     const token: any = data.get('token');
-
-    const { email, isGoogleAuth, fullName } = userData;
+    const { email, isGoogleAuth, fullName, isEmailAuth } = userData;
     // validation check for email & fullName
     const { error } = schema.validate(
       { email, fullName },
@@ -30,6 +29,7 @@ export async function POST(req: NextRequest) {
       const response = responseHandler(403, false, null, errorMessage);
       return response;
     }
+    // sign up with google auth
     if (isGoogleAuth) {
       const usersRef = collection(db, 'users');
       const findUserQuery = query(usersRef, where('email', '==', email));
@@ -46,6 +46,39 @@ export async function POST(req: NextRequest) {
         'User with this email already exists. Sign in Successfully',
       );
       return response;
+    }
+    // Sign up with email
+    if (isEmailAuth) {
+      // check if user exist with the same email
+      const usersRef = collection(db, 'users');
+      const findUserQuery = query(usersRef, where('email', '==', email));
+      const existedUser = await getDocs(findUserQuery);
+      if (!existedUser.empty) {
+        const response = responseHandler(
+          403,
+          false,
+          null,
+          'User with this email already exists.',
+        );
+        return response;
+      }
+      // check if user exist with same username
+      // const findUserWithUsername = query(
+      //   usersRef,
+      //   where('username', '==', username.toLowerCase()),
+      // );
+      // const existedUserWithUsername = await getDocs(findUserWithUsername);
+      // if (!existedUserWithUsername.empty) {
+      //   const response = responseHandler(
+      //     403,
+      //     false,
+      //     null,
+      //     'User with this username already exists.',
+      //   );
+      //   return response;
+      // }
+      const user = await createUserService(userData, null);
+      return user;
     }
   } catch (error) {
     console.log(error, 'Error in sign up');
