@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '../../public/images/logo.svg';
 import apple from '../../public/images/apple.svg';
@@ -8,7 +8,30 @@ import leftshape from '../../public/images/left-shapes.svg';
 import mobleftshape from '../../public/images/left-mob-shape.svg';
 import rightshape from '../../public/images/right-shapes.svg';
 import mobrightshape from '../../public/images/right-mob-shape.svg';
+import { userDetail } from '@/interface/user';
+import { ToastData } from '@/interface/notification';
+import { handleGoogleSignUp } from '@/utils/signUpEvent';
+import Toast from '../notification/ToastNotification';
 const SignInStep1: React.FC = () => {
+  const initialToastData: ToastData = {
+    status: 'success',
+    message: '',
+    show: false,
+  };
+  const [toastData, setToastData] = useState<ToastData>(initialToastData);
+  const initialValueOfUser: userDetail = {
+    username: '',
+    fullName: '',
+    email: '',
+    location: '',
+    isGoogleAuth: false,
+    isAppleAuth: false,
+    isEmailAuth: false,
+    status: true,
+  };
+  const [userDetails, setUserDetails] =
+    useState<userDetail>(initialValueOfUser);
+
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 px-8 pb-32 md:pb-0">
       {/* Use next/image component */}
@@ -23,7 +46,13 @@ const SignInStep1: React.FC = () => {
           <button className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black">
             <Image src={apple} alt="Logo" /> Continue with Apple
           </button>
-          <button className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black">
+          <button
+            className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
+            // we are using the same sign up function for the google sign in as this is the same functinality as sign up.
+            onClick={() =>
+              handleGoogleSignUp(userDetails, setUserDetails, setToastData)
+            }
+          >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>
         </div>
@@ -77,6 +106,7 @@ const SignInStep1: React.FC = () => {
         />
         <Image className="block md:hidden" src={mobrightshape} alt="shapes" />
       </div>
+      <Toast {...toastData} />
     </div>
   );
 };
