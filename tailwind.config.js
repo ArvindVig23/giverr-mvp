@@ -9,12 +9,11 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './src/**/*.{js,jsx,ts,tsx}',
     './node_modules/react-tailwindcss-datepicker/dist/index.esm.js',
-    './src/app/fonts.css',
   ],
   theme: {
     extend: {
       colors: {
-        bg: 'red',
+        bg: ['red'],
       },
       fontFamily: {
         Boris: ['boris'],
