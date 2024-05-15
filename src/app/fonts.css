@@ -1,0 +1,7 @@
+@font-face {
+  font-family: boris; /* Font family name */
+  src:
+    url('../assets/fonts/Boris.otf') format('opentype'),
+    /* OTF format */ url('../assets/fonts/Boris.ttf') format('truetype'),
+    /* TTF format */ url('../assets/fonts/Boris.woff') format('woff'); /* WOFF format */
+}

@@ -1,14 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap');
 
 * {
   box-sizing: border-box;
 }
+@font-face {
+  font-family: boris; /* Font family name */
+  src: url("/public/fonts/Boris.otf") format("opentype"),  /* OTF format */
+       url("/public/fonts/Boris.ttf") format("truetype"),  /* TTF format */
+       url("/public/fonts/Boris.woff") format("woff");   /* WOFF format */
+}
 body {
   font-family: 'Rethink Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
+  color: #1E1E1E;
+  background-color: #f5f3ef;
+}
+
+.daterange input {
+  background-color: transparent;
+}
+.daterange button {
+  display: none !important;
+}
+.opportunities-swiper .swiper-slide
+{
+  width: auto !important;
+}
+.opportunities-swiper  .swiper-button-next::after {
+  display: none;
+}
+.opportunities-swiper .swiper-button-next
+{
+  z-index: 1;
+}
+.opportunities-swiper .swiper-button-next::before {
+  content: '';
+  background: linear-gradient(270deg, #F5F3EF 0%, rgba(245, 243, 239, 0) 100%);
+  width: 97px;
+  height: 50px;
+  position: absolute;
+  left: -69px;
+  z-index: -1;
 }
