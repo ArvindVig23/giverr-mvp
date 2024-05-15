@@ -16,9 +16,9 @@ export const createUserService = async (userData: any, token?: any) => {
       status,
     } = userData;
     const createuser = await addDoc(collection(db, 'users'), {
-      username,
+      username: username.toLowerCase(),
       fullName,
-      email,
+      email: email.toLowerCase(),
       location,
       isGoogleAuth,
       isAppleAuth,
@@ -34,7 +34,7 @@ export const createUserService = async (userData: any, token?: any) => {
       200,
       false,
       createuser,
-      'User created & Sign in Successfully',
+      'User created Successfully',
     );
     return response;
   } catch (error) {

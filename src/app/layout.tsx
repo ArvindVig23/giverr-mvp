@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.scss';
 import React from 'react';
+import { ReduxProvider } from './redux/ReduxProvider';
 
 export const metadata: Metadata = {
   title: 'Giverr',
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* <Header/> */}
-        {children}
+        <ReduxProvider>
+          {/* <Header/> */}
+          {children}
+        </ReduxProvider>
       </body>
     </html>
   );
