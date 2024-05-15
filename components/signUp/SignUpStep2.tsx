@@ -5,10 +5,13 @@ import logo from '../../public/images/logo.svg';
 import eye from '../../public/images/eye.svg';
 import eyeSlash from '../../public/images/eye-slash.svg';
 import mobleftshape from '../../public/images/left-mob-shape.svg';
+import mobCloseRight from '../../public/images/mobile-close-right.svg';
+import mobCloseLeft from '../../public/images/mobile-close-left.svg';
 import mobrightshape from '../../public/images/right-mob-shape.svg';
 import leftshape from '../../public/images/left-shapes.svg';
+import leftCloseShape from '../../public/images/show-pass-left.svg';
+import rightCloseShape from '../../public/images/show-pass-right.svg';
 import rightshape from '../../public/images/right-shapes.svg';
-import { useSignUpContext } from '@/utils/context/signUpContext';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import {
@@ -19,35 +22,50 @@ import {
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase/config';
 import axios from 'axios';
-const SignUpStep2: React.FC = () => {
+import { useDispatch, useSelector } from 'react-redux';
+import { OptionalToastProp } from '@/interface/notification';
+import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
+import { tooglePassword } from '@/utils/signUpEvent';
+import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
+const SignUpStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const { userDetails, setToastData } = useSignUpContext();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
+  const user: any = useSelector((state: any) => state.userDetailReducer);
   const router = useRouter();
+  const dispatch = useDispatch();
   useEffect(() => {
     // if user tries to go on step 2 directly by entering url
-    if (!userDetails.email) {
+    if (!user.email) {
       router.push('/sign-up');
       return;
     } // eslint-disable-next-line
   }, []);
 
-  // toggle password visibilty
-  const onShowPasswordClick = () => {
-    setShowPassword(!showPassword);
-  };
-
   const handleJoin = async (formdetails: any) => {
     const { password, username, fullname } = formdetails;
     setLoading(true);
+    // check userName exist or not
     try {
-      await createUserWithEmailAndPassword(auth, userDetails.email, password);
+      await axios.post('/api/check-duplicate-user', { username });
+    } catch (error: any) {
+      setLoading(false);
+      console.log(error, 'error');
+      const { message } = error.response.data;
+      setToastData({
+        status: 'error',
+        message,
+        show: true,
+      });
+      return;
+    }
+    // firebase authenticator for email & password
+    try {
+      await createUserWithEmailAndPassword(auth, user.email, password);
     } catch (error: any) {
       setLoading(false);
       const string = error?.customData?._tokenResponse?.error?.message;
@@ -57,20 +75,14 @@ const SignUpStep2: React.FC = () => {
           message: 'User with email already exist',
           show: true,
         });
-        setTimeout(() => {
-          setToastData({
-            status: 'sucess',
-            message: '',
-            show: false,
-          });
-        }, 1000);
         return;
       }
     }
+    // Api to create the entery in the firestore db
     try {
       const formData = new FormData();
       const newUserDetails = {
-        ...userDetails,
+        ...user,
         password,
         username,
         fullname,
@@ -85,6 +97,7 @@ const SignUpStep2: React.FC = () => {
         message: response.data.message,
         show: true,
       });
+      dispatch(updateUserDetails(resetGlobalState));
       // added a timeout so that user can see succss message.
       setTimeout(() => {
         router.push('/sign-in');
@@ -117,7 +130,7 @@ const SignUpStep2: React.FC = () => {
           <div className="relative w-full">
             <input
               disabled
-              defaultValue={userDetails.email}
+              defaultValue={user.email}
               type="email"
               id="email"
               className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer cursor-not-allowed"
@@ -148,7 +161,7 @@ const SignUpStep2: React.FC = () => {
             </label>
 
             <Image
-              onClick={onShowPasswordClick}
+              onClick={() => tooglePassword(showPassword, setShowPassword)}
               src={showPassword ? eyeSlash : eye}
               alt="eye"
               className="cursor-pointer absolute right-5 top-5"
@@ -235,19 +248,27 @@ const SignUpStep2: React.FC = () => {
       <div className="absolute left-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={leftshape}
+          src={showPassword ? leftCloseShape : leftshape}
           alt="shapes"
         />
-        <Image className="block md:hidden" src={mobleftshape} alt="shapes" />
+        <Image
+          className="block md:hidden"
+          src={showPassword ? mobCloseLeft : mobleftshape}
+          alt="shapes"
+        />
       </div>
 
       <div className="absolute right-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={rightshape}
+          src={showPassword ? rightCloseShape : rightshape}
           alt="shapes"
         />
-        <Image className="block md:hidden" src={mobrightshape} alt="shapes" />
+        <Image
+          className="block md:hidden"
+          src={showPassword ? mobCloseRight : mobrightshape}
+          alt="shapes"
+        />
       </div>
     </div>
   );

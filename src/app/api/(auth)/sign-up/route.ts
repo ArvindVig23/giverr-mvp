@@ -1,6 +1,13 @@
 import { NextRequest } from 'next/server';
 import responseHandler from '../../../../../lib/responseHandler';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { cookies } from 'next/headers';
 import { createUserService } from '@/services/signUpService';
@@ -37,7 +44,13 @@ export async function POST(req: NextRequest) {
       if (existedUser.empty) {
         await createUserService(userData, token);
       }
+      const userDoc = existedUser.docs[0]; // Get the first user document
+      const userId = userDoc.id;
 
+      await updateDoc(doc(db, 'users', userId), {
+        isEmailAuth: false,
+        isGoogleAuth: true,
+      });
       cookies().set('userToken', token);
       const response = responseHandler(
         200,
@@ -62,21 +75,6 @@ export async function POST(req: NextRequest) {
         );
         return response;
       }
-      // check if user exist with same username
-      // const findUserWithUsername = query(
-      //   usersRef,
-      //   where('username', '==', username.toLowerCase()),
-      // );
-      // const existedUserWithUsername = await getDocs(findUserWithUsername);
-      // if (!existedUserWithUsername.empty) {
-      //   const response = responseHandler(
-      //     403,
-      //     false,
-      //     null,
-      //     'User with this username already exists.',
-      //   );
-      //   return response;
-      // }
       const user = await createUserService(userData, null);
       return user;
     }

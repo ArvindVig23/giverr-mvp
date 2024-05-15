@@ -18,7 +18,7 @@ export const createUserService = async (userData: any, token?: any) => {
     const createuser = await addDoc(collection(db, 'users'), {
       username: username.toLowerCase(),
       fullName,
-      email,
+      email: email.toLowerCase(),
       location,
       isGoogleAuth,
       isAppleAuth,

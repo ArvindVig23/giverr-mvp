@@ -1,12 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import SignUpStep1 from '../../../../components/signUp/SignUpStep1';
 import SignUpStep2 from '../../../../components/signUp/SignUpStep2';
 import { ToastData } from '@/interface/notification';
-import { userDetail } from '@/interface/user';
 import Toast from '../../../../components/notification/ToastNotification';
-import { SignUpContext } from '@/utils/context/signUpContext';
+import CommonStep1 from '../../../../components/commonStep/CommonStep1';
 
 const SignUp: React.FC = () => {
   const searchParams = useSearchParams();
@@ -17,26 +15,16 @@ const SignUp: React.FC = () => {
     message: '',
     show: false,
   });
-  const initialValueOfUser: userDetail = {
-    username: '',
-    fullName: '',
-    email: '',
-    location: '',
-    isGoogleAuth: false,
-    isAppleAuth: false,
-    isEmailAuth: false,
-    status: true,
-  };
-  const [userDetails, setUserDetails] =
-    useState<userDetail>(initialValueOfUser);
 
   return (
-    <SignUpContext.Provider
-      value={{ toastData, setToastData, userDetails, setUserDetails }}
-    >
-      <div>{step === '2' ? <SignUpStep2 /> : <SignUpStep1 />}</div>
-      <Toast {...toastData} />
-    </SignUpContext.Provider>
+    <div>
+      {step === '2' ? (
+        <SignUpStep2 setToastData={setToastData} />
+      ) : (
+        <CommonStep1 setToastData={setToastData} />
+      )}
+      <Toast toastData={toastData} setToastData={setToastData} />
+    </div>
   );
 };
 
