@@ -22,3 +22,16 @@ export const schema = Joi.object({
         'Username should contain alphabets, numbers and special characters only.',
     }),
 });
+
+export const schemaWithOptionalFields = Joi.object({
+  email: Joi.string().email().trim().messages({
+    'string.email': 'Enter a valid email',
+  }),
+  username: Joi.string()
+    .allow('')
+    .pattern(/^[a-zA-Z0-9!@#$%^&*()_+-]+$/)
+    .messages({
+      'string.pattern':
+        'Username should contain alphabets, numbers and special characters only.',
+    }),
+});

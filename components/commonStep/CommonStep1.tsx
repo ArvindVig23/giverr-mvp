@@ -15,10 +15,10 @@ import { emailregex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
-import { OptionalToastProp } from '@/interface/notification';
-import axios from 'axios';
+import { sweetAlertToast } from '@/services/toastServices';
+import { checkUsernameAndEmail } from '@/services/userService';
 
-const CommonStep1: React.FC<OptionalToastProp> = ({ setToastData }) => {
+const CommonStep1: React.FC = () => {
   // global state for userDetails
   const user: any = useSelector((state: any) => state.userDetailReducer);
   const dispatch = useDispatch();
@@ -27,24 +27,19 @@ const CommonStep1: React.FC<OptionalToastProp> = ({ setToastData }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
   const router = useRouter();
   const continueButton = async (data: any) => {
     dispatch(updateUserDetails({ ...user, email: data.email }));
     try {
-      const responseForRedirectionLink = await axios.post(
-        '/api/check-duplicate-user',
-        { email: data.email },
-      );
-      const { redirectUrl } = responseForRedirectionLink.data.data;
+      const responseForRedirectionLink: any = await checkUsernameAndEmail({
+        email: data.email,
+      });
+
+      const { redirectUrl } = responseForRedirectionLink.data;
       router.push(redirectUrl);
     } catch (error: any) {
       const { message } = error.response.data;
-      setToastData({
-        status: 'error',
-        message,
-        show: true,
-      });
+      sweetAlertToast('error', message);
       return;
     }
   };
@@ -65,9 +60,7 @@ const CommonStep1: React.FC<OptionalToastProp> = ({ setToastData }) => {
           </button>
           <button
             className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
-            onClick={() =>
-              handleGoogleSignUp(user, setToastData, router, dispatch)
-            }
+            onClick={() => handleGoogleSignUp(user, router, dispatch)}
           >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>

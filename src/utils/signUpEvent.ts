@@ -1,15 +1,14 @@
 import { auth } from '@/firebase/config';
-import { ToastData } from '@/interface/notification';
 import { userDetail } from '@/interface/user';
-import axios from 'axios';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import React from 'react';
 import { resetGlobalState } from './initialStates/userInitialStates';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
+import { sweetAlertToast } from '@/services/toastServices';
+import callApi from '@/services/callApiService';
 
 export const handleGoogleSignUp = async (
   userDetails: userDetail,
-  setToastData: React.Dispatch<React.SetStateAction<ToastData>>,
   router: any,
   dispatch: any,
 ) => {
@@ -29,24 +28,14 @@ export const handleGoogleSignUp = async (
     const formData = new FormData();
     formData.append('userDetails', JSON.stringify(userData));
     formData.append('token', token);
-    await axios.post('/api/sign-up', formData);
-    setToastData({
-      status: 'success',
-      message: 'Login Successfull',
-      show: true,
-    });
-    setTimeout(() => {
-      router.push('/');
-    }, 2000);
+    await callApi('sign-up', 'post', formData);
+    sweetAlertToast('success', 'Login Successfull');
+    router.push('/');
     dispatch(updateUserDetails(resetGlobalState));
   } catch (error: any) {
     console.log('Error in sign up with google', error);
-    const { message } = error.response.data;
-    setToastData({
-      status: 'error',
-      message,
-      show: true,
-    });
+    const { message } = error.data;
+    sweetAlertToast('error', message);
   }
 };
 

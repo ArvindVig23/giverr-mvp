@@ -8,8 +8,3 @@ export interface ToastProps {
   toastData: ToastData;
   setToastData?: any;
 }
-
-export interface OptionalToastProp {
-  toastData?: ToastData;
-  setToastData?: any;
-}

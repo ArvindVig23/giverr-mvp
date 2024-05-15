@@ -21,13 +21,14 @@ import {
 } from '@/utils/regex';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase/config';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { OptionalToastProp } from '@/interface/notification';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { tooglePassword } from '@/utils/signUpEvent';
 import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
-const SignUpStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
+import { sweetAlertToast } from '@/services/toastServices';
+import { checkUsernameAndEmail } from '@/services/userService';
+import callApi from '@/services/callApiService';
+const SignUpStep2: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const {
@@ -51,16 +52,12 @@ const SignUpStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
     setLoading(true);
     // check userName exist or not
     try {
-      await axios.post('/api/check-duplicate-user', { username });
+      const user = await checkUsernameAndEmail({ username });
+      console.log(user, ' ');
     } catch (error: any) {
       setLoading(false);
-      console.log(error, 'error');
-      const { message } = error.response.data;
-      setToastData({
-        status: 'error',
-        message,
-        show: true,
-      });
+      const { message } = error;
+      sweetAlertToast('error', message);
       return;
     }
     // firebase authenticator for email & password
@@ -70,11 +67,7 @@ const SignUpStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
       setLoading(false);
       const string = error?.customData?._tokenResponse?.error?.message;
       if (string === 'EMAIL_EXISTS') {
-        setToastData({
-          status: 'error',
-          message: 'User with email already exist',
-          show: true,
-        });
+        sweetAlertToast('error', 'User with this email already exist');
         return;
       }
     }
@@ -90,28 +83,17 @@ const SignUpStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
         status: true,
       };
       formData.append('userDetails', JSON.stringify(newUserDetails));
-      const response = await axios.post('/api/sign-up', formData);
-      console.log(response.data);
-      setToastData({
-        status: 'success',
-        message: response.data.message,
-        show: true,
-      });
+      const response = await callApi('/sign-up', 'post', formData);
+      const message = response.message;
+      sweetAlertToast('success', message);
       dispatch(updateUserDetails(resetGlobalState));
-      // added a timeout so that user can see succss message.
-      setTimeout(() => {
-        router.push('/sign-in');
-      }, 2000);
+      router.push('/sign-in');
       setLoading(false);
     } catch (error: any) {
       setLoading(false);
       console.log(error, 'error');
-      const { message } = error.response.data;
-      setToastData({
-        status: 'error',
-        message,
-        show: true,
-      });
+      const { message } = error.data;
+      sweetAlertToast('error', message);
     }
   };
   return (

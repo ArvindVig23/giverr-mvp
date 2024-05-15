@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         200,
         false,
         null,
-        'User with email is available',
+        'User with this email is available',
       );
       return response;
     } else {

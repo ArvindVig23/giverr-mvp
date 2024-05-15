@@ -2,14 +2,28 @@ import { NextRequest } from 'next/server';
 import responseHandler from '../../../../../lib/responseHandler';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import { schemaWithOptionalFields } from '@/utils/joiSchema';
 
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
     const { username, email } = reqBody;
+    //  add validations
 
     const usersRef = collection(db, 'users');
     if (email) {
+      const { error } = schemaWithOptionalFields.validate(
+        { email },
+        { abortEarly: false },
+      );
+      if (error) {
+        const errorMessage: string = error.details
+          .map((err) => err.message)
+          .join('; ');
+
+        const response = responseHandler(403, false, null, errorMessage);
+        return response;
+      }
       const findUserWithEmail = query(
         usersRef,
         where('email', '==', email.toLowerCase()),
@@ -34,6 +48,18 @@ export async function POST(req: NextRequest) {
       }
     }
     if (username) {
+      const { error } = schemaWithOptionalFields.validate(
+        { username },
+        { abortEarly: false },
+      );
+      if (error) {
+        const errorMessage: string = error.details
+          .map((err) => err.message)
+          .join('; ');
+
+        const response = responseHandler(403, false, null, errorMessage);
+        return response;
+      }
       const findUserWithUsername = query(
         usersRef,
         where('username', '==', username.toLowerCase()),

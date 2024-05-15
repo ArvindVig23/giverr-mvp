@@ -18,16 +18,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { passwordValidationPattern } from '@/utils/regex';
 import { tooglePassword } from '@/utils/signUpEvent';
-import axios from 'axios';
-import { OptionalToastProp } from '@/interface/notification';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase/config';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
+import { sweetAlertToast } from '@/services/toastServices';
+import callApi from '@/services/callApiService';
 
-const SignInStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
+const SignInStep2: React.FC = () => {
   // Global state user details
   const user: any = useSelector((state: any) => state.userDetailReducer);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -47,15 +47,10 @@ const SignInStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
     // check if user existed and with the email method
     setLoading(true);
     try {
-      await axios.post('/api/sign-in', { email: user.email });
+      await callApi('/sign-in', 'post', { email: user.email });
     } catch (error: any) {
-      console.log(error, 'error');
-      const { message } = error.response.data;
-      setToastData({
-        status: 'error',
-        message,
-        show: true,
-      });
+      const { message } = error.data;
+      sweetAlertToast('error', message);
       setLoading(false);
       return;
     }
@@ -69,25 +64,15 @@ const SignInStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
       );
       const token = await res.user.getIdToken();
       setCookie('userToken', token, { path: '/' });
-      setToastData({
-        status: 'sucess',
-        message: 'Login Successfull',
-        show: true,
-      });
-      setTimeout(() => {
-        router.push('/');
-      }, 2000);
+      sweetAlertToast('success', 'Login Successfull');
+      router.push('/');
       setLoading(false);
       dispatch(updateUserDetails(resetGlobalState));
     } catch (error: any) {
       console.error(JSON.stringify(error.code), 'Error in the firebase auth');
       const errString = error?.code;
       if (errString === 'auth/invalid-credential') {
-        setToastData({
-          status: 'error',
-          message: 'Invalid Credentials',
-          show: true,
-        });
+        sweetAlertToast('error', 'Invalid Credentials');
       }
       reset();
       setLoading(false);
@@ -102,6 +87,9 @@ const SignInStep2: React.FC<OptionalToastProp> = ({ setToastData }) => {
       return;
     } // eslint-disable-next-line
   }, []);
+  const toastDa = useSelector((state: any) => state.toastReducer);
+  console.log(toastDa, 'toastDa========================');
+
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}

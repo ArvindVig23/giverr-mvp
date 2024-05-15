@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
     // sign up with google auth
     if (isGoogleAuth) {
       const usersRef = collection(db, 'users');
-      const findUserQuery = query(usersRef, where('email', '==', email));
+      const findUserQuery = query(
+        usersRef,
+        where('email', '==', email.trim().toLowerCase()),
+      );
       const existedUser = await getDocs(findUserQuery);
       if (existedUser.empty) {
         await createUserService(userData, token);
@@ -50,6 +53,7 @@ export async function POST(req: NextRequest) {
       await updateDoc(doc(db, 'users', userId), {
         isEmailAuth: false,
         isGoogleAuth: true,
+        isAppleAuth: false,
       });
       cookies().set('userToken', token);
       const response = responseHandler(
@@ -64,7 +68,10 @@ export async function POST(req: NextRequest) {
     if (isEmailAuth) {
       // check if user exist with the same email
       const usersRef = collection(db, 'users');
-      const findUserQuery = query(usersRef, where('email', '==', email));
+      const findUserQuery = query(
+        usersRef,
+        where('email', '==', email.trim().toLowerCase()),
+      );
       const existedUser = await getDocs(findUserQuery);
       if (!existedUser.empty) {
         const response = responseHandler(
