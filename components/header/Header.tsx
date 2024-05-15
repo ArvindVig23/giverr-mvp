@@ -12,7 +12,7 @@ const Header: React.FC = () => {
       <nav className=" px-4 md:px-5 py-5">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen">
           <div className="flex flex-wrap gap-8">
-            <Link href="#" className="items-center inline-block">
+            <Link href="/" className="items-center inline-block">
               <Image className="h-8 w-auto" src={logo} alt="Logo" />
             </Link>
             <div className="flex flex-wrap gap-2.5 items-center text-base">
@@ -47,9 +47,12 @@ const Header: React.FC = () => {
             </form>
           </div>
           <div className="flex items-center gap-2.5">
-            <button className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]">
+            <Link
+              href={'/sign-in'}
+              className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+            >
               Join now
-            </button>
+            </Link>
             <ProfileDropdown />
           </div>
         </div>
