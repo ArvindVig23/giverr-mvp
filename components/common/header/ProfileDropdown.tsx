@@ -4,6 +4,7 @@ import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import check from '../../../public/images/check-circle.svg';
 import Image from 'next/image';
+import { logOut } from '@/services/userService';
 
 export default function ProfileDropdown() {
   return (
@@ -81,12 +82,12 @@ export default function ProfileDropdown() {
             </Menu.Item>
 
             <Menu.Item>
-              <Link
-                href="#"
+              <button
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                onClick={logOut}
               >
                 Log out
-              </Link>
+              </button>
             </Menu.Item>
           </div>
         </Menu.Items>

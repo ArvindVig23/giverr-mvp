@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 
 export const withAdminAuthorization = (OriginalComponent: any) => {
-  function WithAdminAuthorization(props: any) {
+  function HOCAuth(props: any) {
     const [cookies] = useCookies();
     const router = useRouter();
     const user: any = cookies.userToken;
@@ -21,7 +21,7 @@ export const withAdminAuthorization = (OriginalComponent: any) => {
     return isLoggedIn ? null : <OriginalComponent {...props} />;
   }
 
-  WithAdminAuthorization.displayName = 'WithAdminAuthorization';
+  HOCAuth.displayName = 'HOCAuth';
 
-  return WithAdminAuthorization;
+  return HOCAuth;
 };
