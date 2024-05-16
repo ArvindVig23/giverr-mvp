@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
@@ -5,8 +6,10 @@ import logo from '../../../public/images/logo.svg';
 import search from '../../../public/images/search.svg';
 import ProfileDropdown from './ProfileDropdown';
 import Daterange from './Daterange';
+import { useCookies } from 'react-cookie';
 
 const Header: React.FC = () => {
+  const [cookies] = useCookies();
   return (
     <header>
       <nav className=" px-4 md:px-5 py-5">
@@ -47,13 +50,16 @@ const Header: React.FC = () => {
             </form>
           </div>
           <div className="flex items-center gap-2.5">
-            <Link
-              href={'/sign-in'}
-              className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
-            >
-              Join now
-            </Link>
-            <ProfileDropdown />
+            {cookies.userToken ? (
+              <ProfileDropdown />
+            ) : (
+              <Link
+                href={'/sign-in'}
+                className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+              >
+                Join now
+              </Link>
+            )}
           </div>
         </div>
       </nav>
