@@ -1,8 +1,8 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import Header from './header/Header';
-import Footer from './footer/Footer';
+import Header from '../common/header/Header';
+import Footer from '../common/footer/Footer';
 const AppWrapper = ({ children }: any) => {
   const pathName = usePathname();
   return pathName === '/sign-in' ||

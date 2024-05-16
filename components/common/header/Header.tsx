@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
-import logo from '../../public/images/logo.svg';
-import search from '../../public/images/search.svg';
+import logo from '../../../public/images/logo.svg';
+import search from '../../../public/images/search.svg';
 import ProfileDropdown from './ProfileDropdown';
 import Daterange from './Daterange';
 

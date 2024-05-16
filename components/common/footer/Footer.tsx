@@ -5,7 +5,7 @@ import footerlogo from '../../../public/images/giverr.svg';
 import insta from '../../../public/images/instagram.svg';
 import twitter from '../../../public/images/twitter.svg';
 import linkedin from '../../../public/images/linkedin.svg';
-import link from '../../public/../images/external-link.svg';
+import link from '../../../public/images/external-link.svg';
 
 const Footer: React.FC = () => {
   return (

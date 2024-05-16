@@ -28,11 +28,9 @@ const OpportunitiesTags: React.FC = () => {
         loop={true}
         navigation={{
           // Add navigation prop
-          nextEl: '.swiper-button-next', // Selector for the next button
-          prevEl: '.swiper-button-prev', // Selector for the previous button
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         }}
-        onSlideChange={() => console.log('slide change')}
-        onSwiper={(swiper) => console.log(swiper)}
       >
         <SwiperSlide>
           <div className="group border border-[#E60054] text-[#E60054] rounded-md gap-[5px] px-3 py-2 inline-flex items-center justify-center cursor-pointer hover:border-[#E60054] hover:text-[#E60054]">
