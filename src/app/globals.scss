@@ -46,3 +46,13 @@ body {
   left: -69px;
   z-index: -1;
 }
+.swiper-btns .swiper-button-disabled
+{
+  background-color: #1E1E1E0D;
+  opacity: 1 !important;
+  img 
+  {
+    filter: brightness(0);
+    opacity: 0.3;
+  }
+}
