@@ -2,6 +2,7 @@ import { db } from '@/firebase/config';
 import { addDoc, collection } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import responseHandler from '../../lib/responseHandler';
+import { sendEmail } from './emailService';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -30,6 +31,13 @@ export const createUserService = async (userData: any, token?: any) => {
     if (token) {
       cookies().set('userToken', token);
     }
+
+    // send email after user created
+    await sendEmail(
+      email,
+      'Sign up sucessfull',
+      'You are registered sucessfully',
+    );
     const response = responseHandler(
       200,
       false,

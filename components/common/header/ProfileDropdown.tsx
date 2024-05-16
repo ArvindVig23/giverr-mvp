@@ -2,14 +2,8 @@
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
-import check from '../../public/images/check-circle.svg';
-import Image from 'next/image'; // Import Image from next/image
-
-// import { ChevronDownIcon } from '@heroicons/react/20/solid';
-
-// function classNames(...classes: any) {
-//   return classes.filter(Boolean).join(' ');
-// }
+import check from '../../../public/images/check-circle.svg';
+import Image from 'next/image';
 
 export default function ProfileDropdown() {
   return (

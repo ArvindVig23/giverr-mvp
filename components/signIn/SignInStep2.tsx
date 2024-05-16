@@ -16,7 +16,6 @@ import rightCloseShape from '../../public/images/show-pass-right.svg';
 import back from '../../public/images/arrow-left.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { passwordValidationPattern } from '@/utils/regex';
 import { tooglePassword } from '@/utils/signUpEvent';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase/config';
@@ -87,8 +86,6 @@ const SignInStep2: React.FC = () => {
       return;
     } // eslint-disable-next-line
   }, []);
-  const toastDa = useSelector((state: any) => state.toastReducer);
-  console.log(toastDa, 'toastDa========================');
 
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
@@ -122,11 +119,6 @@ const SignInStep2: React.FC = () => {
             <input
               {...register('password', {
                 required: 'Password is required',
-                pattern: {
-                  value: passwordValidationPattern,
-                  message:
-                    'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
-                },
               })}
               type={showPassword ? 'text' : 'password'}
               id="password"
@@ -139,7 +131,7 @@ const SignInStep2: React.FC = () => {
 
             <Image
               onClick={() => tooglePassword(showPassword, setShowPassword)}
-              src={showPassword ? eyeSlash : eye}
+              src={showPassword ? eye : eyeSlash}
               alt="eye"
               className="cursor-pointer absolute right-5 top-5"
             />
@@ -178,12 +170,12 @@ const SignInStep2: React.FC = () => {
       <div className="absolute left-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? leftCloseShape : leftshape}
+          src={showPassword ? leftshape : leftCloseShape}
           alt="shapes"
         />
         <Image
           className="block md:hidden"
-          src={showPassword ? mobCloseLeft : mobleftshape}
+          src={showPassword ? mobleftshape : mobCloseLeft}
           alt="shapes"
         />
       </div>
@@ -191,12 +183,12 @@ const SignInStep2: React.FC = () => {
       <div className="absolute right-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? rightCloseShape : rightshape}
+          src={showPassword ? rightshape : rightCloseShape}
           alt="shapes"
         />
         <Image
           className="block md:hidden"
-          src={showPassword ? mobCloseRight : mobrightshape}
+          src={showPassword ? mobrightshape : mobCloseRight}
           alt="shapes"
         />
       </div>

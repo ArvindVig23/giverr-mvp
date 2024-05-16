@@ -48,13 +48,14 @@ export async function POST(req: NextRequest) {
         await createUserService(userData, token);
       }
       const userDoc = existedUser.docs[0]; // Get the first user document
-      const userId = userDoc.id;
-
-      await updateDoc(doc(db, 'users', userId), {
-        isEmailAuth: false,
-        isGoogleAuth: true,
-        isAppleAuth: false,
-      });
+      if (userDoc) {
+        const userId = userDoc.id;
+        await updateDoc(doc(db, 'users', userId), {
+          isEmailAuth: false,
+          isGoogleAuth: true,
+          isAppleAuth: false,
+        });
+      }
       cookies().set('userToken', token);
       const response = responseHandler(
         200,

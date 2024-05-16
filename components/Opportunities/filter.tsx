@@ -10,11 +10,11 @@ import check from '../../public/images/check.svg';
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false); // State to track menu open/close
   const [isButtonClicked, setIsButtonClicked] = useState(false); // State to track filter button click
-  const dropdownRef = useRef(null); // Ref to store reference to dropdown
+  const dropdownRef = useRef<HTMLDivElement>(null); // Ref to store reference to dropdown
 
   useEffect(() => {
     // Function to handle click outside dropdown
-    function handleClickOutside(event) {
+    function handleClickOutside(event: any) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false); // Close dropdown if clicked outside
         setIsButtonClicked(false); // Reset button click state
