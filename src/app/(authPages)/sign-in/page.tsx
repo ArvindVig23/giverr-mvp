@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import SignInStep2 from '../../../../components/signIn/SignInStep2';
 import CommonStep1 from '../../../../components/commonStep/CommonStep1';
-import { withAdminAuthorization } from '../../../../components/hoc/hocAuth';
+import { withAdminAuthorization } from '../../../../components/hoc/HOCAuth';
 
 const SignIn: React.FC = () => {
   const searchParams = useSearchParams();
