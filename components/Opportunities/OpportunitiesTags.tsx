@@ -24,7 +24,7 @@ const OpportunitiesTags: React.FC = () => {
     <div className="px-5 relative mb-5 opportunities-swiper">
       <Swiper
         spaceBetween={12}
-        slidesPerView={8}
+        slidesPerView="auto"
         loop={true}
         navigation={{
           // Add navigation prop
