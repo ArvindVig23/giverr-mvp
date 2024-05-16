@@ -3,6 +3,7 @@ import './globals.scss';
 import React from 'react';
 import { ReduxProvider } from './redux/ReduxProvider';
 
+import AppWrapper from '../../components/container/AppWrapper';
 export const metadata: Metadata = {
   title: 'Giverr',
   description: 'Events Management Application',
@@ -17,8 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ReduxProvider>
-          {/* <Header/> */}
-          {children}
+          <AppWrapper>{children}</AppWrapper>
         </ReduxProvider>
       </body>
     </html>

@@ -89,7 +89,7 @@ const CommonStep1: React.FC = () => {
                   message: 'Enter a valid email',
                 },
               })}
-              type="email"
+              type="text"
               id="email"
               className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "

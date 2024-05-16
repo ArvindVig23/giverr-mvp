@@ -144,7 +144,7 @@ const SignUpStep2: React.FC = () => {
 
             <Image
               onClick={() => tooglePassword(showPassword, setShowPassword)}
-              src={showPassword ? eyeSlash : eye}
+              src={showPassword ? eye : eyeSlash}
               alt="eye"
               className="cursor-pointer absolute right-5 top-5"
             />
@@ -230,12 +230,12 @@ const SignUpStep2: React.FC = () => {
       <div className="absolute left-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? leftCloseShape : leftshape}
+          src={showPassword ? leftshape : leftCloseShape}
           alt="shapes"
         />
         <Image
           className="block md:hidden"
-          src={showPassword ? mobCloseLeft : mobleftshape}
+          src={showPassword ? mobleftshape : mobCloseLeft}
           alt="shapes"
         />
       </div>
@@ -243,12 +243,12 @@ const SignUpStep2: React.FC = () => {
       <div className="absolute right-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? rightCloseShape : rightshape}
+          src={showPassword ? rightshape : rightCloseShape}
           alt="shapes"
         />
         <Image
           className="block md:hidden"
-          src={showPassword ? mobCloseRight : mobrightshape}
+          src={showPassword ? mobrightshape : mobCloseRight}
           alt="shapes"
         />
       </div>
