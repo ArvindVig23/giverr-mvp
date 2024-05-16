@@ -5,7 +5,6 @@ export interface ToastData {
 }
 
 export interface ToastProps {
-  status: 'success' | 'error';
-  message: string;
-  show: boolean;
+  toastData: ToastData;
+  setToastData?: any;
 }

@@ -4,6 +4,8 @@ import './fonts.css';
 import React from 'react';
 import Header from '../../components/header/Header';
 import Footer from '../../components/footer/Footer';
+import { ReduxProvider } from './redux/ReduxProvider';
+
 export const metadata: Metadata = {
   title: 'Giverr',
   description: 'Events Management Application',
@@ -17,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <ReduxProvider>
+          <Header />
+          {children}
+          <Footer />
+        </ReduxProvider>
       </body>
     </html>
   );

@@ -1,16 +1,51 @@
-import Link from 'next/link';
+'use client';
 import React from 'react';
+import Link from 'next/link';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '../../public/images/logo.svg';
 import apple from '../../public/images/apple.svg';
 import google from '../../public/images/Google.svg';
-import leftshape from '../../public/images/left-shapes.svg';
 import mobleftshape from '../../public/images/left-mob-shape.svg';
-import rightshape from '../../public/images/right-shapes.svg';
 import mobrightshape from '../../public/images/right-mob-shape.svg';
-const SignInStep1: React.FC = () => {
+import leftshape from '../../public/images/left-shapes.svg';
+import rightshape from '../../public/images/right-shapes.svg';
+import { handleGoogleSignUp } from '@/utils/signUpEvent';
+import { useForm } from 'react-hook-form';
+import { emailregex } from '@/utils/regex';
+import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
+import { sweetAlertToast } from '@/services/toastServices';
+import { checkUsernameAndEmail } from '@/services/userService';
+
+const CommonStep1: React.FC = () => {
+  // global state for userDetails
+  const user: any = useSelector((state: any) => state.userDetailReducer);
+  const dispatch = useDispatch();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const router = useRouter();
+  const continueButton = async (data: any) => {
+    dispatch(updateUserDetails({ ...user, email: data.email }));
+    try {
+      const responseForRedirectionLink: any = await checkUsernameAndEmail({
+        email: data.email,
+      });
+
+      const { redirectUrl } = responseForRedirectionLink.data;
+      router.push(redirectUrl);
+    } catch (error: any) {
+      const { message } = error.response.data;
+      sweetAlertToast('error', message);
+      return;
+    }
+  };
+
   return (
-    <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 px-8 pb-32 md:pb-0">
+    <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
       <div className="w-full text-center relative md:absolute md:top-16 mb-8 md:m-0">
         <Link className="inline-block" href="#">
@@ -23,7 +58,10 @@ const SignInStep1: React.FC = () => {
           <button className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black">
             <Image src={apple} alt="Logo" /> Continue with Apple
           </button>
-          <button className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black">
+          <button
+            className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
+            onClick={() => handleGoogleSignUp(user, router, dispatch)}
+          >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>
         </div>
@@ -37,25 +75,44 @@ const SignInStep1: React.FC = () => {
           <div className="h-px w-full bg-[#1E1E1E] opacity-20"></div>
         </div>
 
-        <form className="flex gap-4 w-full flex-col">
+        <form
+          className="flex gap-4 w-full flex-col"
+          onSubmit={handleSubmit(continueButton)}
+        >
           <div className="relative w-full">
             <input
-              type="text"
-              id="floating_filled"
+              defaultValue={user.email}
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: emailregex,
+                  message: 'Enter a valid email',
+                },
+              })}
+              type="email"
+              id="email"
               className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "
             />
             <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
               Email
             </label>
+            {errors.email && (
+              <span className="text-red-500">
+                {(errors.email as { message: string }).message}
+              </span>
+            )}
           </div>
 
-          <button className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]">
+          <button
+            type="submit"
+            className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
+          >
             Continue
           </button>
 
           <p className="mt-2 text-center w-full text-[#1E1E1E80]">
-            If you dont have an account, we&apos;ll create one.
+            If you don&apos;t have an account, we&apos;ll create one.
           </p>
         </form>
       </div>
@@ -81,4 +138,4 @@ const SignInStep1: React.FC = () => {
   );
 };
 
-export default SignInStep1;
+export default CommonStep1;
