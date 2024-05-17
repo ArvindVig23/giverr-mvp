@@ -7,6 +7,7 @@ import search from '../../../public/images/search.svg';
 import ProfileDropdown from './ProfileDropdown';
 import Daterange from './Daterange';
 import { useCookies } from 'react-cookie';
+import CreateOrganization from '../../manageProfile/CreateOrganization';
 
 const Header: React.FC = () => {
   const [cookies] = useCookies();
@@ -51,11 +52,14 @@ const Header: React.FC = () => {
           </div>
           <div className="flex items-center gap-2.5">
             {cookies.userToken ? (
-              <ProfileDropdown />
+              <>
+                <CreateOrganization />
+                <ProfileDropdown />
+              </>
             ) : (
               <Link
                 href={'/sign-in'}
-                className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                className="text-base  w-auto h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
               >
                 Join now
               </Link>
