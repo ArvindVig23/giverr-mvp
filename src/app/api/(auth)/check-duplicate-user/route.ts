@@ -26,13 +26,13 @@ export async function POST(req: NextRequest) {
       }
       const findUserWithEmail = query(
         usersRef,
-        where('email', '==', email.toLowerCase()),
+        where('email', '==', email.toLowerCase().trim()),
       );
       const existedUserWithEmail = await getDocs(findUserWithEmail);
       if (!existedUserWithEmail.empty) {
         const response = responseHandler(
           200,
-          false,
+          true,
           { redirectUrl: '/sign-in?step=2' },
           'User with this Email already exists.',
         );
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       } else {
         const response = responseHandler(
           200,
-          false,
+          true,
           { redirectUrl: '/sign-up?step=2' },
           'User does not exist with this email. Create new user',
         );
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       }
       const findUserWithUsername = query(
         usersRef,
-        where('username', '==', username.toLowerCase()),
+        where('username', '==', username.toLowerCase().trim()),
       );
       const existedUserWithUsername = await getDocs(findUserWithUsername);
       if (!existedUserWithUsername.empty) {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '../../public/images/logo.svg';
 import mobleftshape from '../../public/images/left-mob-shape.svg';
@@ -7,8 +7,21 @@ import mobrightshape from '../../public/images/right-mob-shape.svg';
 import leftshape from '../../public/images/left-shapes.svg';
 import rightshape from '../../public/images/right-shapes.svg';
 import back from '../../public/images/arrow-left.svg';
+import { useRouter } from 'next/navigation';
 
-const ForgotStep2: React.FC = () => {
+const ForgotStep2: React.FC<{ email: string }> = ({ email }) => {
+  const router = useRouter();
+  useEffect(() => {
+    if (!email) {
+      router.push('/forgot-password');
+    }
+  });
+
+  const maskEmail = (email: string) => {
+    let [local, domain] = email.split('@');
+    let maskedLocal = local.slice(0, 2) + '******';
+    return `${maskedLocal}@${domain}`;
+  };
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
@@ -24,13 +37,13 @@ const ForgotStep2: React.FC = () => {
             Password reset
           </strong>
           <p className="m-0 text-[#1E1E1E80] text-base">
-            Check your inbox at a**th@gmail.com.
+            Check your inbox at {email && maskEmail(email)}.
           </p>
         </div>
 
         <div className="w-full text-center md:absolute mt-6 md:m-0 left-0 right-0 -bottom-32">
           <Link
-            href={'/sign-in?step=1'}
+            href={'/forgot-password'}
             className="border border-[#E6E3D6] hover:bg-[#E6E3D6] rounded-lg w-11 h-11 inline-flex items-center justify-center"
           >
             <Image src={back} alt="back" />
