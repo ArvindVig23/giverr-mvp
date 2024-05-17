@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const usersRef = collection(db, 'users');
     // get the user with email
     const userWithEmail = await getDocs(
-      query(usersRef, where('email', '==', email.toLowerCase())),
+      query(usersRef, where('email', '==', email.toLowerCase().trim())),
     );
     // if user not existed
     if (userWithEmail.empty) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
     const response = responseHandler(
       200,
-      false,
+      true,
       null,
       'User with this email is available, please login',
     );

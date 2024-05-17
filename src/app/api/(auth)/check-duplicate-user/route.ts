@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       }
       const findUserWithEmail = query(
         usersRef,
-        where('email', '==', email.toLowerCase()),
+        where('email', '==', email.toLowerCase().trim()),
       );
       const existedUserWithEmail = await getDocs(findUserWithEmail);
       if (!existedUserWithEmail.empty) {
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       }
       const findUserWithUsername = query(
         usersRef,
-        where('username', '==', username.toLowerCase()),
+        where('username', '==', username.toLowerCase().trim()),
       );
       const existedUserWithUsername = await getDocs(findUserWithUsername);
       if (!existedUserWithUsername.empty) {

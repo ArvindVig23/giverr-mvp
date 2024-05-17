@@ -15,7 +15,7 @@ export async function GET() {
       return response;
     }
     cookieStore.delete('userToken');
-    const response = responseHandler(200, false, null, 'Logout successfull.');
+    const response = responseHandler(200, true, null, 'Logout successfull.');
     return response;
   } catch (error) {
     const response = responseHandler(500, false, null, 'Error while logout.');
