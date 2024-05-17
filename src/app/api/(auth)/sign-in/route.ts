@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const usersRef = collection(db, 'users');
     // get the user with email
     const userWithEmail = await getDocs(
-      query(usersRef, where('email', '==', email.toLowerCase())),
+      query(usersRef, where('email', '==', email.toLowerCase().trim())),
     );
     // if user not existed
     if (userWithEmail.empty) {
@@ -33,25 +33,13 @@ export async function POST(req: NextRequest) {
       );
       return response;
     }
-    const userDoc = userWithEmail.docs[0];
-    const userData = userDoc.data();
-    if (userData.isEmailAuth) {
-      const response = responseHandler(
-        200,
-        false,
-        null,
-        'User with this email is available',
-      );
-      return response;
-    } else {
-      const response = responseHandler(
-        409,
-        false,
-        null,
-        'User registered with Google Sign up method.',
-      );
-      return response;
-    }
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'User with this email is available, please login',
+    );
+    return response;
   } catch (error) {
     const response = responseHandler(500, false, null, 'Error while sign in.');
     return response;

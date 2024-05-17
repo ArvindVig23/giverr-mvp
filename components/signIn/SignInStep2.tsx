@@ -151,7 +151,7 @@ const SignInStep2: React.FC = () => {
           </button>
 
           <p className="mt-2 text-center w-full text-[#1E1E1E] ">
-            <Link className="hover:underline" href="#">
+            <Link className="hover:underline" href="/forgot-password">
               Forgot password?
             </Link>
           </p>
