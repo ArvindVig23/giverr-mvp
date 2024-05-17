@@ -34,7 +34,10 @@ const ResetPasswordForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     getValues,
+    trigger,
+    watch,
   } = useForm();
+  const password = watch('password');
   const router = useRouter();
   const resetPassword = async (formData: any) => {
     try {
@@ -63,6 +66,11 @@ const ResetPasswordForm: React.FC = () => {
       router.push('/forgot-password');
     } // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    if (password) {
+      trigger('confirmPassword');
+    }
+  }, [password, trigger]);
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
