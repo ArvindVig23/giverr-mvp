@@ -1,75 +1,471 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
+} from '@material-tailwind/react';
+import Image from 'next/image';
+import dummy from '../../public/images/dummy.jpg';
+import externalLink from '../../public/images/external-link.svg';
+import arrowDown from '../../public/images/chevron-down.svg';
+import Link from 'next/link';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import SwiperCore from 'swiper'; // Import Swiper core and required modules
+import { A11y, Navigation, Pagination, Scrollbar } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import heart from '../../public/images/heart.svg';
+import stateFill from '../../public/images/state=filled.svg';
+import thumb from '../../public/images/thumb.jpg';
+
+SwiperCore.use([Navigation]);
 
 export function Organization() {
-  // const [open, setOpen] = React.useState<boolean>(true); // Annotate type here
+  const [isActive, setIsActive] = useState(false);
 
-  // const handleOpen = (value: boolean) =>
-  //   setOpen(open === value ? false : value); // Annotate type here
+  const handleClick = () => {
+    setIsActive(!isActive);
+  };
+
+  const [open, setOpen] = React.useState<number>(1);
 
   return (
     <div className="w-full border-t border-[#E6E3D6] p-5">
       <div className="max-w-[652px] m-auto w-full">
-        <div className="container mx-auto">
-          <div className="m-8 rounded overflow-hidden">
-            <div className="group outline-none accordion-section" tabIndex={1}>
-              <div className="group bg-gray-900 flex justify-between px-4 py-3 items-center text-gray-500 transition ease duration-500 cursor-pointer pr-10 relative">
-                <div className="group-focus:text-white transition ease duration-500"></div>
-                <div className="h-8 w-8 border border-gray-700 rounded-full items-center inline-flex justify-center transform transition ease duration-500 group-focus:text-white group-focus:-rotate-180 absolute top-0 right-0 mb-auto ml-auto mt-2 mr-2">
-                  <i className="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div className="group-focus:max-h-screen max-h-0 bg-gray-800 px-4 overflow-hidden ease duration-500">
-                <p className="p-2 text-gray-400 text-justify">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Fugiat, repellat amet doloribus consequuntur eos similique
-                  provident tempora voluptates iure quia fuga dicta voluptatibus
-                  culpa mollitia recusandae delectus id suscipit labore?
-                </p>
-              </div>
-            </div>
-            <div className="group outline-none accordion-section" tabIndex={1}>
-              <div className="group bg-gray-900 flex justify-between px-4 py-3 items-center text-gray-500 transition ease duration-500 cursor-pointer pr-10 relative">
-                <div className="group-focus:text-white transition ease duration-500">
-                  Title for Tab - 2
-                </div>
-                <div className="h-8 w-8 border border-gray-700 rounded-full items-center inline-flex justify-center transform transition ease duration-500 group-focus:text-white group-focus:-rotate-180 absolute top-0 right-0 mb-auto ml-auto mt-2 mr-2">
-                  <i className="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div className="group-focus:max-h-screen max-h-0 bg-gray-800 px-4 overflow-hidden ease duration-500">
-                <p className="p-2 text-gray-400 text-justify">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Fugiat, repellat amet doloribus consequuntur eos similique
-                  provident tempora voluptates iure quia fuga dicta voluptatibus
-                  culpa mollitia recusandae delectus id suscipit labore?
-                </p>
-              </div>
-            </div>
-            <div className="group outline-none accordion-section" tabIndex={1}>
-              <div className="group bg-gray-900 flex justify-between px-4 py-3 items-center text-gray-500 transition ease duration-500 cursor-pointer pr-10 relative">
-                <div className="group-focus:text-white transition ease duration-500">
-                  Title for Tab - 3
-                </div>
-                <div className="h-8 w-8 border border-gray-700 rounded-full items-center inline-flex justify-center transform transition ease duration-500 group-focus:text-white group-focus:-rotate-180 absolute top-0 right-0 mb-auto ml-auto mt-2 mr-2">
-                  <i className="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div className="group-focus:max-h-screen max-h-0 bg-gray-800 px-4 overflow-hidden ease duration-500">
-                <p className="p-2 text-gray-400 text-justify">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Fugiat, repellat amet doloribus consequuntur eos similique
-                  provident tempora voluptates iure quia fuga dicta voluptatibus
-                  culpa mollitia recusandae delectus id suscipit labore?
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <>
+          <Accordion
+            open={open === 1}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <AccordionHeader
+              onClick={() => setOpen(1)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+              className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${open === 1 ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
+            >
+              <div className="w-full flex flex-wrap gap-5">
+                <div className="flex-1 flex gap-4 items-center">
+                  <div className="w-11 h-11 overflow-hidden rounded-full">
+                    <Image
+                      className="w-full h-full object-cover"
+                      src={dummy}
+                      alt="avatar"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <h5 className="text-base font-medium text-[#24181B] m-0 leading-[22px]">
+                      Planet Caretakers
+                    </h5>
+                    <span className="text-base text-[#24181B80]">
+                      4 opportunities
+                    </span>
+                  </div>
 
-        <div className="w-full fixed bottom-0 text-center bg-red-700 py-4 text-white">
-          Pure CSS Accordion Built using TailwindCSS. CSS is generated using the
-          built tool by making tweaks to the <strong>tailwind.config.js</strong>
-        </div>
+                  <Link
+                    href="#"
+                    className="w-[70px] ml-auto text-sm text-[#24181B] py-0.5 px-2 border border-[#D1CFC7] rounded-[10px] hover:bg-[#E6E3D6] group"
+                  >
+                    <span className="group-hover:hidden">Website</span>
+                    <span className="hidden group-hover:flex  w-full justify-between">
+                      Visit{' '}
+                      <Image
+                        className="brightness-0"
+                        src={externalLink}
+                        alt="link"
+                      />
+                    </span>
+                  </Link>
+                </div>
+
+                <Image src={arrowDown} alt="arrow" />
+              </div>
+            </AccordionHeader>
+            <AccordionBody className="bg-[#EAE7DC] px-2.5 rounded-b-xl">
+              <Swiper
+                modules={[Navigation, Pagination, Scrollbar, A11y]}
+                spaceBetween={12}
+                slidesPerView={2}
+                navigation={{
+                  // Add navigation prop
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+                }}
+                pagination={{ clickable: true }}
+              >
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                  <div className="relative group">
+                    <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+                      <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                        <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                        Pre-Entry
+                      </div>
+                      <div
+                        className="relative cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <Image src={isActive ? stateFill : heart} alt="heart" />
+                      </div>
+                    </div>
+
+                    <Link
+                      href="#"
+                      className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                    >
+                      <div className="overflow-hidden rounded-[14px]">
+                        <Image
+                          className="w-full  rounded-[14px]"
+                          src={dummy}
+                          alt="dummy"
+                        />
+                      </div>
+                      <div className="flex flex-col p-5">
+                        <h4 className="font-medium text-base">
+                          Forest maintenance
+                        </h4>
+                        <span className="text-base">Apr 6, 2024 at 09:30</span>
+                        <div className="mt-1 text-[#1E1E1E80]">
+                          Miami, FL, USA
+                        </div>
+
+                        <div className="flex items-center mt-5 gap-2">
+                          <div className="w-8 h-8 rounded-full overflow-hidden ">
+                            <Image
+                              src={thumb}
+                              className="object-cover w-full h-full"
+                              alt="thumbnail"
+                            />
+                          </div>
+                          Planet Caretakers
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </SwiperSlide>
+              </Swiper>
+            </AccordionBody>
+          </Accordion>
+          <Accordion
+            open={open === 2}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <AccordionHeader
+              onClick={() => setOpen(2)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              What is Material Tailwind?
+            </AccordionHeader>
+            <AccordionBody>sdsa</AccordionBody>
+          </Accordion>
+        </>
       </div>
     </div>
   );

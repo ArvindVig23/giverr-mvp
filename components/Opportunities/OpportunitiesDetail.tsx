@@ -7,6 +7,7 @@ import dogIcon from '../../public/images/dog-icon.svg';
 import location from '../../public/images/location.svg';
 import Link from 'next/link';
 import OpportunitiesSimilars from '../Opportunities/OpportunitiesSimilars';
+import Delete from '../manageProfile/detete';
 
 const OpportunitiesDetail: React.FC = () => {
   return (
@@ -23,9 +24,7 @@ const OpportunitiesDetail: React.FC = () => {
                 <button className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0">
                   Edit
                 </button>
-                <button className="text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-e-xl	">
-                  Delete
-                </button>
+                <Delete />
               </div>
             </div>
             <div className="realtive rounded-3xl">
