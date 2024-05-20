@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import OpportunitiesDetail from '../../../components/Opportunities/OpportunitiesDetail';
+import About from '../../../components/about/About';
 
 const details: React.FC = () => {
-  return <OpportunitiesDetail />;
+  return <About />;
 };
 export default details;

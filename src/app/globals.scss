@@ -79,3 +79,32 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.swiper-pagination {
+  position: relative !important;
+  padding: 8px 12px 8px 12px;
+  display:inline-flex;
+  width: auto !IMPORTANT;
+  margin: auto !important;
+  border-radius: 500px;
+  background: #fff;
+  gap: 7px;
+  margin-top: 30px !important;
+}
+.swiper-pagination-bullet
+{
+  width: 8px;
+  height: 8px;
+  margin: 0 !important;
+}
+.swiper-pagination-bullet-active {
+  background: #24181B !important;
+}
+.organization-section .swiper 
+{
+  text-align: center;
+}
+.organization-section .swiper-slide
+{
+  text-align: left;
+}
