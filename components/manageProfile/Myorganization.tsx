@@ -6,7 +6,7 @@ import more from '../../public/images/more.svg';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
-
+// import CreateOrganizations from '../manageProfile/CreateOrganizations';
 const Myorganization: React.FC = () => {
   return (
     <div className="w-full">
@@ -22,9 +22,7 @@ const Myorganization: React.FC = () => {
           <p className="text-[#24181B80] text-base m-0">You are the owner.</p>
         </div>
 
-        <button className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]">
-          New
-        </button>
+        <CreateOrganizations />
       </div> */}
       {/* No organization section end */}
 

@@ -7,7 +7,7 @@ import search from '../../../public/images/search.svg';
 import ProfileDropdown from './ProfileDropdown';
 import Daterange from './Daterange';
 import { useCookies } from 'react-cookie';
-import CreateOrganization from '../../manageProfile/CreateOrganization';
+import SubmitEvents from '../../manageProfile/SubmitEvents';
 
 const Header: React.FC = () => {
   const [cookies] = useCookies();
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-2.5">
             {cookies.userToken ? (
               <>
-                <CreateOrganization />
+                <SubmitEvents />
                 <ProfileDropdown />
               </>
             ) : (
