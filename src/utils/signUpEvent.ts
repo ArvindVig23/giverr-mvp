@@ -4,8 +4,8 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import React from 'react';
 import { resetGlobalState } from './initialStates/userInitialStates';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
-import { sweetAlertToast } from '@/services/toastServices';
-import callApi from '@/services/callApiService';
+import callApi from '@/services/frontend/callApiService';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
 
 export const handleGoogleSignUp = async (
   userDetails: userDetail,

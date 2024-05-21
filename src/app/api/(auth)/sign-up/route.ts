@@ -10,8 +10,9 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { cookies } from 'next/headers';
-import { createUserService } from '@/services/signUpService';
+import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
+import { UserDetailsCookies } from '@/interface/user';
 
 export async function POST(req: NextRequest) {
   try {
@@ -49,14 +50,21 @@ export async function POST(req: NextRequest) {
       }
       const userDoc = existedUser.docs[0]; // Get the first user document
       if (userDoc) {
+        const userDocData = userDoc.data();
         const userId = userDoc.id;
         await updateDoc(doc(db, 'users', userId), {
           isEmailAuth: false,
           isGoogleAuth: true,
           isAppleAuth: false,
         });
+        const userCookies: UserDetailsCookies = {
+          email: userDocData.email,
+          username: userDocData.username,
+          id: userDoc.id,
+        };
+        cookies().set('userDetails', JSON.stringify(userCookies));
+        cookies().set('userToken', token);
       }
-      cookies().set('userToken', token);
       const response = responseHandler(
         200,
         false,

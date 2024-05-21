@@ -23,8 +23,8 @@ import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
-import { sweetAlertToast } from '@/services/toastServices';
-import callApi from '@/services/callApiService';
+import callApi from '@/services/frontend/callApiService';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
 
 const SignInStep2: React.FC = () => {
   // Global state user details

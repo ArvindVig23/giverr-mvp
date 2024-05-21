@@ -35,3 +35,39 @@ export const schemaWithOptionalFields = Joi.object({
         'Username should contain alphabets, numbers and special characters only.',
     }),
 });
+
+export const eventValidationSchema = Joi.object({
+  name: Joi.string().required().messages({
+    'string.base': 'Event Name must be a string',
+    'string.required': 'Event Name is required',
+  }),
+
+  description: Joi.string()
+    .allow(null, '')
+    .optional()
+    .messages({ 'string.base': 'Description must be a string' }),
+
+  eventDate: Joi.string().isoDate().required().messages({
+    'string.base': 'EventDate  must be a string',
+    'string.required': 'Event Date  is required',
+  }),
+
+  frequency: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Frequency must be a string',
+    'string.required': 'Frequency is required',
+  }),
+
+  opportuntyType: Joi.string().allow(null, '').required().messages({
+    'string.base': 'opportuntyType must be a string',
+    'string.required': 'opportuntyType is required',
+  }),
+
+  organizationId: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Opportunty Name must be a string',
+    'string.required': 'Opportunty Name is required',
+  }),
+  imageLink: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Image url must be a string',
+    'string.required': 'Image url is required',
+  }),
+}).options({ abortEarly: false });

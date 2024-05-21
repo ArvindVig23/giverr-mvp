@@ -3,7 +3,8 @@ import responseHandler from '../../../../../lib/responseHandler';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { schema } from '@/utils/joiSchema';
-
+import { cookies } from 'next/headers';
+import { UserDetailsCookies } from '@/interface/user';
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
@@ -33,6 +34,19 @@ export async function POST(req: NextRequest) {
       );
       return response;
     }
+    const userDoc = userWithEmail.docs[0];
+    const userData = userDoc.data();
+    const documentId = userDoc.id;
+
+    const cookiesNeedsToSet: UserDetailsCookies = {
+      email: userData.email,
+      username: userData.username,
+      id: documentId,
+    };
+    cookies().set({
+      name: 'userDetails',
+      value: JSON.stringify(cookiesNeedsToSet),
+    });
     const response = responseHandler(
       200,
       true,

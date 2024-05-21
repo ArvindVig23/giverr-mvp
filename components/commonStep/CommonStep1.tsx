@@ -15,8 +15,8 @@ import { emailregex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
-import { sweetAlertToast } from '@/services/toastServices';
-import { checkUsernameAndEmail } from '@/services/userService';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { checkUsernameAndEmail } from '@/services/frontend/userService';
 
 const CommonStep1: React.FC = () => {
   // global state for userDetails

@@ -8,3 +8,9 @@ export interface userDetail {
   isEmailAuth?: boolean;
   status?: boolean;
 }
+
+export interface UserDetailsCookies {
+  email?: string;
+  id?: string;
+  username?: string;
+}
