@@ -18,10 +18,10 @@ import { useForm } from 'react-hook-form';
 import { passwordValidationPattern } from '@/utils/regex';
 import { confirmPasswordReset } from 'firebase/auth';
 import { auth } from '@/firebase/config';
-import { sweetAlertToast } from '@/services/toastServices';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { tooglePassword } from '@/utils/signUpEvent';
 import eyeSlash from '../../public/images/eye-slash.svg';
-import callApi from '@/services/callApiService';
+import callApi from '@/services/frontend/callApiService';
 
 const ResetPasswordForm: React.FC = () => {
   const searchParams = useSearchParams();

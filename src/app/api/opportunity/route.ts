@@ -2,19 +2,14 @@ import { NextRequest } from 'next/server';
 import responseHandler from '../../../../lib/responseHandler';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { createOpportunity } from '@/services/opportunityServices';
 import { eventValidationSchema } from '@/utils/joiSchema';
+import { createOpportunity } from '@/services/backend/opportunityServices';
 
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.formData();
-    const eventDetails: any = data.get('eventDetails');
-    let event = null;
-    if (typeof eventDetails === 'string') {
-      event = JSON.parse(eventDetails);
-    }
-    const { name, createdBy } = event;
-    const { error } = eventValidationSchema.validate(event);
+    const reqBody: any = await req.json();
+    const { name, createdBy } = reqBody;
+    const { error } = eventValidationSchema.validate(reqBody);
     if (error) {
       const errorMessage: string = error.details
         .map((err) => err.message)
@@ -41,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
       return response;
     }
-    const response = await createOpportunity(event);
+    const response = await createOpportunity(reqBody);
     return response;
   } catch (error) {
     console.log(error, 'error');

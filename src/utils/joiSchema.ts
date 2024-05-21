@@ -51,6 +51,23 @@ export const eventValidationSchema = Joi.object({
     'string.base': 'EventDate  must be a string',
     'string.required': 'Event Date  is required',
   }),
-})
-  .unknown(true)
-  .options({ abortEarly: false });
+
+  frequency: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Frequency must be a string',
+    'string.required': 'Frequency is required',
+  }),
+
+  opportuntyType: Joi.string().allow(null, '').required().messages({
+    'string.base': 'opportuntyType must be a string',
+    'string.required': 'opportuntyType is required',
+  }),
+
+  organizationId: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Opportunty Name must be a string',
+    'string.required': 'Opportunty Name is required',
+  }),
+  imageLink: Joi.string().allow(null, '').required().messages({
+    'string.base': 'Image url must be a string',
+    'string.required': 'Image url is required',
+  }),
+}).options({ abortEarly: false });

@@ -4,7 +4,7 @@ import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import check from '../../../public/images/check-circle.svg';
 import Image from 'next/image';
-import { logOut } from '@/services/userService';
+import { logOut } from '@/services/frontend/userService';
 
 export default function ProfileDropdown() {
   return (

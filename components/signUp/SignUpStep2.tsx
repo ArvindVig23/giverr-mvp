@@ -25,9 +25,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { tooglePassword } from '@/utils/signUpEvent';
 import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
-import { sweetAlertToast } from '@/services/toastServices';
-import { checkUsernameAndEmail } from '@/services/userService';
-import callApi from '@/services/callApiService';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import callApi from '@/services/frontend/callApiService';
+import { checkUsernameAndEmail } from '@/services/frontend/userService';
 const SignUpStep2: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);

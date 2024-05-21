@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { cookies } from 'next/headers';
-import { createUserService } from '@/services/signUpService';
+import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
 import { UserDetailsCookies } from '@/interface/user';
 
