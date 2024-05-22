@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import SignUpStep2 from '../../../../components/signUp/SignUpStep2';
-import CommonStep1 from '../../../../components/commonStep/CommonStep1';
-import { withAdminAuthorization } from '../../../../components/hoc/HOCAuth';
+import SignUpStep2 from '@/components/signUp/SignUpStep2';
+import CommonStep1 from '@/components/commonStep/CommonStep1';
+import { withAdminAuthorization } from '@/components/hoc/HOCAuth';
 
 const SignUp: React.FC = () => {
   const searchParams = useSearchParams();

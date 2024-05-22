@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import responseHandler from '../../../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 import {
   collection,
   doc,

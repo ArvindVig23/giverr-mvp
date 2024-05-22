@@ -1,5 +1,5 @@
 import { db } from '@/firebase/config';
-import responseHandler from '../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 import { addDoc, collection } from 'firebase/firestore';
 import moment from 'moment-timezone';
 
@@ -38,6 +38,7 @@ export const createOpportunity = async (opportunity: any) => {
       createdBy,
       imageLink,
       location,
+      status: false,
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,

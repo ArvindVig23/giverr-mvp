@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ForgotStep2 from '../../../../components/forgotPassword/ForgotStep2';
-import ForgotStep1 from '../../../../components/forgotPassword/ForgotStep1';
+import ForgotStep2 from '@/components/forgotPassword/ForgotStep2';
+import ForgotStep1 from '@/components/forgotPassword/ForgotStep1';
 
 const ForgotPassword: React.FC = () => {
   const searchParams = useSearchParams();

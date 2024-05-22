@@ -1,7 +1,7 @@
 import { db } from '@/firebase/config';
 import { addDoc, collection, getDoc } from 'firebase/firestore';
 import { cookies } from 'next/headers';
-import responseHandler from '../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 import { sendEmail } from './emailService';
 import { UserDetailsCookies } from '@/interface/user';
 import { currentUtcDate } from './opportunityServices';
@@ -52,7 +52,7 @@ export const createUserService = async (userData: any, token?: any) => {
     const response = responseHandler(
       200,
       true,
-      createuser,
+      null,
       'User created Successfully',
     );
     return response;

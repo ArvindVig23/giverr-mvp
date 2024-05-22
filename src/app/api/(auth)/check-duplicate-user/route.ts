@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import responseHandler from '../../../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { schemaWithOptionalFields } from '@/utils/joiSchema';
