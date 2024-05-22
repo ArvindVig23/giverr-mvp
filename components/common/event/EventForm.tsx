@@ -1,7 +1,6 @@
 'use client';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { noExtraSpaceRegex } from '@/utils/regex';
 import {
   eventFrequency,
   organizationName,
@@ -194,13 +193,9 @@ const EventForm = ({ setShowModal }: any) => {
           <input
             {...register('name', {
               required: 'Event Name is required',
-              pattern: {
-                value: noExtraSpaceRegex,
-                message: 'Remove extra spaces',
-              },
               min: {
-                value: 3,
-                message: 'Minimum 3 characters required.',
+                value: 4,
+                message: 'Minimum 4 characters required.',
               },
             })}
             type="text"
@@ -388,13 +383,9 @@ const EventForm = ({ setShowModal }: any) => {
           <textarea
             {...register('description', {
               required: 'Please enter description',
-              pattern: {
-                value: noExtraSpaceRegex,
-                message: 'Remove extra spaces',
-              },
               min: {
-                value: 3,
-                message: 'Minimum 3 characters required.',
+                value: 4,
+                message: 'Minimum 4 characters required.',
               },
             })}
             id="description"
