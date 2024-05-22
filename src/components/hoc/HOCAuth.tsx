@@ -9,7 +9,12 @@ export const withAdminAuthorization = (OriginalComponent: any) => {
     const router = useRouter();
     const user: any = cookies.userToken;
     const pathName = usePathname();
-    const publicPaths = ['/sign-in', '/sign-up'];
+    const publicPaths = [
+      '/sign-in',
+      '/sign-up',
+      '/forgot-password',
+      '/reset-password',
+    ];
     const isLoggedIn = publicPaths.includes(pathName) && user;
 
     useEffect(() => {

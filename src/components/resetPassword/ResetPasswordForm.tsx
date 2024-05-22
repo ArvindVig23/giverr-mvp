@@ -68,7 +68,7 @@ const ResetPasswordForm: React.FC = () => {
     } // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    if (password) {
+    if (password && confirmPassword) {
       trigger('confirmPassword');
     }
   }, [password, trigger, confirmPassword]);

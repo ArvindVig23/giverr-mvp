@@ -44,7 +44,7 @@ const EventForm = ({ setShowModal }: any) => {
       volunteerRequirements: '',
       registrationWebsiteLink: '',
       organizationId: '',
-      opportuntyType: '',
+      opportunityType: '',
       eventDate: null,
       eventTime: null,
       location: '',
@@ -356,7 +356,7 @@ const EventForm = ({ setShowModal }: any) => {
             Event type
           </label>
           <select
-            {...register('opportuntyType', {
+            {...register('opportunityType', {
               required: 'Select Event',
             })}
             className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
@@ -376,9 +376,9 @@ const EventForm = ({ setShowModal }: any) => {
             alt="arrow"
             className="absolute top-[18px] right-4 pointer-events-none"
           />
-          {errors.opportuntyType && (
+          {errors.opportunityType && (
             <span className="text-red-500">
-              {(errors.opportuntyType as { message: string }).message}
+              {(errors.opportunityType as { message: string }).message}
             </span>
           )}
         </div>
