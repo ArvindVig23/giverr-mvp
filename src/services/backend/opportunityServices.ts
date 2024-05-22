@@ -1,6 +1,10 @@
 import { db } from '@/firebase/config';
 import responseHandler from '../../../lib/responseHandler';
 import { addDoc, collection } from 'firebase/firestore';
+import moment from 'moment-timezone';
+
+//  current date to utc format
+export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
 // create opportunity
 export const createOpportunity = async (opportunity: any) => {
@@ -35,8 +39,8 @@ export const createOpportunity = async (opportunity: any) => {
       imageLink,
       location,
       lowercaseName: name.toLowerCase().trim(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
     });
     const response = responseHandler(
       200,

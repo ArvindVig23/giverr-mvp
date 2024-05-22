@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import responseHandler from '../../../lib/responseHandler';
 import { sendEmail } from './emailService';
 import { UserDetailsCookies } from '@/interface/user';
+import { currentUtcDate } from './opportunityServices';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -17,6 +18,7 @@ export const createUserService = async (userData: any, token?: any) => {
       isEmailAuth,
       status,
     } = userData;
+
     const createuser = await addDoc(collection(db, 'users'), {
       username: username.toLowerCase().trim(),
       fullName,
@@ -26,8 +28,8 @@ export const createUserService = async (userData: any, token?: any) => {
       isAppleAuth,
       isEmailAuth,
       status,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
     });
     if (token) {
       const getCreatedUser = await getDoc(createuser);
