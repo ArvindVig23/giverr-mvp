@@ -8,8 +8,25 @@ import { createOpportunity } from '@/services/backend/opportunityServices';
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
-    const { name, createdBy } = reqBody;
-    const { error } = eventValidationSchema.validate(reqBody);
+    const {
+      name,
+      createdBy,
+      description,
+      eventDate,
+      frequency,
+      opportuntyType,
+      organizationId,
+      imageLink,
+    } = reqBody;
+    const { error } = eventValidationSchema.validate({
+      name,
+      description,
+      eventDate,
+      frequency,
+      opportuntyType,
+      organizationId,
+      imageLink,
+    });
     if (error) {
       const errorMessage: string = error.details
         .map((err) => err.message)
