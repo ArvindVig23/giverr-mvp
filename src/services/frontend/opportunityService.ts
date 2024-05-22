@@ -2,10 +2,11 @@ import { updateEventDetails } from '@/app/redux/slices/eventType';
 import callApi from './callApiService';
 import { storage } from '@/firebase/config';
 import { ref, uploadBytes } from '@firebase/storage';
+import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
 
 export const getEventList = async (dispatch: any) => {
   try {
-    const list = await callApi('/get-event-type', 'get');
+    const list = await callApi('/opportunity-type', 'get');
     dispatch(updateEventDetails(list.data));
   } catch (error) {
     console.log(error, 'error in getting the event list');
@@ -25,5 +26,17 @@ export const uploadFile = async (file: any, path: string) => {
     return upload.metadata.fullPath;
   } catch (error) {
     console.log(error, 'error in uploading image');
+  }
+};
+
+// get organization list
+export const getOrganizationList = async (dispatch: any) => {
+  try {
+    const list = await callApi('/organization', 'get');
+    console.log(list, '---list');
+
+    dispatch(updateOrganizationList(list.data));
+  } catch (error) {
+    console.log(error, 'error in getting the organization list');
   }
 };

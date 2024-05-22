@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import responseHandler from '../../../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 import {
   collection,
   doc,
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       }
       const response = responseHandler(
         200,
-        false,
+        true,
         null,
         'User with this email already exists. Sign in Successfully',
       );

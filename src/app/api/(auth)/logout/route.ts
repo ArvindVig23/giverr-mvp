@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import responseHandler from '../../../../../lib/responseHandler';
+import responseHandler from '@/lib/responseHandler';
 
 export async function GET() {
   try {

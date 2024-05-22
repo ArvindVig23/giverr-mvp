@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import OrganizationsPage from '../../../components/organizations/Organization';
+import OrganizationsPage from '../../components/organizations/Organization';
 
 const Organizations: React.FC = () => {
   return <OrganizationsPage />;

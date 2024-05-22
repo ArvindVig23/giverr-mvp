@@ -4,7 +4,7 @@ import './fonts.css';
 import React from 'react';
 import { ReduxProvider } from './redux/ReduxProvider';
 
-import AppWrapper from '../../components/container/AppWrapper';
+import AppWrapper from '@/components/container/AppWrapper';
 export const metadata: Metadata = {
   title: 'Giverr',
   description: 'Events Management Application',
