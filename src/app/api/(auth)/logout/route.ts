@@ -1,6 +1,19 @@
 import { cookies } from 'next/headers';
 import responseHandler from '@/lib/responseHandler';
 
+/**
+ * @swagger
+ * /api/logout:
+ *   get:
+ *      summary: Logout the user
+ *      description: Logout the User
+ *      responses:
+ *        200:
+ *          description: 'Logout successfull.'
+ *        401:
+ *          description: 'User already logged out.'
+ */
+
 export async function GET() {
   try {
     const cookieStore = cookies();

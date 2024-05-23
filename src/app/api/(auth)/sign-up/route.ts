@@ -14,6 +14,42 @@ import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
 import { UserDetailsCookies } from '@/interface/user';
 
+/**
+ * @swagger
+ * /api/sign-up:
+ *   post:
+ *     summary: Create a new user
+ *     description: Endpoint to create a new user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the user.
+ *               username:
+ *                 type: string
+ *                 description: The username of the user.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: The password for the user account.
+ *               fullname:
+ *                 type: string
+ *                 description: The full name of the user.
+ *     responses:
+ *       '200':
+ *         description: User with this email already exists. Sign in Successfully.
+ *       '403':
+ *         description: User with this email already exists.
+ *       '500':
+ *         description: Error while sign up.
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();

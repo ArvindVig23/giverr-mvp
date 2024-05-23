@@ -5,6 +5,37 @@ import { db } from '@/firebase/config';
 import { schema } from '@/utils/joiSchema';
 import { cookies } from 'next/headers';
 import { UserDetailsCookies } from '@/interface/user';
+
+/**
+ * @swagger
+ * /api/sign-in:
+ *   post:
+ *     summary: Sign in to the application
+ *     description: Endpoint to sign in to the application.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the user.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: The password for the user account.
+ *     responses:
+ *       '200':
+ *         description: User with this email is available, please login.
+ *       '404':
+ *         description: User with this email is not registered.
+ *       '500':
+ *         description: Error while sign in..
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
