@@ -30,7 +30,7 @@ import { schemaWithOptionalFields } from '@/utils/joiSchema';
  *       '403':
  *         description: User with this username already exists.
  *       '500':
- *         description: Internal server error || Error in checking the duplicate username..
+ *         description: Internal server error || Error in checking the duplicate username.
  */
 
 export async function POST(req: NextRequest) {

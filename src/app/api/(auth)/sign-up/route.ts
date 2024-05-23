@@ -27,23 +27,41 @@ import { UserDetailsCookies } from '@/interface/user';
  *           schema:
  *             type: object
  *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: The email address of the user.
- *               username:
- *                 type: string
- *                 description: The username of the user.
- *               password:
- *                 type: string
- *                 format: password
- *                 description: The password for the user account.
- *               fullname:
- *                 type: string
- *                 description: The full name of the user.
+ *               userDetails:
+ *                 type: object
+ *                 properties:
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                     description: The email address of the user.
+ *                   username:
+ *                     type: string
+ *                     description: The username of the user.
+ *                   password:
+ *                     type: string
+ *                     format: password
+ *                     description: The password for the user account.
+ *                   fullName:
+ *                     type: string
+ *                     description: The full name of the user.
+ *                   isEmailAuth:
+ *                      type: boolean
+ *                      description: Indicates whether email authentication sign-up is enabled for users.
+ *                   location:
+ *                      type: string
+ *                      description: Specifies the location information for the user.
+ *                   isGoogleAuth:
+ *                      type: boolean
+ *                      description: Indicates whether Google authentication sign-up is enabled for users.
+ *                   isAppleAuth:
+ *                      type: boolean
+ *                      description: Indicates whether Apple authentication sign-up is enabled for users.
+ *                   status:
+ *                      type: boolean
+ *                      description: Represents the current status of the authentication settings.
  *     responses:
  *       '200':
- *         description: User with this email already exists. Sign in Successfully.
+ *         description: User created Successfully
  *       '403':
  *         description: User with this email already exists.
  *       '500':

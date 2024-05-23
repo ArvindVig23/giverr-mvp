@@ -33,7 +33,7 @@ import { UserDetailsCookies } from '@/interface/user';
  *       '404':
  *         description: User with this email is not registered.
  *       '500':
- *         description: Error while sign in..
+ *         description: Error while sign in.
  */
 
 export async function POST(req: NextRequest) {

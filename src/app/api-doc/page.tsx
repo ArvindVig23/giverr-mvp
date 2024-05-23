@@ -1,4 +1,4 @@
-import { getApiDocs } from '../../../lib/swagger';
+import { getApiDocs } from '../../lib/swagger';
 import ReactSwagger from './react-swagger';
 import 'swagger-ui-react/swagger-ui.css';
 
