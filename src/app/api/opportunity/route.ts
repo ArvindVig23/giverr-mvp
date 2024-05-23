@@ -83,8 +83,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '5'); // need to convert it to 20
-    const opportunityId = searchParams.get('opportunityId');
+    const limit = parseInt(searchParams.get('limit') || '1'); // need to convert it to 20
+    const opportunityId = searchParams.get('opportunity');
     const cookieStore = cookies();
     const userDetailCookie: any = cookieStore.get('userDetails');
 
@@ -104,6 +104,7 @@ export async function GET(req: NextRequest) {
       const convertString = JSON.parse(userDetailCookie.value);
       // logged in user id
       const { id } = convertString;
+
       opportunitiesQuery = query(
         opportunitiesQuery,
         where('createdBy', '!=', id),
@@ -164,7 +165,7 @@ export async function GET(req: NextRequest) {
     const response = responseHandler(
       200,
       true,
-      { opportunities, totalRecords },
+      { opportunities, totalRecords, page, limit },
       'opportunities Fetched Successfully',
     );
     return response;

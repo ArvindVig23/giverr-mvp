@@ -19,3 +19,8 @@ export interface EventList {
   id: 'string';
   name: 'string';
 }
+
+export interface CurrentPage {
+  currrentPage?: number;
+  setCurrentPage?: any;
+}
