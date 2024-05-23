@@ -37,6 +37,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     try {
       const response = await callApi(
         `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}`,
+        'get',
       );
       const { opportunities, page, totalRecords } = response.data;
       if (page > 1) {
@@ -58,6 +59,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       return '';
     }
     const parmasArray = params.split(',');
+
     const getFiltersOpportunities = opportunityTypeList.filter((record: any) =>
       parmasArray.includes(record.slug),
     );
@@ -69,7 +71,12 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
     getOpportunityList(opportunityIds); //eslint-disable-next-line
-  }, [cookies.userDetails, currrentPage, searchParams]);
+  }, [
+    cookies.userDetails,
+    currrentPage,
+    searchParams,
+    opportunityTypeList.length,
+  ]);
   return (
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
@@ -80,8 +87,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
-        {opportunityList &&
-          opportunityList.length > 0 &&
+        {opportunityList && opportunityList.length > 0 ? (
           opportunityList.map((opportunity: any, index: number) => {
             return (
               <div key={index} className="relative group">
@@ -136,7 +142,10 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                 </Link>
               </div>
             );
-          })}
+          })
+        ) : (
+          <span>No Opportunitites</span>
+        )}
       </div>
 
       <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">

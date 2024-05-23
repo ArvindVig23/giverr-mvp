@@ -45,10 +45,13 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
     if (type === 'all') {
       setOpportunityFilter([]);
       setCurrentPage(1);
-      router.push(pathname + '?' + updateSearchParams('opportunity', ''));
+      router.push(pathname);
     } else {
       const filters = [...opportunityFilter];
-      if (!filters.includes(type)) {
+      if (filters.includes(type)) {
+        const index = filters.indexOf(type);
+        filters.splice(index, 1);
+      } else {
         filters.push(type);
       }
       const string = filters.join(',');
