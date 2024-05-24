@@ -22,6 +22,8 @@ import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { tooglePassword } from '@/utils/signUpEvent';
 import eyeSlash from '/public/images/eye-slash.svg';
 import callApi from '@/services/frontend/callApiService';
+import { useDispatch } from 'react-redux';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const ResetPasswordForm: React.FC = () => {
   const searchParams = useSearchParams();
@@ -40,13 +42,17 @@ const ResetPasswordForm: React.FC = () => {
   const password = watch('password');
   const confirmPassword = watch('confirmPassword');
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const resetPassword = async (formData: any) => {
     try {
+      dispatch(setLoader(true));
       const email: any = searchParams.get('email');
       await confirmPasswordReset(auth, token, formData.password);
       await callApi('/update-auth-method', 'post', { email });
       sweetAlertToast('success', 'Password reset successfully');
       router.push('/sign-in');
+      dispatch(setLoader(false));
     } catch (error: any) {
       const errorMessage = error.code;
       if (errorMessage === 'auth/invalid-action-code') {
@@ -55,7 +61,7 @@ const ResetPasswordForm: React.FC = () => {
           'The password reset link has expired. Please request a new one',
         );
       }
-      console.log(errorMessage, 'mest');
+      dispatch(setLoader(false));
       router.push('/forgot-password');
     }
   };
@@ -68,7 +74,7 @@ const ResetPasswordForm: React.FC = () => {
     } // eslint-disable-next-line
   }, []);
   useEffect(() => {
-    if (password) {
+    if (password && confirmPassword) {
       trigger('confirmPassword');
     }
   }, [password, trigger, confirmPassword]);

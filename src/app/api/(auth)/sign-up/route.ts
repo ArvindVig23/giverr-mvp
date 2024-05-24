@@ -14,6 +14,60 @@ import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
 import { UserDetailsCookies } from '@/interface/user';
 
+/**
+ * @swagger
+ * /api/sign-up:
+ *   post:
+ *     summary: Create a new user
+ *     description: Endpoint to create a new user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userDetails:
+ *                 type: object
+ *                 properties:
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                     description: The email address of the user.
+ *                   username:
+ *                     type: string
+ *                     description: The username of the user.
+ *                   password:
+ *                     type: string
+ *                     format: password
+ *                     description: The password for the user account.
+ *                   fullName:
+ *                     type: string
+ *                     description: The full name of the user.
+ *                   isEmailAuth:
+ *                      type: boolean
+ *                      description: Indicates whether email authentication sign-up is enabled for users.
+ *                   location:
+ *                      type: string
+ *                      description: Specifies the location information for the user.
+ *                   isGoogleAuth:
+ *                      type: boolean
+ *                      description: Indicates whether Google authentication sign-up is enabled for users.
+ *                   isAppleAuth:
+ *                      type: boolean
+ *                      description: Indicates whether Apple authentication sign-up is enabled for users.
+ *                   status:
+ *                      type: boolean
+ *                      description: Represents the current status of the authentication settings.
+ *     responses:
+ *       '200':
+ *         description: User created Successfully
+ *       '403':
+ *         description: User with this email already exists.
+ *       '500':
+ *         description: Error while sign up.
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();

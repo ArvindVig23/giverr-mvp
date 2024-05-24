@@ -28,9 +28,9 @@ import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import callApi from '@/services/frontend/callApiService';
 import { checkUsernameAndEmail } from '@/services/frontend/userService';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const SignUpStep2: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const {
     register,
@@ -50,13 +50,13 @@ const SignUpStep2: React.FC = () => {
 
   const handleJoin = async (formdetails: any) => {
     const { password, username, fullname } = formdetails;
-    setLoading(true);
+    dispatch(setLoader(true));
     // check userName exist or not
     try {
       const user = await checkUsernameAndEmail({ username });
       console.log(user, ' ');
     } catch (error: any) {
-      setLoading(false);
+      dispatch(setLoader(false));
       const { message } = error;
       sweetAlertToast('error', message);
       return;
@@ -65,7 +65,7 @@ const SignUpStep2: React.FC = () => {
     try {
       await createUserWithEmailAndPassword(auth, user.email, password);
     } catch (error: any) {
-      setLoading(false);
+      dispatch(setLoader(false));
       const string = error?.customData?._tokenResponse?.error?.message;
       if (string === 'EMAIL_EXISTS') {
         sweetAlertToast('error', 'User with this email already exist');
@@ -89,9 +89,9 @@ const SignUpStep2: React.FC = () => {
       sweetAlertToast('success', message);
       dispatch(updateUserDetails(resetGlobalState));
       router.push('/sign-in');
-      setLoading(false);
+      dispatch(setLoader(false));
     } catch (error: any) {
-      setLoading(false);
+      dispatch(setLoader(false));
       console.log(error, 'error');
       const { message } = error.data;
       sweetAlertToast('error', message);
@@ -211,7 +211,6 @@ const SignUpStep2: React.FC = () => {
           </div>
 
           <button
-            disabled={loading}
             type="submit"
             className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           >

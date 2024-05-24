@@ -57,9 +57,9 @@ export const eventValidationSchema = Joi.object({
     'string.required': 'Frequency is required',
   }),
 
-  opportuntyType: Joi.string().allow(null, '').required().messages({
-    'string.base': 'opportuntyType must be a string',
-    'string.required': 'opportuntyType is required',
+  opportunityType: Joi.string().allow(null, '').required().messages({
+    'string.base': 'opportunityType must be a string',
+    'string.required': 'opportunityType is required',
   }),
 
   organizationId: Joi.string().allow(null, '').required().messages({

@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { checkUsernameAndEmail } from '@/services/frontend/userService';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const CommonStep1: React.FC = () => {
   // global state for userDetails
@@ -29,6 +30,7 @@ const CommonStep1: React.FC = () => {
   } = useForm();
   const router = useRouter();
   const continueButton = async (data: any) => {
+    dispatch(setLoader(true));
     dispatch(updateUserDetails({ ...user, email: data.email }));
     try {
       const responseForRedirectionLink: any = await checkUsernameAndEmail({
@@ -37,9 +39,11 @@ const CommonStep1: React.FC = () => {
 
       const { redirectUrl } = responseForRedirectionLink.data;
       router.push(redirectUrl);
+      dispatch(setLoader(false));
     } catch (error: any) {
       const { message } = error.response.data;
       sweetAlertToast('error', message);
+      dispatch(setLoader(false));
       return;
     }
   };
