@@ -20,6 +20,7 @@ import {
   uploadFile,
 } from '@/services/frontend/opportunityService';
 import { fileTypes } from '@/constants/fileConstants';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const EventForm = ({ setShowModal }: any) => {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ const EventForm = ({ setShowModal }: any) => {
       setFileError('Pleae select thumbnail');
       return;
     }
+    dispatch(setLoader(true));
     if (thumbnailFile) {
       const filePathName = `opportunities/${thumbnailFile.name}`;
       const pathOfFile = await uploadFile(thumbnailFile, filePathName);
@@ -92,7 +94,9 @@ const EventForm = ({ setShowModal }: any) => {
       setFileError('');
       setThumbnailUrl('');
       setThumbnailFile(null);
+      dispatch(setLoader(false));
     } catch (error: any) {
+      dispatch(setLoader(false));
       const { message } = error.data;
       sweetAlertToast('error', message);
     }

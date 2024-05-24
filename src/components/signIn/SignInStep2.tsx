@@ -25,12 +25,12 @@ import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { resetGlobalState } from '@/utils/initialStates/userInitialStates';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const SignInStep2: React.FC = () => {
   // Global state user details
   const user: any = useSelector((state: any) => state.userDetailReducer);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   // react-hook-form
   const {
     register,
@@ -44,13 +44,13 @@ const SignInStep2: React.FC = () => {
   // Submit function
   const handleJoin = async (formData: any) => {
     // check if user existed and with the email method
-    setLoading(true);
+    dispatch(setLoader(true));
     try {
       await callApi('/sign-in', 'post', { email: user.email });
     } catch (error: any) {
       const { message } = error.data;
       sweetAlertToast('error', message);
-      setLoading(false);
+      dispatch(setLoader(false));
       return;
     }
 
@@ -65,8 +65,8 @@ const SignInStep2: React.FC = () => {
       setCookie('userToken', token, { path: '/' });
       sweetAlertToast('success', 'Login Successfull');
       router.push('/');
-      setLoading(false);
       dispatch(updateUserDetails(resetGlobalState));
+      dispatch(setLoader(false));
     } catch (error: any) {
       console.error(JSON.stringify(error.code), 'Error in the firebase auth');
       const errString = error?.code;
@@ -74,7 +74,7 @@ const SignInStep2: React.FC = () => {
         sweetAlertToast('error', 'Invalid Credentials');
       }
       reset();
-      setLoading(false);
+      dispatch(setLoader(false));
       return;
     }
   };
@@ -143,7 +143,6 @@ const SignInStep2: React.FC = () => {
           </div>
 
           <button
-            disabled={loading}
             className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
             type="submit"
           >
