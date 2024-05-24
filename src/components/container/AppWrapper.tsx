@@ -17,6 +17,7 @@ const AppWrapper = ({ children }: any) => {
   return pathName === '/sign-in' ||
     pathName === '/sign-up' ||
     pathName === '/forgot-password' ||
+    pathName === '/api-doc' ||
     pathName === '/reset-password' ? (
     <>{children}</>
   ) : (

@@ -11,6 +11,37 @@ import {
 import { schemaWithOptionalFields } from '@/utils/joiSchema';
 import { db } from '@/firebase/config';
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Users
+ *     description: API endpoints for user-related operations
+ * /api/update-auth-method:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Update user authentication method
+ *     description: Endpoint to update the authentication method associated with a user account.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the user.
+ *     responses:
+ *       '200':
+ *         description: User with this Email already exists.
+ *       '404':
+ *         description: User does not exist with this email.
+ *       '500':
+ *         description: Error in checking the updating the user auth method.'
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();

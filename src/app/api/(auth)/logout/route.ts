@@ -3,16 +3,22 @@ import responseHandler from '@/lib/responseHandler';
 
 /**
  * @swagger
+ * tags:
+ *   - name: Users
+ *     description: API endpoints for user-related operations
  * /api/logout:
  *   get:
+ *      tags:
+ *        - Users
  *      summary: Logout the user
  *      description: Endpoint to Logout the User from the application
  *      responses:
  *        200:
- *          description: 'Logout successful.'
+ *          description: Logout successful.
  *        401:
- *          description: 'User already logged out.'
+ *          description: User already logged out.
  */
+
 
 export async function GET() {
   try {

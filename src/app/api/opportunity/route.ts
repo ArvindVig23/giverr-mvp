@@ -7,10 +7,15 @@ import { createOpportunity } from '@/services/backend/opportunityServices';
 
 /**
  * @swagger
+ * tags:
+ *   - name: Opportunity
+ *     description: API endpoints for opportunity-related operations
  * /api/opportunity:
  *   post:
+ *     tags:
+ *       - Opportunity
  *     summary: Create a new opportunity
- *     description: Endpoint to create a new event
+ *     description: Endpoint to create a new opportunity
  *     requestBody:
  *       required: true
  *       content:
@@ -70,6 +75,7 @@ import { createOpportunity } from '@/services/backend/opportunityServices';
  *       '500':
  *         description: Error while creating opportunity.
  */
+
 
 export async function POST(req: NextRequest) {
   try {

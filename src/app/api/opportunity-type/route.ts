@@ -4,8 +4,13 @@ import { collection, getDocs } from 'firebase/firestore';
 
 /**
  * @swagger
+ * tags:
+ *   - name: Opportunity
+ *     description: API endpoints for opportunity-related operations
  * /api/opportunity-type:
  *   get:
+ *     tags:
+ *       - Opportunity
  *     summary: Get list of opportunity types
  *     description: Endpoint to fetch the list of opportunity types
  *     responses:
