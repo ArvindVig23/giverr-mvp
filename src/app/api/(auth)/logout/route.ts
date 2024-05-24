@@ -6,10 +6,10 @@ import responseHandler from '@/lib/responseHandler';
  * /api/logout:
  *   get:
  *      summary: Logout the user
- *      description: Logout the User
+ *      description: Endpoint to Logout the User from the application
  *      responses:
  *        200:
- *          description: 'Logout successfull.'
+ *          description: 'Logout successful.'
  *        401:
  *          description: 'User already logged out.'
  */
