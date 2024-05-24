@@ -21,7 +21,7 @@ export const createFileUrl = (file: any) => {
 // upload file
 export const uploadFile = async (file: any, path: string) => {
   try {
-    const fileRef = ref(storage, `${path}?alt=media`);
+    const fileRef = ref(storage, path);
     const upload = await uploadBytes(fileRef, file);
     return upload.metadata.fullPath;
   } catch (error) {
