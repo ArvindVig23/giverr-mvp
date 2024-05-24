@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import Spinner from '../common/loader/Spinner';
 const AppWrapper = ({ children }: any) => {
   const [mounted, setMounted] = useState(false);
+  const excludedPaths = ['/sign-in', '/sign-up', '/forgot-password', '/api-doc', '/reset-password'];
 
   const pathName = usePathname();
   const loader = useSelector((state: any) => state.loaderReducer);
@@ -19,12 +20,8 @@ const AppWrapper = ({ children }: any) => {
   }
   return (
     <>
-      {pathName === '/sign-in' ||
-      pathName === '/sign-up' ||
-      pathName === '/forgot-password' ||
-      pathName === '/api-doc' ||
-      pathName === '/reset-password' ? (
-        <>{children}</>
+      {excludedPaths.includes(pathName) ? (
+      <>{children}</>
       ) : (
         <>
           <Header />
