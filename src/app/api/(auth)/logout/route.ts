@@ -19,7 +19,6 @@ import responseHandler from '@/lib/responseHandler';
  *          description: User already logged out.
  */
 
-
 export async function GET() {
   try {
     const cookieStore = cookies();

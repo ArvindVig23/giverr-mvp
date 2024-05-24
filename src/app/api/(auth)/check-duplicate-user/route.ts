@@ -38,7 +38,6 @@ import { schemaWithOptionalFields } from '@/utils/joiSchema';
  *          description: Internal server error || Error in checking the duplicate username.
  */
 
-
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();

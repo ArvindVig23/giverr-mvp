@@ -14,7 +14,6 @@ import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
 import { UserDetailsCookies } from '@/interface/user';
 
-
 /**
  * @swagger
  * tags:

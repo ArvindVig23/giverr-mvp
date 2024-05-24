@@ -76,7 +76,6 @@ import { createOpportunity } from '@/services/backend/opportunityServices';
  *         description: Error while creating opportunity.
  */
 
-
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
