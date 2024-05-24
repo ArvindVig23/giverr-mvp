@@ -1,12 +1,18 @@
+import {
+  SMTP_EMAIL,
+  SMTP_HOST,
+  SMTP_PASSWORD,
+  SMTP_PORT,
+} from '@/constants/constants';
 import { generateEmailTemplate } from '@/emailTemplate/signUpEmail';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: +process.env.SMTP_PORT!,
+  host: SMTP_HOST,
+  port: SMTP_PORT,
   auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
+    user: SMTP_EMAIL,
+    pass: SMTP_PASSWORD,
   },
 });
 

@@ -14,6 +14,7 @@ import { getEventList } from '@/services/frontend/opportunityService';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CurrentPage } from '@/interface/opportunity';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 // Install Swiper modules
 
 SwiperCore.use([Navigation]);
@@ -104,7 +105,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
                   className={` ${opportunityFilter.includes(type.slug) ? 'brightness-100' : 'brightness-0'} `}
                   width={20}
                   height={20}
-                  src={`${process.env.NEXT_PUBLIC_FIRESTORE_IMG_BASE_START_URL}${encodeUrl(type?.icon)}`}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(type?.icon)}`}
                   alt="beach"
                 />
                 {type.name}

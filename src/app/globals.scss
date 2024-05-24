@@ -159,3 +159,7 @@ body {
   }
 }
 
+.react-datepicker-popper {
+  z-index: 12 !important;
+  line-height: 0;
+}

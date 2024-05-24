@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ForgotStep2 from '@/components/forgotPassword/ForgotStep2';
 import ForgotStep1 from '@/components/forgotPassword/ForgotStep1';
-import { withAdminAuthorization } from '@/components/hoc/HOCAuth';
+import { hocAuth } from '@/components/hoc/HOCAuth';
 
 const ForgotPassword: React.FC = () => {
   const searchParams = useSearchParams();
@@ -21,4 +21,4 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default withAdminAuthorization(ForgotPassword);
+export default hocAuth(ForgotPassword);

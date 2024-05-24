@@ -6,7 +6,6 @@ import Filter from '../Opportunities/filter';
 import heart from '/public/images/heart.svg';
 import stateFill from '/public/images/state=filled.svg';
 import thumb from '/public/images/thumb.jpg';
-import callApi from '@/services/frontend/callApiService';
 import { useCookies } from 'react-cookie';
 import {
   encodeUrl,
@@ -15,7 +14,8 @@ import {
 import { useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { CurrentPage } from '@/interface/opportunity';
-
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { getOpportunityList } from '@/services/frontend/opportunityService';
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
   setCurrentPage,
@@ -33,25 +33,6 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     setIsActive(!isActive);
   };
   const searchParams = useSearchParams();
-  const getOpportunityList = async (opportunityIds: string) => {
-    try {
-      const response = await callApi(
-        `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}`,
-        'get',
-      );
-      const { opportunities, page, totalRecords } = response.data;
-      if (page > 1) {
-        setOpportunityList([...opportunityList, ...opportunities]);
-      } else {
-        setOpportunityList(opportunities);
-      }
-      setCurrentPage(page);
-      setTotalRecords(totalRecords);
-      // setLimit(limit);
-    } catch (error) {
-      console.log(error, 'error');
-    }
-  };
   const createQueryParams = () => {
     const params = searchParams.get('opportunity');
 
@@ -70,7 +51,17 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   };
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
-    getOpportunityList(opportunityIds); //eslint-disable-next-line
+    (async () => {
+      const getList = await getOpportunityList(opportunityIds, currrentPage);
+      const { opportunities, page, totalRecords } = getList;
+      if (page > 1) {
+        setOpportunityList([...opportunityList, ...opportunities]);
+      } else {
+        setOpportunityList(opportunities);
+      }
+      setCurrentPage(page);
+      setTotalRecords(totalRecords);
+    })(); //eslint-disable-next-line
   }, [
     cookies.userDetails,
     currrentPage,
@@ -111,7 +102,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                   <div className="overflow-hidden rounded-[14px]">
                     <Image
                       className="w-full  rounded-[14px]"
-                      src={`${process.env.NEXT_PUBLIC_FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunity.imageLink)}`}
+                      src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunity.imageLink)}`}
                       alt={opportunity.name}
                       width={399}
                       height={250}

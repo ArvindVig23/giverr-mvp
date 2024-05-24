@@ -19,7 +19,7 @@ import {
   getOrganizationList,
   uploadFile,
 } from '@/services/frontend/opportunityService';
-import { fileTypes } from '@/constants/fileConstants';
+import { FILE_TYPES } from '@/constants/constants';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const EventForm = ({ setShowModal }: any) => {
@@ -60,7 +60,7 @@ const EventForm = ({ setShowModal }: any) => {
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
     if (!thumbnailFile) {
-      setFileError('Pleae select thumbnail');
+      setFileError('Pleae thumbnail');
       return;
     }
     dispatch(setLoader(true));
@@ -180,7 +180,7 @@ const EventForm = ({ setShowModal }: any) => {
                 className="hidden"
                 handleChange={(file: any) => handleFile(file)}
                 name="file"
-                types={fileTypes}
+                types={FILE_TYPES}
               >
                 <div>
                   <span className="text-[#0C0D0D]">
@@ -285,7 +285,7 @@ const EventForm = ({ setShowModal }: any) => {
           <select
             id="frequency"
             {...register('frequency', {
-              required: 'Select Frequency',
+              required: 'Frequency is required.',
             })}
             className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
           >
@@ -312,22 +312,15 @@ const EventForm = ({ setShowModal }: any) => {
 
         <div className="relative w-full">
           <input
-            {...register('location', {
-              required: 'Select Location',
-            })}
+            {...register}
             type="text"
             id="location"
             className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
             placeholder=" "
           />
           <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-            Location
+            Location (optional)
           </label>
-          {errors.location && (
-            <span className="text-red-500">
-              {(errors.location as { message: string }).message}
-            </span>
-          )}
         </div>
 
         <div className="relative w-full mt-1">
@@ -361,7 +354,7 @@ const EventForm = ({ setShowModal }: any) => {
           </label>
           <select
             {...register('opportunityType', {
-              required: 'Select Event',
+              required: 'Event type is required',
             })}
             className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
           >

@@ -146,7 +146,7 @@ const SignInStep2: React.FC = () => {
             className="mt-4 text-base  w-full h-[58px] p-2 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
             type="submit"
           >
-            Login
+            Log in
           </button>
 
           <p className="mt-2 text-center w-full text-[#1E1E1E] ">

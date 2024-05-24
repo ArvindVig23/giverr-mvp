@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 
-export const withAdminAuthorization = (OriginalComponent: any) => {
+export const hocAuth = (OriginalComponent: any) => {
   function HOCAuth(props: any) {
     const [cookies] = useCookies();
     const router = useRouter();

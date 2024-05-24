@@ -40,3 +40,21 @@ export const getOrganizationList = async (dispatch: any) => {
     console.log(error, 'error in getting the organization list');
   }
 };
+
+//  get opportunity list
+export const getOpportunityList = async (
+  opportunityIds: string,
+  currrentPage?: number,
+) => {
+  try {
+    const response = await callApi(
+      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}`,
+      'get',
+    );
+    return response.data;
+
+    // setLimit(limit);
+  } catch (error) {
+    console.log(error, 'error');
+  }
+};
