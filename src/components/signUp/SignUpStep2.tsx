@@ -99,7 +99,7 @@ const SignUpStep2: React.FC = () => {
   };
   return (
     <div className="flex w-full overflow-auto min-h-screen items-center md:justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
-      <div className="w-full text-center relative md:absolute md:top-16 mb-8 md:m-0">
+      <div className="w-full text-center relative md:absolute md:top-16 mb-8 md:m-0 z-10">
         <Link className="inline-block" href="#">
           <Image className="h-8 md:h-auto" src={logo} alt="Logo" />
         </Link>

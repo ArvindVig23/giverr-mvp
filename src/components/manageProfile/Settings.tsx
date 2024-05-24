@@ -55,7 +55,7 @@ const Settings: React.FC = () => {
         </div>
 
         <div className="flex gap-5 w-full flex-col">
-          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4">
+          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4 cursor-pointer">
             <div className="flex items-center text-[#24181B] gap-2 flex-1">
               <input className="hidden peer" name="type" type="radio" />
               <div className="border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
@@ -65,7 +65,7 @@ const Settings: React.FC = () => {
             </div>
             <span className="ml-auto text-[#24181B80]">1:30 PM</span>
           </label>
-          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4">
+          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4 cursor-pointer">
             <div className="flex items-center text-[#24181B] gap-2 flex-1">
               <input className="hidden peer" name="type" type="radio" />
               <div className="border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
@@ -89,7 +89,7 @@ const Settings: React.FC = () => {
         </div>
 
         <div className="flex gap-5 w-full flex-col">
-          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4">
+          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4 cursor-pointer">
             <div className="flex items-center text-[#24181B] gap-2 flex-1">
               <input className="hidden peer" name="type" type="radio" />
               <div className="border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
@@ -99,7 +99,7 @@ const Settings: React.FC = () => {
             </div>
             <span className="ml-auto text-[#24181B80]">20 April, 2024</span>
           </label>
-          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4">
+          <label className="relative w-full border border-[#E6E3D6] inline-flex rounded-xl bg-[#EDEBE3] p-4 cursor-pointer">
             <div className="flex items-center text-[#24181B] gap-2 flex-1">
               <input className="hidden peer" name="type" type="radio" />
               <div className="border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
