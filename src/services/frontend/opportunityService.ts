@@ -3,7 +3,6 @@ import callApi from './callApiService';
 import { storage } from '@/firebase/config';
 import { ref, uploadBytes } from '@firebase/storage';
 import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
-import { sweetAlertToast } from './toastServices';
 
 export const getEventList = async (dispatch: any) => {
   try {
@@ -61,13 +60,12 @@ export const getOpportunityList = async (
 };
 
 // get opportunity details
-export const getOpportunityDetails = async (id: string, router: any) => {
+export const getOpportunityDetails = async (id: string) => {
   try {
     const response: any = await callApi(`/opportunity/${id}`);
     return response.data;
   } catch (error: any) {
     console.log(error, 'Error in getting the detail');
     throw error.data;
-    
   }
 };

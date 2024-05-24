@@ -15,7 +15,7 @@ const OpportunityDetailPage: React.FC = ({ params }: any) => {
   useEffect(() => {
     (async () => {
       try {
-        const getList = await getOpportunityDetails(params.id, router);
+        const getList = await getOpportunityDetails(params.id);
         const { opportunityData, similarOpportunity } = getList;
         setOpportunityDetail(opportunityData);
         setSimilarInterest(similarOpportunity);
