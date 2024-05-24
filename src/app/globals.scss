@@ -108,3 +108,58 @@ body {
 .organization-section .swiper-slide {
   text-align: left;
 }
+
+.spinner-overlay {
+  width: 100vw;
+  height: 100vh;
+  background: rgb(0 0 0 / 60%);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 99;
+}
+
+.spinner {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  border: 5.8px solid #0000;
+  border-radius: 50%;
+  border-right-color: #e40054;
+  animation: spinner-a4dj62 1s infinite linear;
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+}
+
+.spinner::before,
+.spinner::after {
+  content: '';
+  grid-area: 1/1;
+  margin: 2.9px;
+  border: inherit;
+  border-radius: 50%;
+  animation: spinner-a4dj62 2s infinite;
+}
+
+.spinner::after {
+  margin: 11.6px;
+  animation-duration: 3s;
+}
+
+@keyframes spinner-a4dj62 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.react-datepicker-popper {
+  z-index: 12 !important;
+  line-height: 0;
+}

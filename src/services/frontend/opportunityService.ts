@@ -21,7 +21,7 @@ export const createFileUrl = (file: any) => {
 // upload file
 export const uploadFile = async (file: any, path: string) => {
   try {
-    const fileRef = ref(storage, path);
+    const fileRef = ref(storage, `${path}?alt=media`);
     const upload = await uploadBytes(fileRef, file);
     return upload.metadata.fullPath;
   } catch (error) {
@@ -38,5 +38,23 @@ export const getOrganizationList = async (dispatch: any) => {
     dispatch(updateOrganizationList(list.data));
   } catch (error) {
     console.log(error, 'error in getting the organization list');
+  }
+};
+
+//  get opportunity list
+export const getOpportunityList = async (
+  opportunityIds: string,
+  currrentPage?: number,
+) => {
+  try {
+    const response = await callApi(
+      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}`,
+      'get',
+    );
+    return response.data;
+
+    // setLimit(limit);
+  } catch (error) {
+    console.log(error, 'error');
   }
 };

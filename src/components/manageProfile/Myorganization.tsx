@@ -6,7 +6,7 @@ import more from '/public/images/more.svg';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
-// import CreateOrganizations from '../manageProfile/CreateOrganizations';
+import CreateOrganizations from '../manageProfile/CreateOrganizations';
 const Myorganization: React.FC = () => {
   return (
     <div className="w-full">
@@ -16,14 +16,14 @@ const Myorganization: React.FC = () => {
 
       {/* No organization section Start */}
 
-      {/* <div className="flex w-full justify-between gap-3 items-center">
+      <div className="flex w-full justify-between gap-3 items-center">
         <div>
           <span className="text-[#24181B] text-base">No organizations</span>
           <p className="text-[#24181B80] text-base m-0">You are the owner.</p>
         </div>
 
         <CreateOrganizations />
-      </div> */}
+      </div>
       {/* No organization section end */}
 
       <div className="inline-flex w-full items-center gap-4 justify-between">
