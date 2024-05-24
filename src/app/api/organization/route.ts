@@ -3,6 +3,46 @@ import responseHandler from '../../../lib/responseHandler';
 import { db } from '@/firebase/config';
 import { cookies } from 'next/headers';
 
+/**
+ * @swagger
+ * /api/organization:
+ *   get:
+ *     summary: Get list of organizations
+ *     description: Endpoint to fetch the list of organizations
+ *     responses:
+ *       '200':
+ *         description: Organizations fetched successfully
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               description: Indicates if the request was successfull
+ *             data:
+ *               type: array
+ *               description: List of organizations
+ *               items:
+ *                 type: string
+ *                 description: Organization name
+ *             message:
+ *               type: string
+ *               description: Response message
+ *       '500':
+ *         description: Error while fetching organization
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               description: Indicates if the request was successful
+ *             data:
+ *               type: null
+ *               description: Null data in case of error
+ *             message:
+ *               type: string
+ *               description: Error message
+ */
+
 export async function GET() {
   try {
     const cookieStore = cookies();

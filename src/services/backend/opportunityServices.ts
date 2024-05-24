@@ -38,7 +38,7 @@ export const createOpportunity = async (opportunity: any) => {
       createdBy,
       imageLink,
       location,
-      status: false,
+      status: true,
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
