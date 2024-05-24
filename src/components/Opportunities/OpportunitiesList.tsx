@@ -96,7 +96,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                 </div>
 
                 <Link
-                  href="#"
+                  href={`/opportunity/${opportunity.id}`}
                   className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
                 >
                   <div className="overflow-hidden rounded-[14px]">
