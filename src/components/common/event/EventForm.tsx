@@ -67,7 +67,7 @@ const EventForm = ({ setShowModal }: any) => {
     if (thumbnailFile) {
       const filePathName = `opportunities/${thumbnailFile.name}`;
       const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = pathOfFile;
+      data.imageLink = `${pathOfFile}?alt=media`;
     }
     data.createdBy = cookies.userDetails.id;
     const eventDate = data.eventDate;
@@ -236,6 +236,7 @@ const EventForm = ({ setShowModal }: any) => {
                   }
                   timeCaption="Time"
                   dateFormat="yyyy-MM-dd"
+                  minDate={new Date()}
                 />
               )}
             />
