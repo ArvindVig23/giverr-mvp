@@ -12,6 +12,8 @@ import { emailregex } from '@/utils/regex';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase/config';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const ForgotStep1: React.FC<{
   setEmail: React.Dispatch<React.SetStateAction<string>>;
@@ -22,13 +24,17 @@ const ForgotStep1: React.FC<{
     formState: { errors },
   } = useForm();
   const router = useRouter();
+  const dispatch = useDispatch();
   const handleForgotPassword = async (formData: any) => {
     try {
+      dispatch(setLoader(true));
       const email: string = formData.email;
       await sendPasswordResetEmail(auth, email);
       setEmail(email);
       router.push('/forgot-password?step=2');
+      dispatch(setLoader(false));
     } catch (error) {
+      dispatch(setLoader(false));
       console.log(error, 'error');
     }
   };

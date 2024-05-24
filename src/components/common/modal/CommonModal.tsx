@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useEffect } from 'react';
 import close from '/public/images/close.svg';
 import Image from 'next/image';
 
@@ -9,6 +10,17 @@ const CommonModal = ({
   subHeading,
   children,
 }: any) => {
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showModal]);
   return (
     <>
       {showModal && (

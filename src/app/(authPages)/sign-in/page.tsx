@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import SignInStep2 from '@/components/signIn/SignInStep2';
 import CommonStep1 from '@/components/commonStep/CommonStep1';
-import { withAdminAuthorization } from '../../../components/hoc/HOCAuth';
+import { hocAuth } from '../../../components/hoc/HOCAuth';
 
 const SignIn: React.FC = () => {
   const searchParams = useSearchParams();
@@ -11,4 +11,4 @@ const SignIn: React.FC = () => {
   return <div>{step === '2' ? <SignInStep2 /> : <CommonStep1 />}</div>;
 };
 
-export default withAdminAuthorization(SignIn);
+export default hocAuth(SignIn);

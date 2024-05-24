@@ -8,9 +8,12 @@ import ProfileDropdown from './ProfileDropdown';
 import Daterange from './Daterange';
 import { useCookies } from 'react-cookie';
 import SubmitEvents from '../../manageProfile/SubmitEvents';
+import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () => {
   const [cookies] = useCookies();
+  const pathName = usePathname();
+
   return (
     <header>
       <nav className=" px-4 md:px-5 py-5">
@@ -22,7 +25,7 @@ const Header: React.FC = () => {
             <div className="flex flex-wrap gap-2.5 items-center text-base">
               <Link
                 href="#"
-                className="px-1 text-[#1E1E1E80] hover:text-[#1E1E1E]"
+                className={`px-1  hover:text-[#1E1E 1E] ${pathName === '/' ? 'text-[#1E1E 1E]' : 'text-[#1E1E1E80]'}`}
               >
                 Opportunities
               </Link>

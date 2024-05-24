@@ -3,13 +3,18 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 
-export const withAdminAuthorization = (OriginalComponent: any) => {
+export const hocAuth = (OriginalComponent: any) => {
   function HOCAuth(props: any) {
     const [cookies] = useCookies();
     const router = useRouter();
     const user: any = cookies.userToken;
     const pathName = usePathname();
-    const publicPaths = ['/sign-in', '/sign-up'];
+    const publicPaths = [
+      '/sign-in',
+      '/sign-up',
+      '/forgot-password',
+      '/reset-password',
+    ];
     const isLoggedIn = publicPaths.includes(pathName) && user;
 
     useEffect(() => {

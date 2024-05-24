@@ -15,7 +15,7 @@ import { collection, getDocs } from 'firebase/firestore';
  *     description: Endpoint to fetch the list of opportunity types
  *     responses:
  *       '200':
- *         description: Event list fetched successfully
+ *         description: Event list fetched successfully.
  *         schema:
  *           type: object
  *           properties:

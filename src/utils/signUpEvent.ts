@@ -6,6 +6,7 @@ import { resetGlobalState } from './initialStates/userInitialStates';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 export const handleGoogleSignUp = async (
   userDetails: userDetail,
@@ -24,7 +25,7 @@ export const handleGoogleSignUp = async (
       email,
       isGoogleAuth: true,
     };
-
+    dispatch(setLoader(true));
     const formData = new FormData();
     formData.append('userDetails', JSON.stringify(userData));
     formData.append('token', token);
@@ -32,10 +33,12 @@ export const handleGoogleSignUp = async (
     sweetAlertToast('success', 'Login Successfull');
     router.push('/');
     dispatch(updateUserDetails(resetGlobalState));
+    dispatch(setLoader(false));
   } catch (error: any) {
     console.log('Error in sign up with google', error);
     const { message } = error.data;
     sweetAlertToast('error', message);
+    dispatch(setLoader(false));
   }
 };
 
