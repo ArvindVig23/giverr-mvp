@@ -21,6 +21,7 @@ import {
 } from '@/services/frontend/opportunityService';
 import { FILE_TYPES } from '@/constants/constants';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { min4CharWithoutSpace } from '@/utils/regex';
 
 const EventForm = ({ setShowModal }: any) => {
   const dispatch = useDispatch();
@@ -205,6 +206,10 @@ const EventForm = ({ setShowModal }: any) => {
                 value: 4,
                 message: 'Minimum 4 characters required.',
               },
+              pattern: {
+                value: min4CharWithoutSpace,
+                message: 'Minimum 4 characters required.',
+              },
             })}
             type="text"
             id="name"
@@ -387,6 +392,10 @@ const EventForm = ({ setShowModal }: any) => {
               required: 'Please enter description',
               min: {
                 value: 4,
+                message: 'Minimum 4 characters required.',
+              },
+              pattern: {
+                value: min4CharWithoutSpace,
                 message: 'Minimum 4 characters required.',
               },
             })}
