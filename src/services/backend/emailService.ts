@@ -4,7 +4,6 @@ import {
   SMTP_PASSWORD,
   SMTP_PORT,
 } from '@/constants/constants';
-import { generateEmailTemplate } from '@/emailTemplate/signUpEmail';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -16,14 +15,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to: string, subject: string, text: string) => {
+export const sendEmail = async (
+  to: string,
+  subject: string,
+  text: string,
+  html: string,
+) => {
   try {
     await transporter.sendMail({
       from: process.env.SMTP_FROM, // sender address
       to: to,
       subject: subject,
       text: text,
-      html: generateEmailTemplate(to),
+      html: html,
     });
   } catch (error) {
     console.log(error);

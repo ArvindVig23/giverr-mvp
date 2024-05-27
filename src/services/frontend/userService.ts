@@ -12,13 +12,13 @@ export const checkUsernameAndEmail = async (body: any) => {
   }
 };
 
-export const logOut = async () => {
+export const logOut = async (router: any) => {
   try {
     await signOut(auth);
     const response = await callApi('/logout', 'get');
-    console.log(response);
     const { message } = response;
     sweetAlertToast('success', message);
+    router.push('/');
   } catch (error: any) {
     const { message } = error.data;
     sweetAlertToast('error', message);

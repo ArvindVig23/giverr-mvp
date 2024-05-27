@@ -30,7 +30,7 @@ const Header: React.FC = () => {
                 Opportunities
               </Link>
               <Link
-                href="#"
+                href="/organizations"
                 className="px-1 text-[#1E1E1E80] hover:text-[#1E1E1E]"
               >
                 Organizations
