@@ -13,6 +13,7 @@ import {
   getFormattedLocalTime,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { useCookies } from 'react-cookie';
 
 const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
   opportunityDetail,
@@ -21,6 +22,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
   const handleJoin = () => {
     setSuccessfullContent(true);
   };
+  const [cookies] = useCookies();
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="p-5 w-full relative pb-24">
@@ -163,7 +165,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
             </div>
 
             {opportunityDetail?.registrationType === '3' ? (
-              <div className="flex flex-col gap-5 ">
+              <div className={`flex flex-col gap-5  `}>
                 <div className="flex flex-col gap-1">
                   <h4 className="text-base text-[#24181B] font-medium">
                     Ready to make a difference?
@@ -179,7 +181,10 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     involved.
                   </p>
                 </div>
-
+                {console.log(
+                  opportunityDetail?.registrationWebsiteLink,
+                  'opportunityDetail?.registrationWebsiteLink ',
+                )}
                 {opportunityDetail?.registrationWebsiteLink && (
                   <Link
                     target="_blank"
@@ -191,7 +196,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 )}
               </div>
             ) : successfullContent ? (
-              <div className="flex flex-col gap-5 ">
+              <div className={`flex flex-col gap-5 `}>
                 <div className="flex flex-col gap-1">
                   <div>
                     <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
@@ -222,7 +227,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-5">
+              <div className={`flex flex-col gap-5`}>
                 <div className="flex flex-col gap-1">
                   <h4 className="text-base text-[#24181B] font-medium">
                     Become a volunteer
@@ -234,8 +239,11 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 </div>
 
                 <button
+                  disabled={
+                    cookies.userDetails.id === opportunityDetail?.createdBy
+                  }
                   onClick={handleJoin}
-                  className="text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                  className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies.userDetails.id === opportunityDetail?.createdBy && 'cursor-not-allowed'}`}
                 >
                   Join the event
                 </button>

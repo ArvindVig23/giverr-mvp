@@ -54,8 +54,8 @@ export const getOpportunityList = async (
     return response.data;
 
     // setLimit(limit);
-  } catch (error) {
-    console.log(error, 'error');
+  } catch (error: any) {
+    throw error.data;
   }
 };
 

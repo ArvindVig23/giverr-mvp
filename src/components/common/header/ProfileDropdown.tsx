@@ -5,8 +5,10 @@ import Link from 'next/link';
 import check from '/public/images/check-circle.svg';
 import Image from 'next/image';
 import { logOut } from '@/services/frontend/userService';
+import { useRouter } from 'next/navigation';
 
 export default function ProfileDropdown() {
+  const router = useRouter();
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -55,7 +57,7 @@ export default function ProfileDropdown() {
             <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
             <Menu.Item>
               <Link
-                href="#"
+                href="/activity"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
               >
                 Events & Activity
@@ -74,7 +76,7 @@ export default function ProfileDropdown() {
 
             <Menu.Item>
               <Link
-                href="#"
+                href="/profile"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
               >
                 Account settings
@@ -84,7 +86,7 @@ export default function ProfileDropdown() {
             <Menu.Item>
               <button
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                onClick={logOut}
+                onClick={() => logOut(router)}
               >
                 Log out
               </button>

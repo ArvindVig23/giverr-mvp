@@ -1,22 +1,4 @@
-'use client';
-// import { app } from '@/firebase/config';
-// import { getDownloadURL, getStorage, ref } from '@firebase/storage';
 import moment from 'moment-timezone';
-
-// export const getImageUrl = async (imageName: string) => {
-//   const storage = getStorage(app);
-//   const imageRef = ref(storage, imageName);
-
-//   try {
-//     const url = await getDownloadURL(imageRef);
-//     console.log(url);
-
-//     return url;
-//   } catch (error) {
-//     console.error('Error getting image URL:', error);
-//     return null;
-//   }
-// };
 
 export const getFormattedLocalTime = (utcTimeString: string) => {
   const userLocalZone = moment.tz.guess();

@@ -22,6 +22,7 @@ import {
 import { FILE_TYPES } from '@/constants/constants';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { min4CharWithoutSpace } from '@/utils/regex';
+import { useRouter } from 'next/navigation';
 
 const EventForm = ({ setShowModal }: any) => {
   const dispatch = useDispatch();
@@ -53,7 +54,7 @@ const EventForm = ({ setShowModal }: any) => {
     },
   });
   const radioValue = watch('registrationType');
-
+  const router = useRouter();
   const eventList = useSelector((state: any) => state.eventListReducer);
   const organizationList = useSelector(
     (state: any) => state.organizationReducer,
@@ -96,6 +97,7 @@ const EventForm = ({ setShowModal }: any) => {
       setThumbnailUrl('');
       setThumbnailFile(null);
       dispatch(setLoader(false));
+      router.push('/');
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;

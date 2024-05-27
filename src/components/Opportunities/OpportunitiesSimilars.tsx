@@ -21,7 +21,7 @@ const OpportunitiesSimilars: React.FC<SimilarInterest> = ({
   similarInterest,
 }: any) => {
   return (
-    <div className="relative">
+    <div className="relative ml-5">
       <div className="flex justify-between items-center mb-5 items-center ">
         <h4 className="text-2xl text-[#24181B] font-medium">
           Similar interests

@@ -9,11 +9,12 @@ import {
   where,
   limit as firestoreLimit,
   startAfter,
+  orderBy,
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { eventValidationSchema } from '@/utils/joiSchema';
 import { createOpportunity } from '@/services/backend/opportunityServices';
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
 
 /**
  * @swagger
@@ -151,12 +152,13 @@ export async function GET(req: NextRequest) {
     const page = +(searchParams.get('page') || '1');
     const limit = +(searchParams.get('limit') || '20');
     const opportunityId = searchParams.get('opportunity');
-    const cookieStore = cookies();
-    const userDetailCookie: any = cookieStore.get('userDetails');
+    // const cookieStore = cookies();
+    // const userDetailCookie: any = cookieStore.get('userDetails');
 
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
-      where('status', '==', true),
+      where('status', '==', 'approved'),
+      orderBy('createdAt', 'desc'),
     );
     if (opportunityId) {
       const arrayOfOpportunityFilter = opportunityId?.split(',');
@@ -166,16 +168,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (userDetailCookie) {
-      const convertString = JSON.parse(userDetailCookie.value);
-      // logged in user id
-      const { id } = convertString;
+    // if (userDetailCookie) {
+    //   const convertString = JSON.parse(userDetailCookie.value);
+    //   // logged in user id
+    //   const { id } = convertString;
 
-      opportunitiesQuery = query(
-        opportunitiesQuery,
-        where('createdBy', '!=', id),
-      );
-    }
+    //   opportunitiesQuery = query(
+    //     opportunitiesQuery,
+    //     where('createdBy', '!=', id),
+    //   );
+    // }
     const totalSnapshot = await getDocs(opportunitiesQuery);
     const totalRecords = totalSnapshot.size;
 

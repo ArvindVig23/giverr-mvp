@@ -31,9 +31,9 @@ const Cards: React.FC = () => {
             href="#"
             className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
           >
-            <div className="overflow-hidden rounded-[14px]">
+            <div className="overflow-hidden rounded-[14px] h-[122px]">
               <Image
-                className="w-full  rounded-[14px]"
+                className="w-full h-full object-cover rounded-[14px]"
                 src={dummy}
                 alt="dummy"
               />
