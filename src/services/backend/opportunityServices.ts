@@ -1,6 +1,6 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import moment from 'moment-timezone';
 
 //  current date to utc format
@@ -58,5 +58,31 @@ export const createOpportunity = async (opportunity: any) => {
       'Error in creating new opportunity.',
     );
     return response;
+  }
+};
+
+export const getOpportunityTypeById = async (id: any) => {
+  const opportunityTypesRef = collection(db, 'opportunityTypes');
+  const docRef = doc(opportunityTypesRef, id);
+  const docSnap = await getDoc(docRef);
+  const opportunityTypeData: any = docSnap.data();
+  if (!opportunityTypeData) {
+    return null;
+  } else {
+    return opportunityTypeData;
+  }
+};
+
+export const getOrgDetailsById = async (id: any) => {
+  const organizationsRef = collection(db, 'organizations');
+  console.log(id, 'id');
+
+  const docRef = doc(organizationsRef, id);
+  const docSnap = await getDoc(docRef);
+  const orgData: any = docSnap.data();
+  if (!orgData) {
+    return null;
+  } else {
+    return orgData;
   }
 };

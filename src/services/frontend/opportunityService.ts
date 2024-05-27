@@ -58,3 +58,14 @@ export const getOpportunityList = async (
     console.log(error, 'error');
   }
 };
+
+// get opportunity details
+export const getOpportunityDetails = async (id: string) => {
+  try {
+    const response: any = await callApi(`/opportunity/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.log(error, 'Error in getting the detail');
+    throw error.data;
+  }
+};

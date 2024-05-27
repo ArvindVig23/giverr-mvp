@@ -202,6 +202,7 @@ export async function GET(req: NextRequest) {
     const opportunitiesPromises = opportunitiesSnapshot.docs.map(
       async (docs) => {
         const opportunityData = docs.data();
+        opportunityData.id = docs.id;
         const organizationId = opportunityData.organizationId;
 
         // Option 1: Fetch organization data using a separate query (for complex data)
