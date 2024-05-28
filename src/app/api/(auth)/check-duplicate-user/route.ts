@@ -6,31 +6,36 @@ import { schemaWithOptionalFields } from '@/utils/joiSchema';
 
 /**
  * @swagger
+ * tags:
+ *   - name: Users
+ *     description: API endpoints for user-related operations
  * /api/check-duplicate-user:
  *   post:
- *     summary: Check if a user already exists
- *     description: Endpoint to check if a user with the provided username or email already exists.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *                 description: The username to check.
- *               email:
- *                 type: string
- *                 format: email
- *                 description: The email address to check.
- *     responses:
- *       '200':
- *         description: User with this Email already exists.
- *       '403':
- *         description: User with this username already exists.
- *       '500':
- *         description: Internal server error || Error in checking the duplicate username.
+ *      tags:
+ *        - Users
+ *      summary: Check if a user already exists
+ *      description: Endpoint to check if a user with the provided username or email already exists.
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                username:
+ *                  type: string
+ *                  description: The username to check.
+ *                email:
+ *                  type: string
+ *                  format: email
+ *                  description: The email address to check.
+ *      responses:
+ *        '200':
+ *          description: User with this Email already exists.
+ *        '403':
+ *          description: User with this username already exists.
+ *        '500':
+ *          description: Internal server error || Error in checking the duplicate username.
  */
 
 export async function POST(req: NextRequest) {

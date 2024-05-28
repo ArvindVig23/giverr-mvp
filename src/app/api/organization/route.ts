@@ -5,13 +5,18 @@ import { cookies } from 'next/headers';
 
 /**
  * @swagger
+ * tags:
+ *   - name: Organization
+ *     description: API endpoints for organization-related operations
  * /api/organization:
  *   get:
+ *     tags:
+ *       - Organization
  *     summary: Get list of organizations
  *     description: Endpoint to fetch the list of organizations
  *     responses:
  *       '200':
- *         description: Organizations fetched successfully
+ *         description: Organizations fetched successfully.
  *         schema:
  *           type: object
  *           properties:
@@ -28,7 +33,7 @@ import { cookies } from 'next/headers';
  *               type: string
  *               description: Response message
  *       '500':
- *         description: Error while fetching organization
+ *         description: Error while fetching organization.
  *         schema:
  *           type: object
  *           properties:
