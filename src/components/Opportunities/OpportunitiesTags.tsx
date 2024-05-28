@@ -15,6 +15,7 @@ import { encodeUrl } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CurrentPage } from '@/interface/opportunity';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import OpportunityTypeSkeleton from '../common/loader/OpportunityTypeSkeleton';
 // Install Swiper modules
 
 SwiperCore.use([Navigation]);
@@ -69,50 +70,58 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
       setOpportunityFilter(filters.split(','));
     } //eslint-disable-next-line
   }, []);
-
+  const skeleton = Array(7).fill(null);
   return (
     <div className="px-5 relative mb-5 opportunities-swiper">
-      <Swiper
-        spaceBetween={12}
-        slidesPerView="auto"
-        loop={true}
-        navigation={{
-          // Add navigation prop
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        }}
-      >
-        <SwiperSlide onClick={() => filterClick('all')}>
-          <div
-            className={`group border rounded-md gap-[5px] px-3 py-2 inline-flex items-center justify-center cursor-pointer hover:border-[#E60054] hover:text-[#E60054] ${opportunityFilter.length === 0 && 'border-[#E60054] text-[#E60054]'}`}
-          >
-            <Image
-              className={` group-hover:brightness-100 ${opportunityFilter.length === 0 ? 'brightness-100' : 'brightness-0'}`}
-              src={heartSearch}
-              alt="search"
-            />
-            All
-          </div>
-        </SwiperSlide>
-        {opportunityTypeList &&
-          opportunityTypeList.length > 0 &&
-          opportunityTypeList.map((type: any, index: number) => (
-            <SwiperSlide key={index} onClick={() => filterClick(type.slug)}>
-              <div
-                className={`group  border border-[#D1CFC7] rounded-md gap-[5px] px-3 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && 'border-[#E60054] text-[#E60054]'}`}
-              >
-                <Image
-                  className={` ${opportunityFilter.includes(type.slug) ? 'brightness-100' : 'brightness-0'} `}
-                  width={20}
-                  height={20}
-                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(type?.icon)}`}
-                  alt="beach"
-                />
-                {type.name}
-              </div>
-            </SwiperSlide>
+      {opportunityTypeList.length === 0 ? (
+        <div className="grid grid-cols-7">
+          {skeleton.map((_, index) => (
+            <OpportunityTypeSkeleton key={index} />
           ))}
-      </Swiper>
+        </div>
+      ) : (
+        <Swiper
+          spaceBetween={12}
+          slidesPerView="auto"
+          loop={true}
+          navigation={{
+            // Add navigation prop
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          }}
+        >
+          <SwiperSlide onClick={() => filterClick('all')}>
+            <div
+              className={`group border rounded-md gap-[5px] px-3 py-2 inline-flex items-center justify-center cursor-pointer hover:border-[#E60054] hover:text-[#E60054] ${opportunityFilter.length === 0 && 'border-[#E60054] text-[#E60054]'}`}
+            >
+              <Image
+                className={` group-hover:brightness-100 ${opportunityFilter.length === 0 ? 'brightness-100' : 'brightness-0'}`}
+                src={heartSearch}
+                alt="search"
+              />
+              All
+            </div>
+          </SwiperSlide>
+          {opportunityTypeList &&
+            opportunityTypeList.length > 0 &&
+            opportunityTypeList.map((type: any, index: number) => (
+              <SwiperSlide key={index} onClick={() => filterClick(type.slug)}>
+                <div
+                  className={`group  border border-[#D1CFC7] rounded-md gap-[5px] px-3 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && 'border-[#E60054] text-[#E60054]'}`}
+                >
+                  <Image
+                    className={` ${opportunityFilter.includes(type.slug) ? 'brightness-100' : 'brightness-0'} `}
+                    width={20}
+                    height={20}
+                    src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(type?.icon)}`}
+                    alt="beach"
+                  />
+                  {type.name}
+                </div>
+              </SwiperSlide>
+            ))}
+        </Swiper>
+      )}
       <div className="swiper-button-next">
         <Image src={round} alt="next" />
       </div>

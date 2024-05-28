@@ -67,7 +67,7 @@ export async function GET() {
 
     const response = responseHandler(
       200,
-      false,
+      true,
       organizations,
       'Organizations fetched successfully',
     );

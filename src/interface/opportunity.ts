@@ -24,3 +24,17 @@ export interface CurrentPage {
   currrentPage?: number;
   setCurrentPage?: any;
 }
+
+export interface OpportunityDetail {
+  opportunityDetail?: any;
+  setOpportunityDetail?: any;
+}
+
+export interface SimilarInterest {
+  similarInterest?: any;
+  setSimilarInterest?: any;
+}
+
+export interface OpportunityCardProps {
+  opportunity: any;
+}

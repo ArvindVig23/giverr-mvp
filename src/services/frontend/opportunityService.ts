@@ -54,7 +54,18 @@ export const getOpportunityList = async (
     return response.data;
 
     // setLimit(limit);
-  } catch (error) {
-    console.log(error, 'error');
+  } catch (error: any) {
+    throw error.data;
+  }
+};
+
+// get opportunity details
+export const getOpportunityDetails = async (id: string) => {
+  try {
+    const response: any = await callApi(`/opportunity/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.log(error, 'Error in getting the detail');
+    throw error.data;
   }
 };
