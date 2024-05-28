@@ -36,10 +36,10 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
         href="#"
         className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
       >
-        <div className="overflow-hidden rounded-[14px]">
+        <div className="overflow-hidden rounded-[14px] h-[122px]">
           {opportunity?.imageLink && (
             <Image
-              className="w-full  rounded-[14px]"
+              className="w-full h-full object-cover rounded-[14px]"
               width={652}
               height={408}
               src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunity.imageLink)}`}
