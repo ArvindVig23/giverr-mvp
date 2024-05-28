@@ -21,17 +21,15 @@ export async function GET(request: NextRequest, { params }: any) {
     const cookieStore = cookies();
     const userDetailCookie: any = cookieStore.get('userDetails');
 
-    if (!userDetailCookie) {
-      const response = responseHandler(
-        401,
-        false,
-        null,
-        'Please login before joining the event',
-      );
-      return response;
-    }
-    const convertString = JSON.parse(userDetailCookie.value);
-    const userId = convertString.id;
+    // if (!userDetailCookie) {
+    //   const response = responseHandler(
+    //     401,
+    //     false,
+    //     null,
+    //     'Please login before joining the event',
+    //   );
+    //   return response;
+    // }
 
     const { id }: any = params;
     const opportunitiesRef = collection(db, 'opportunities');
@@ -109,19 +107,22 @@ export async function GET(request: NextRequest, { params }: any) {
       Boolean(opportunity),
     );
     //  check if user already
-    console.log(userId, id);
+    if (userDetailCookie) {
+      const convertString = JSON.parse(userDetailCookie.value);
+      const userId = convertString.id;
+      const oppMemberRef = collection(db, 'opportunityMembers');
+      const findUser = query(
+        oppMemberRef,
+        where('opportunityId', '==', id),
+        where('userId', '==', userId),
+      );
+      const alreadyAppliedUser = await getDocs(findUser);
 
-    const oppMemberRef = collection(db, 'opportunityMembers');
-    const findUser = query(
-      oppMemberRef,
-      where('opportunityId', '==', id),
-      where('userId', '==', userId),
-    );
-    const alreadyAppliedUser = await getDocs(findUser);
-    console.log(alreadyAppliedUser.size, 'data');
-
-    if (alreadyAppliedUser.empty) {
-      opportunityData.alreadyJoined = false;
+      if (alreadyAppliedUser.empty) {
+        opportunityData.alreadyJoined = false;
+      } else {
+        opportunityData.alreadyJoined = true;
+      }
     } else {
       opportunityData.alreadyJoined = true;
     }

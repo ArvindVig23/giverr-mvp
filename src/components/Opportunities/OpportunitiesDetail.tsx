@@ -274,7 +274,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                           : false
                       }
                       onClick={handleJoin}
-                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies?.userDetails?.id === opportunityDetail?.createdBy || (opportunityDetail?.alreadyJoined && 'cursor-not-allowed')}`}
+                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
                     >
                       {opportunityDetail?.alreadyJoined
                         ? 'Already Joined'
