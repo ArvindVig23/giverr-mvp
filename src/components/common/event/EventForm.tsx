@@ -36,6 +36,7 @@ const EventForm = ({ setShowModal }: any) => {
     watch,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -144,6 +145,13 @@ const EventForm = ({ setShowModal }: any) => {
       setFileError('');
     }
   };
+
+  // to set the website link value to empty
+  useEffect(() => {
+    if (radioValue !== '3') {
+      setValue('registrationWebsiteLink', '');
+    } //eslint-disable-next-line
+  }, [radioValue]);
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex gap-5 w-full flex-col relative px-5">
@@ -176,6 +184,7 @@ const EventForm = ({ setShowModal }: any) => {
             )}
             <div className="flex items-center justify-center text-center h-full file-upload">
               <FileUploader
+                id="thumbnail"
                 onTypeError={(error: any) => validateFile(error)}
                 onSizeError={(error: any) => validateFile(error)}
                 maxSize={5}
@@ -513,7 +522,10 @@ const EventForm = ({ setShowModal }: any) => {
               <div className="relative w-full ">
                 <input
                   disabled={radioValue !== '3'}
-                  {...register('registrationWebsiteLink')}
+                  {...register('registrationWebsiteLink', {
+                    required:
+                      radioValue === '3' ? 'Website link is required.' : false,
+                  })}
                   type="text"
                   id="registrationWebsiteLink"
                   className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
@@ -522,6 +534,14 @@ const EventForm = ({ setShowModal }: any) => {
                 <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                   Website link
                 </label>
+                {errors.registrationWebsiteLink && (
+                  <span className="text-red-500">
+                    {
+                      (errors.registrationWebsiteLink as { message: string })
+                        .message
+                    }
+                  </span>
+                )}
               </div>
             </div>
           </div>

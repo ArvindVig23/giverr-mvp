@@ -120,7 +120,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                     href={`/opportunity/${opportunity.id}`}
                     className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
                   >
-                    <div className="overflow-hidden rounded-[14px] h-[122px]">
+                    <div className="overflow-hidden rounded-[14px] h-[198px]">
                       <Image
                         className="w-full h-full object-cover rounded-[14px]"
                         src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunity.imageLink)}`}
@@ -130,11 +130,11 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                       />
                     </div>
                     <div className="flex flex-col p-5">
-                      {opportunity.name.length > 15 ? (
+                      {opportunity.name.length > 30 ? (
                         <Tooltip content={opportunity.name}>
                           <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
-                            {opportunity.name.slice(0, 15)}{' '}
-                            {opportunity.name.length > 15 && '...'}
+                            {opportunity.name.slice(0, 30)}{' '}
+                            {opportunity.name.length > 30 && '...'}
                           </h4>
                         </Tooltip>
                       ) : (
@@ -157,7 +157,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                             alt="thumbnail"
                           />
                         </div>
-                        Planet Caretakers
+                        {opportunity?.organization?.name}
                       </div>
                     </div>
                   </Link>

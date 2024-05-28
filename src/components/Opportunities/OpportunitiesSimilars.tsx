@@ -45,13 +45,15 @@ const OpportunitiesSimilars: React.FC<SimilarInterest> = ({
           prevEl: '.swiper-button-prev',
         }}
       >
-        {similarInterest &&
-          similarInterest.length > 0 &&
+        {similarInterest && similarInterest.length > 0 ? (
           similarInterest.map((opportunity: any, index: number) => (
             <SwiperSlide key={index}>
               <OpportunityCard opportunity={opportunity} />
             </SwiperSlide>
-          ))}
+          ))
+        ) : (
+          <p>No Similar Interests found.</p>
+        )}
       </Swiper>
     </div>
   );

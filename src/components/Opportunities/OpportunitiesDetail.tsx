@@ -3,7 +3,7 @@ import Image from 'next/image'; // Import Image from next/image
 // import dog from '/public/images/dog-walking.jpg';
 import dummy from '/public/images/dummy.jpg';
 import time from '/public/images/one-time.svg';
-import dogIcon from '/public/images/dog-icon.svg';
+// import dogIcon from '/public/images/dog-icon.svg';
 import location from '/public/images/location.svg';
 import Link from 'next/link';
 // import Delete from '../manageProfile/detete';
@@ -146,7 +146,13 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
 
               {opportunityDetail?.opportunityData && (
                 <div className="flex gap-1 text-base text-[#24181B]">
-                  <Image src={dogIcon} alt="dog" />
+                  <Image
+                    className="brightness-0"
+                    width={20}
+                    height={20}
+                    src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.opportunityData.icon)}`}
+                    alt="dog"
+                  />
                   {opportunityDetail?.opportunityData?.name}
                 </div>
               )}
@@ -185,10 +191,6 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     involved.
                   </p>
                 </div>
-                {console.log(
-                  opportunityDetail?.registrationWebsiteLink,
-                  'opportunityDetail?.registrationWebsiteLink ',
-                )}
                 {opportunityDetail?.registrationWebsiteLink && (
                   <Link
                     target="_blank"

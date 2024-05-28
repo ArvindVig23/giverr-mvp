@@ -62,6 +62,7 @@ export async function GET(request: NextRequest, { params }: any) {
     if (getSimilarInterests.size > 0) {
       let opportunitiesPromises = getSimilarInterests.docs.map(async (docs) => {
         const opportunityData = docs.data();
+        opportunityData.id = docs.id;
 
         if (docs.id !== foundOppId) {
           const organizationId = opportunityData.organizationId;
