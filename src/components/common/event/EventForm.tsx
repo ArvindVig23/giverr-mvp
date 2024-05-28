@@ -21,7 +21,7 @@ import {
 } from '@/services/frontend/opportunityService';
 import { FILE_TYPES } from '@/constants/constants';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { min4CharWithoutSpace } from '@/utils/regex';
+import { min4CharWithoutSpace, websiteLinkRegex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
 
 const EventForm = ({ setShowModal }: any) => {
@@ -91,7 +91,7 @@ const EventForm = ({ setShowModal }: any) => {
     try {
       const response = await callApi('/opportunity', 'post', data);
       const { message } = response;
-      sweetAlertToast('success', message);
+      sweetAlertToast('success', message, 3000);
       reset();
       setShowModal(false);
       setFileError('');
@@ -525,6 +525,10 @@ const EventForm = ({ setShowModal }: any) => {
                   {...register('registrationWebsiteLink', {
                     required:
                       radioValue === '3' ? 'Website link is required.' : false,
+                    pattern: {
+                      value: websiteLinkRegex,
+                      message: 'Enter valid website link',
+                    },
                   })}
                   type="text"
                   id="registrationWebsiteLink"

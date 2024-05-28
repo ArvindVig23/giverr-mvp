@@ -11,10 +11,10 @@ const Toast = Swal.mixin({
   },
 });
 
-export const sweetAlertToast = (icon: any, title: any) => {
+export const sweetAlertToast = (icon: any, title: any, timer = 3000) => {
   Toast.fire({
     icon: icon,
     title: title,
-    timer: icon === 'success' ? 1000 : 3000,
+    timer: timer ? timer : icon === 'success' ? 1000 : 3000,
   });
 };
