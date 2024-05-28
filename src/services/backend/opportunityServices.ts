@@ -42,7 +42,7 @@ export const createOpportunity = async (opportunity: any) => {
       createdBy,
       imageLink,
       location,
-      status: 'pending',
+      status: 'PENDING',
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
@@ -134,8 +134,8 @@ export const sendEmailForApproval = async (
     const token = jwt.sign({ opportunityId }, TOKEN_SECRET!, {
       expiresIn: '1w',
     });
-    const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=approved`;
-    const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=rejected`;
+    const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=APPROVED`;
+    const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=REJECTED`;
     // convert to local time string
     const time = getFormattedLocalTime(eventDate!);
 

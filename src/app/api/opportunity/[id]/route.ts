@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: any) {
     const getSilimarTypeQuery = query(
       opportunitiesRef,
       where('opportunityType', '==', opportunityData.opportunityType),
-      where('status', '==', 'approved'),
+      where('status', '==', 'APPROVED'),
       limit(10),
     );
     const getSimilarInterests = await getDocs(getSilimarTypeQuery);

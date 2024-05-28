@@ -9,6 +9,15 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const token: any = searchParams.get('token');
     const status = searchParams.get('status');
+    if (!token || !status) {
+      const response = responseHandler(
+        400,
+        false,
+        null,
+        'Invalid approval request',
+      );
+      return response;
+    }
     try {
       const decodedToken = verify(token, TOKEN_SECRET!) as {
         expiration: number;
