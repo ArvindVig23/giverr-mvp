@@ -18,6 +18,7 @@ import 'swiper/css/pagination';
 import heart from '/public/images/heart.svg';
 import stateFill from '/public/images/state=filled.svg';
 import thumb from '/public/images/thumb.jpg';
+import arrow from '/public/images/chevron-right-black.svg';
 // import OrganizationEmpty from './OrganizationEmpty';
 
 SwiperCore.use([Navigation]);
@@ -92,11 +93,10 @@ const Organization = () => {
                 spaceBetween={12}
                 slidesPerView={2}
                 navigation={{
-                  // Add navigation prop
                   nextEl: '.swiper-button-next',
                   prevEl: '.swiper-button-prev',
                 }}
-                pagination={{ clickable: true }}
+                pagination={{ clickable: true, el: '.swiper-pagination' }}
               >
                 <SwiperSlide>
                   <div className="relative group">
@@ -115,7 +115,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -165,7 +165,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -215,7 +215,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -265,7 +265,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -315,7 +315,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -365,7 +365,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -397,6 +397,17 @@ const Organization = () => {
                     </Link>
                   </div>
                 </SwiperSlide>
+
+                {/* Pagination and navigation container */}
+                <div className="swiper-controls">
+                  <div className="swiper-button-prev">
+                    <Image src={arrow} alt="arorw" />{' '}
+                  </div>
+                  <div className="swiper-button-next">
+                    <Image src={arrow} alt="arorw" />{' '}
+                  </div>
+                  <div className="swiper-pagination"></div>
+                </div>
               </Swiper>
             </AccordionBody>
           </Accordion>
@@ -456,11 +467,10 @@ const Organization = () => {
                 spaceBetween={12}
                 slidesPerView={2}
                 navigation={{
-                  // Add navigation prop
                   nextEl: '.swiper-button-next',
                   prevEl: '.swiper-button-prev',
                 }}
-                pagination={{ clickable: true }}
+                pagination={{ clickable: true, el: '.swiper-pagination' }}
               >
                 <SwiperSlide>
                   <div className="relative group">
@@ -479,7 +489,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -529,7 +539,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -579,7 +589,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -629,7 +639,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -679,7 +689,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -729,7 +739,7 @@ const Organization = () => {
 
                     <Link
                       href="#"
-                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
+                      className="bg-white border border-[#E6E3D6] overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-[#F5F3EF] inline-block w-full"
                     >
                       <div className="overflow-hidden rounded-[14px]">
                         <Image
@@ -761,6 +771,16 @@ const Organization = () => {
                     </Link>
                   </div>
                 </SwiperSlide>
+                {/* Pagination and navigation container */}
+                <div className="swiper-controls">
+                  <div className="swiper-button-prev">
+                    <Image src={arrow} alt="arorw" />{' '}
+                  </div>
+                  <div className="swiper-button-next">
+                    <Image src={arrow} alt="arorw" />{' '}
+                  </div>
+                  <div className="swiper-pagination"></div>
+                </div>
               </Swiper>
             </AccordionBody>
           </Accordion>
