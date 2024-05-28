@@ -68,3 +68,14 @@ export const getOpportunityDetails = async (id: string) => {
     throw error.data;
   }
 };
+
+export const volunteerOpportunity = async (id: string) => {
+  const oppId = id;
+  try {
+    const response: any = await callApi(`/join-opportunity`, 'post', { oppId });
+    return response.data;
+  } catch (error: any) {
+    console.log(error, 'Error in joining event');
+    throw error.data;
+  }
+};

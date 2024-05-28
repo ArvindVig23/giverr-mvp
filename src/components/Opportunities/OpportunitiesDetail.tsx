@@ -14,13 +14,24 @@ import {
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { useCookies } from 'react-cookie';
+import { volunteerOpportunity } from '@/services/frontend/opportunityService';
+import { useDispatch } from 'react-redux';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
 const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
   opportunityDetail,
 }) => {
+  const dispatch = useDispatch();
   const [successfullContent, setSuccessfullContent] = useState<boolean>(false);
-  const handleJoin = () => {
-    setSuccessfullContent(true);
+  const handleJoin = async () => {
+    try {
+      dispatch(setLoader(true));
+      await volunteerOpportunity(opportunityDetail.id);
+      setSuccessfullContent(true);
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      dispatch(setLoader(false));
+    }
   };
   const [cookies] = useCookies();
   return (
@@ -243,19 +254,33 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     spot!{' '}
                   </p>
                 </div>
-                {opportunityDetail?.createdBy && (
-                  <button
-                    disabled={
-                      cookies?.userDetails
-                        ? cookies?.userDetails?.id ===
-                          opportunityDetail?.createdBy
-                        : false
+                {!cookies?.userDetails ? (
+                  <Link
+                    className={
+                      'text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]'
                     }
-                    onClick={handleJoin}
-                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies?.userDetails?.id === opportunityDetail?.createdBy && 'cursor-not-allowed'}`}
+                    href={'/sign-in'}
                   >
-                    Join the event
-                  </button>
+                    Login to Join
+                  </Link>
+                ) : (
+                  opportunityDetail?.createdBy && (
+                    <button
+                      disabled={
+                        cookies?.userDetails
+                          ? cookies?.userDetails?.id ===
+                              opportunityDetail?.createdBy ||
+                            opportunityDetail?.alreadyJoined
+                          : false
+                      }
+                      onClick={handleJoin}
+                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies?.userDetails?.id === opportunityDetail?.createdBy || (opportunityDetail?.alreadyJoined && 'cursor-not-allowed')}`}
+                    >
+                      {opportunityDetail?.alreadyJoined
+                        ? 'Already Joined'
+                        : 'Join the event'}
+                    </button>
+                  )
                 )}
               </div>
             )}

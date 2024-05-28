@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
 import { getFormattedLocalTime } from '../frontend/commonServices';
+import createVolunteerEmailTemplate from '@/emailTemplate/createVolunteerEmailTemplate';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -117,6 +118,19 @@ export const getUserDetailsById = async (id: any) => {
   }
 };
 
+export const getOpportunityById = async (id: any) => {
+  const opportunitiesRef = collection(db, 'opportunities');
+  const docRef = doc(opportunitiesRef, id);
+  const docSnap = await getDoc(docRef);
+  const opportunityData: any = docSnap.data();
+
+  if (!opportunityData || opportunityData.status !== 'APPROVED') {
+    return null;
+  } else {
+    return opportunityData;
+  }
+};
+
 export const sendEmailForApproval = async (
   name?: string,
   description?: string,
@@ -181,5 +195,55 @@ export const sendEmailForApproval = async (
     console.log(email, 'email');
   } catch (error) {
     console.log(error, 'error in sending email for approval');
+  }
+};
+
+// join opportunity
+export const joinOpportunity = async (
+  oppId: string,
+  id: string,
+  email: string,
+) => {
+  try {
+    const getEventDetails = await getOpportunityById(oppId);
+
+    if (!getEventDetails) {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Opportunity no longer available',
+      );
+      return response;
+    }
+    await addDoc(collection(db, 'opportunityMembers'), {
+      userId: id,
+      opportunityId: oppId,
+    });
+
+    const template = createVolunteerEmailTemplate(getEventDetails);
+    await sendEmail(
+      email,
+      'Welcome aboard, Volunteer!',
+      'Welcome aboard, Volunteer!',
+      template,
+    );
+
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'Thank you for Joining the event',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in fetching the opportunity details');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in Joining the event',
+    );
+    return response;
   }
 };
