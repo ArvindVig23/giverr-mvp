@@ -11,6 +11,7 @@ import {
   getFormattedLocalTime,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { Tooltip } from '@material-tailwind/react';
 
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
@@ -33,10 +34,10 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
       </div>
 
       <Link
-        href="#"
+        href={`/opportunity/${opportunity.id}`}
         className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full"
       >
-        <div className="overflow-hidden rounded-[14px] h-[122px]">
+        <div className="overflow-hidden rounded-[14px] h-[198px]">
           {opportunity?.imageLink && (
             <Image
               className="w-full h-full object-cover rounded-[14px]"
@@ -48,7 +49,18 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
           )}
         </div>
         <div className="flex flex-col p-5">
-          <h4 className="font-medium text-base">{opportunity?.name}</h4>
+          {opportunity.name.length > 30 ? (
+            <Tooltip content={opportunity.name}>
+              <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+                {opportunity.name.slice(0, 30)}{' '}
+                {opportunity.name.length > 30 && '...'}
+              </h4>
+            </Tooltip>
+          ) : (
+            <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+              {opportunity.name}
+            </h4>
+          )}
           <span className="text-base">
             {getFormattedLocalTime(opportunity.eventDate)}
           </span>

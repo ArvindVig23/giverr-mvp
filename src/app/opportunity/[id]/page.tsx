@@ -47,12 +47,8 @@ const OpportunityDetailPage: React.FC = ({ params }: any) => {
             <CardSkeleton key={index} />
           ))}
         </div>
-      ) : similarInterest && similarInterest.length > 0 ? (
-        <OpportunitiesSimilars similarInterest={similarInterest} />
       ) : (
-        <div className="text-center">
-          <p>No Similar Interests</p>
-        </div>
+        <OpportunitiesSimilars similarInterest={similarInterest} />
       )}
     </div>
   );

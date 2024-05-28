@@ -231,3 +231,8 @@ body {
   z-index: 12 !important;
   line-height: 0;
 }
+[data-floating-ui-portal]
+{
+  z-index: 99;
+  position: relative;
+}
