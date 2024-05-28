@@ -17,6 +17,8 @@ import { CurrentPage } from '@/interface/opportunity';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
 import CardSkeleton from '../common/loader/CardSkeleton';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { Tooltip } from '@material-tailwind/react';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
@@ -55,17 +57,23 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
     (async () => {
-      setLoading(true);
-      const getList = await getOpportunityList(opportunityIds, currrentPage);
-      const { opportunities, page, totalRecords } = getList;
-      if (page > 1) {
-        setOpportunityList([...opportunityList, ...opportunities]);
-      } else {
-        setOpportunityList(opportunities);
+      try {
+        setLoading(true);
+        const getList = await getOpportunityList(opportunityIds, currrentPage);
+        const { opportunities, page, totalRecords } = getList;
+        if (page > 1) {
+          setOpportunityList([...opportunityList, ...opportunities]);
+        } else {
+          setOpportunityList(opportunities);
+        }
+        setCurrentPage(page);
+        setTotalRecords(totalRecords);
+        setLoading(false);
+      } catch (error: any) {
+        setLoading(false);
+        const { message } = error;
+        sweetAlertToast('error', message);
       }
-      setCurrentPage(page);
-      setTotalRecords(totalRecords);
-      setLoading(false);
     })(); //eslint-disable-next-line
   }, [
     cookies.userDetails,
@@ -84,7 +92,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-5 gap-4 mx-5">
           {cards.map((_, index) => (
             <CardSkeleton key={index} />
           ))}
@@ -122,9 +130,18 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                       />
                     </div>
                     <div className="flex flex-col p-5">
-                      <h4 className="font-medium text-base">
-                        {opportunity.name}
-                      </h4>
+                      {opportunity.name.length > 15 ? (
+                        <Tooltip content={opportunity.name}>
+                          <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+                            {opportunity.name.slice(0, 15)}{' '}
+                            {opportunity.name.length > 15 && '...'}
+                          </h4>
+                        </Tooltip>
+                      ) : (
+                        <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+                          {opportunity.name}
+                        </h4>
+                      )}
                       <span className="text-base">
                         {getFormattedLocalTime(opportunity.eventDate)}
                       </span>

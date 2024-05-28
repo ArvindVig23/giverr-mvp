@@ -9,6 +9,15 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const token: any = searchParams.get('token');
     const status = searchParams.get('status');
+    if (!token || !status) {
+      const response = responseHandler(
+        400,
+        false,
+        null,
+        'Invalid approval request',
+      );
+      return response;
+    }
     try {
       const decodedToken = verify(token, TOKEN_SECRET!) as {
         expiration: number;
@@ -44,13 +53,11 @@ export async function GET(req: NextRequest) {
       }
       const updatedData = { ...opportunityData, status }; // Efficiently merge data
       await updateDoc(docRef, updatedData);
-
-      const response = responseHandler(
-        200,
-        true,
-        null,
-        'Opportunity status updated successfully',
-      );
+      const message =
+        status === 'APPROVED'
+          ? 'Opportunity status updated to Approved'
+          : 'Opportunity status updated to Rejected';
+      const response = responseHandler(200, true, null, message);
       return response;
 
       // Proceed with your logic here based on opportunityId

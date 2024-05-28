@@ -62,7 +62,7 @@ const EventForm = ({ setShowModal }: any) => {
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
     if (!thumbnailFile) {
-      setFileError('Pleae thumbnail');
+      setFileError('Please Select thumbnail');
       return;
     }
     dispatch(setLoader(true));
@@ -343,11 +343,15 @@ const EventForm = ({ setShowModal }: any) => {
             <option value="" selected disabled hidden>
               Select
             </option>
-            {organizationList.map((option: any, index: number) => (
-              <option key={index} value={option.id}>
-                {option.name}
-              </option>
-            ))}
+            {organizationList.length ? (
+              organizationList.map((option: any, index: number) => (
+                <option key={index} value={option.id}>
+                  {option.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No options to choose</option>
+            )}
           </select>
           <Image
             src={chevronDown}
@@ -369,12 +373,15 @@ const EventForm = ({ setShowModal }: any) => {
             <option value="" selected disabled hidden>
               Event type
             </option>
-            {eventList.length > 0 &&
+            {eventList.length > 0 ? (
               eventList.map((option: any, index: any) => (
                 <option key={index} value={option.id}>
                   {option.name}
                 </option>
-              ))}
+              ))
+            ) : (
+              <option disabled>No options to choose</option>
+            )}
           </select>
           <Image
             src={chevronDown}

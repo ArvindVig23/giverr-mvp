@@ -25,7 +25,7 @@ const About: React.FC = () => {
             Empowering <br></br> volunteers, <br></br>connecting <br></br>
             communities
           </h1>
-          <p className="text-[#FFF3D6] max-w-[485px]">
+          <p className="text-[#FFF3D6] max-w-[500px] text-[20px]">
             Giverr is a volunteer-run project that is dedicated to increasing
             accessibility to volunteering opportunities. Our mission is simple
             yet profound: to empower the world to volunteer.{' '}
@@ -70,7 +70,8 @@ const About: React.FC = () => {
                   <p className="text-base text-[#24181B80]">
                     Volunteers have the power to explore a wide range of
                     volunteering opportunities tailored to their interests,
-                    skills, and availability.
+                    skills, and availability, as well as organize their own
+                    events.
                   </p>
                 </div>
               </div>

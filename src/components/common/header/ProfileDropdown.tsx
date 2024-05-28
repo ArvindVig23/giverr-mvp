@@ -6,9 +6,11 @@ import check from '/public/images/check-circle.svg';
 import Image from 'next/image';
 import { logOut } from '@/services/frontend/userService';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 
 export default function ProfileDropdown() {
   const router = useRouter();
+  const dispatch = useDispatch();
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -86,7 +88,7 @@ export default function ProfileDropdown() {
             <Menu.Item>
               <button
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                onClick={() => logOut(router)}
+                onClick={() => logOut(router, dispatch)}
               >
                 Log out
               </button>

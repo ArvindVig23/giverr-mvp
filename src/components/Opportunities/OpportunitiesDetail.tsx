@@ -86,7 +86,9 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     <h6 className="text-base m-0 text-[#1E1E1E] mb-3 font-medium w-full">
                       Activities
                     </h6>
-                    <p>{opportunityDetail?.activities}</p>
+                    <p className="m-0 text-[#24181B80]">
+                      {opportunityDetail?.activities}
+                    </p>
                     {/* <ul className="list-disc pl-5">
                     <li className="text-[#24181B80] mb-1">
                       Guided dog walks around the scenic neighborhood
@@ -109,7 +111,9 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     <h6 className="text-base m-0 text-[#1E1E1E] mb-3 font-medium w-full">
                       Volunteer requirements
                     </h6>
-                    <p>{opportunityDetail?.volunteerRequirements}</p>
+                    <p className="m-0 text-[#24181B80]">
+                      {opportunityDetail?.volunteerRequirements}
+                    </p>
                     {/* <ul className="list-disc pl-5">
                     <li className="text-[#24181B80] mb-1">
                       All ages welcome (under 18 must be accompanied by an
@@ -237,16 +241,20 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     spot!{' '}
                   </p>
                 </div>
-
-                <button
-                  disabled={
-                    cookies.userDetails.id === opportunityDetail?.createdBy
-                  }
-                  onClick={handleJoin}
-                  className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies.userDetails.id === opportunityDetail?.createdBy && 'cursor-not-allowed'}`}
-                >
-                  Join the event
-                </button>
+                {opportunityDetail?.createdBy && (
+                  <button
+                    disabled={
+                      cookies?.userDetails
+                        ? cookies?.userDetails?.id ===
+                          opportunityDetail?.createdBy
+                        : false
+                    }
+                    onClick={handleJoin}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${cookies?.userDetails?.id === opportunityDetail?.createdBy && 'cursor-not-allowed'}`}
+                  >
+                    Join the event
+                  </button>
+                )}
               </div>
             )}
 

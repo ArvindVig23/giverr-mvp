@@ -157,7 +157,7 @@ export async function GET(req: NextRequest) {
 
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
-      where('status', '==', 'approved'),
+      where('status', '==', 'APPROVED'),
       orderBy('createdAt', 'desc'),
     );
     if (opportunityId) {
@@ -235,7 +235,7 @@ export async function GET(req: NextRequest) {
       200,
       true,
       { opportunities, totalRecords, page, limit },
-      'opportunities Fetched Successfully',
+      'Opportunitiy details fetched Successfully',
     );
     return response;
   } catch (error) {
@@ -245,7 +245,7 @@ export async function GET(req: NextRequest) {
       500,
       false,
       null,
-      'Error in fetching opportunities',
+      'Error in fetching opportunity details',
     );
     return response;
   }

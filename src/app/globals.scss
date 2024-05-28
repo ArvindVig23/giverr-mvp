@@ -85,19 +85,87 @@ body {
 }
 .swiper-pagination {
   position: relative !important;
-  padding: 8px 12px 8px 12px;
   display: inline-flex;
   width: auto !important;
   margin: auto !important;
-  border-radius: 500px;
-  background: #fff;
   gap: 7px;
-  margin-top: 30px !important;
+
+}
+.organization-section .swiper-controls
+{
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 500px;
+  margin-top: 20px ;
+  background: #fff;
+  height: 24px;
+  transition: all 0.3s ease-in-out 0s;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 .swiper-pagination-bullet {
   width: 8px;
   height: 8px;
   margin: 0 !important;
+}
+.organization-section .swiper-button-prev:after, .organization-section .swiper-button-next:after {
+
+  color: #24181B;
+  font-size: 12px !important;
+  font-weight: 700;
+  padding: 0;
+}
+.organization-section .swiper-button-next {
+  padding: 0;
+  height: auto;
+  right: 4px;
+  margin: 0;
+  width: auto;
+  top: 4px; 
+}
+.organization-section .swiper-button-prev
+{
+  padding: 0;
+  left: 4px;
+  margin: 0;
+  width: auto;
+  top: 4px;
+}
+.organization-section .swiper-controls:hover 
+{
+  padding: 8px 33px;
+  height: 32px;
+}
+.organization-section .swiper-button-prev::after , .organization-section .swiper-button-next::after 
+{
+  display: none;
+}
+.organization-section .swiper-button-prev img 
+{
+  transform: rotate(-180deg);
+}
+.organization-section .swiper-button-prev , .organization-section .swiper-button-next 
+{
+  transition: all 0.3s ease-in-out 0s;
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  display: none;
+
+}
+.organization-section .swiper-button-prev:hover , .organization-section .swiper-button-next:hover
+{
+  background: #F5F3EF;
+}
+.organization-section .swiper-controls:hover .swiper-button-prev ,  .organization-section .swiper-controls:hover .swiper-button-next 
+{
+  display: flex;
+}
+.organization-section .swiper-pagination
+{
+  top: inherit !important;
+  bottom: inherit !important;
 }
 .swiper-pagination-bullet-active {
   background: #24181b !important;
