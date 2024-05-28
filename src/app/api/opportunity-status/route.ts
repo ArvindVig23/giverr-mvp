@@ -53,13 +53,11 @@ export async function GET(req: NextRequest) {
       }
       const updatedData = { ...opportunityData, status }; // Efficiently merge data
       await updateDoc(docRef, updatedData);
-
-      const response = responseHandler(
-        200,
-        true,
-        null,
-        'Opportunity status updated successfully',
-      );
+      const message =
+        status === 'APPROVED'
+          ? 'Opportunity status updated to Approved'
+          : 'Opportunity status updated to Rejected';
+      const response = responseHandler(200, true, null, message);
       return response;
 
       // Proceed with your logic here based on opportunityId

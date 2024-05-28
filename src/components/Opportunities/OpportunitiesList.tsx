@@ -18,6 +18,7 @@ import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
 import CardSkeleton from '../common/loader/CardSkeleton';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { Tooltip } from '@material-tailwind/react';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
@@ -129,9 +130,18 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
                       />
                     </div>
                     <div className="flex flex-col p-5">
-                      <h4 className="font-medium text-base">
-                        {opportunity.name}
-                      </h4>
+                      {opportunity.name.length > 15 ? (
+                        <Tooltip content={opportunity.name}>
+                          <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+                            {opportunity.name.slice(0, 15)}{' '}
+                            {opportunity.name.length > 15 && '...'}
+                          </h4>
+                        </Tooltip>
+                      ) : (
+                        <h4 className="font-medium text-base overflow-hidden text-ellipsis whitespace-nowrap">
+                          {opportunity.name}
+                        </h4>
+                      )}
                       <span className="text-base">
                         {getFormattedLocalTime(opportunity.eventDate)}
                       </span>
