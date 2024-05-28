@@ -147,6 +147,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
               {opportunityDetail?.opportunityData && (
                 <div className="flex gap-1 text-base text-[#24181B]">
                   <Image
+                    className="brightness-0"
                     width={20}
                     height={20}
                     src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.opportunityData.icon)}`}

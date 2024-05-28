@@ -50,11 +50,6 @@ export async function GET(request: NextRequest, { params }: any) {
     }
 
     //  get the similar interests
-    console.log(
-      opportunityData.opportunityType,
-      'opportunityData.opportunityType',
-    );
-
     const getSilimarTypeQuery = query(
       opportunitiesRef,
       where('opportunityType', '==', opportunityData.opportunityType),
