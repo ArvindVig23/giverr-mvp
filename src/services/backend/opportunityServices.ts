@@ -65,7 +65,7 @@ export const createOpportunity = async (opportunity: any) => {
       200,
       true,
       null,
-      'Opportunity created Successfully',
+      'Opportunity submitted and sent for the approval.',
     );
     return response;
   } catch (error) {

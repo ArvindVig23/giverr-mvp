@@ -8,3 +8,6 @@ export const userNameRegex = /^(?=.*[a-zA-Z\d])(?!.*\s)[a-zA-Z\d@$!%*?&]{4,}$/;
 export const fullNameregex = /^(?=.{3,}$)[a-zA-Z'-]+(?:\s[a-zA-Z'-]+)?$/;
 
 export const min4CharWithoutSpace = /^(.*\S.*){4,}$/;
+
+export const websiteLinkRegex =
+  /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/;
