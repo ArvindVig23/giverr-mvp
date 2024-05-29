@@ -1,5 +1,5 @@
 import React from 'react';
-import Cards from '../common/cards/Cards';
+import UserBasedOpportunityList from '../Opportunities/UserBasedOpportunityList';
 
 const ActivityTabs: React.FC = () => {
   const [openTab, setOpenTab] = React.useState(1);
@@ -48,35 +48,15 @@ const ActivityTabs: React.FC = () => {
               Wishlist
             </a>
           </li>
-          <li className="">
-            <a
-              className={
-                'px-3 py-2.5 inline-flex items-center rounded-xl text-[#24181B80]  ' +
-                (openTab === 3 ? 'text-white bg-[#24181B]' : '')
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                setOpenTab(3);
-              }}
-              data-toggle="tab"
-              href="#link3"
-              role="tablist"
-            >
-              Pending
-            </a>
-          </li>
         </ul>
         <div className="relative flex flex-col min-w-0 break-words w-full">
           <div className=" py-5 flex-auto">
             <div className="tab-content tab-space">
               <div className={openTab === 1 ? 'block' : 'hidden'} id="link1">
-                <Cards />
+                <UserBasedOpportunityList />
               </div>
               <div className={openTab === 2 ? 'block' : 'hidden'} id="link2">
                 Wishlist
-              </div>
-              <div className={openTab === 3 ? 'block' : 'hidden'} id="link3">
-                Pending
               </div>
             </div>
           </div>

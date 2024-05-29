@@ -21,13 +21,21 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const handleClick = () => {
     setIsActive(!isActive);
   };
-
+  const statusIsPending = opportunity.status === 'PENDING';
+  const statusIsRejected = opportunity.status === 'REJECTED';
   return (
     <>
       <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
-        <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
-          <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span> Pre-Entry
-        </div>
+        {statusIsPending || statusIsRejected ? (
+          <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#D5D7FD80] bg-[#D5D7FDE5] text-[#02088B] rounded-full items-center">
+            {statusIsRejected ? 'Rejected' : 'Approval pending'}
+          </div>
+        ) : (
+          <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+            <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+            Pre-Entry
+          </div>
+        )}
         <div className="relative cursor-pointer" onClick={handleClick}>
           <Image src={isActive ? stateFill : heart} alt="heart" />
         </div>

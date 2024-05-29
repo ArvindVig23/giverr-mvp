@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import close from '/public/images/close.svg';
 import Image from 'next/image';
 
@@ -10,6 +10,7 @@ const CommonModal = ({
   subHeading,
   children,
 }: any) => {
+  const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
   useEffect(() => {
     if (showModal) {
       document.body.style.overflow = 'hidden';
@@ -21,6 +22,33 @@ const CommonModal = ({
       document.body.style.overflow = 'auto';
     };
   }, [showModal]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (event.key === 'Escape') {
+        setIsEscPressed(true);
+      }
+    };
+
+    const handleWindowFocus = () => {
+      setIsEscPressed(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isEscPressed && showModal) {
+      setShowModal(false);
+      setIsEscPressed(false);
+    } // eslint-disable-next-line
+  }, [isEscPressed, showModal]);
   return (
     <>
       {showModal && (

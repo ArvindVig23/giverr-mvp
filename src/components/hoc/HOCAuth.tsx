@@ -15,13 +15,15 @@ export const hocAuth = (OriginalComponent: any) => {
       '/forgot-password',
       '/reset-password',
     ];
+    const protectedRoutes = ['/activity'];
+    const allowProtectedRoutes = protectedRoutes.includes(pathName) && !user;
     const isLoggedIn = publicPaths.includes(pathName) && user;
 
     useEffect(() => {
-      if (isLoggedIn) {
+      if (isLoggedIn || allowProtectedRoutes) {
         router.push('/');
       }
-    }, [isLoggedIn, router]);
+    }, [isLoggedIn, router, allowProtectedRoutes]);
 
     return isLoggedIn ? null : <OriginalComponent {...props} />;
   }

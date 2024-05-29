@@ -13,7 +13,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { eventValidationSchema } from '@/utils/joiSchema';
-import { createOpportunity } from '@/services/backend/opportunityServices';
+import {
+  createOpportunity,
+  getWishlistWithUser,
+} from '@/services/backend/opportunityServices';
+import { getUserDetailsCookie } from '@/services/backend/commonServices';
 // import { cookies } from 'next/headers';
 
 /**
@@ -157,12 +161,10 @@ export async function GET(req: NextRequest) {
     const page = +(searchParams.get('page') || '1');
     const limit = +(searchParams.get('limit') || '20');
     const opportunityId = searchParams.get('opportunity');
-    // const cookieStore = cookies();
-    // const userDetailCookie: any = cookieStore.get('userDetails');
+    const userIdRecordsShouldFetch = searchParams.get('userId');
 
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
-      where('status', '==', 'APPROVED'),
       orderBy('createdAt', 'desc'),
     );
     if (opportunityId) {
@@ -172,17 +174,31 @@ export async function GET(req: NextRequest) {
         where('opportunityType', 'in', arrayOfOpportunityFilter),
       );
     }
+    // this check is added coz if we are fetching records with userId then it should fetch the records with status pending as well
+    if (!userIdRecordsShouldFetch) {
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where('status', '==', 'APPROVED'),
+      );
+    }
+    if (userIdRecordsShouldFetch) {
+      const userDetailCookie = getUserDetailsCookie();
 
-    // if (userDetailCookie) {
-    //   const convertString = JSON.parse(userDetailCookie.value);
-    //   // logged in user id
-    //   const { id } = convertString;
+      if (!userDetailCookie) {
+        const response = responseHandler(
+          401,
+          false,
+          null,
+          'Please login before getting event',
+        );
+        return response;
+      }
 
-    //   opportunitiesQuery = query(
-    //     opportunitiesQuery,
-    //     where('createdBy', '!=', id),
-    //   );
-    // }
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where('createdBy', '==', userIdRecordsShouldFetch),
+      );
+    }
     const totalSnapshot = await getDocs(opportunitiesQuery);
     const totalRecords = totalSnapshot.size;
 
@@ -230,7 +246,15 @@ export async function GET(req: NextRequest) {
         } else {
           opportunityData.organization = null;
         }
-
+        // get the wishlist details
+        opportunityData.isWishlist = false;
+        if (userIdRecordsShouldFetch) {
+          const checkIsWishlist = await getWishlistWithUser(
+            docs.id,
+            userIdRecordsShouldFetch,
+          );
+          opportunityData.isWishlist = checkIsWishlist;
+        }
         return opportunityData;
       },
     );
