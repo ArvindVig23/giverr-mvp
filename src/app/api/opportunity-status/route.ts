@@ -42,12 +42,23 @@ export async function GET(req: NextRequest) {
       const docRef = doc(opportunitiesRef, opportunityId);
       const docSnap = await getDoc(docRef);
       const opportunityData: any = docSnap.data();
+
       if (!opportunityData) {
         const response = responseHandler(
           404,
           false,
           null,
           'Opportunity not found',
+        );
+        return response;
+      }
+      // prevent admin from updating status more than once
+      if (opportunityData.status !== 'PENDING') {
+        const response = responseHandler(
+          400,
+          false,
+          null,
+          'Approval link is expired',
         );
         return response;
       }
