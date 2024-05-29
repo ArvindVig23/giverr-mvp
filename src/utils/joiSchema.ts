@@ -71,3 +71,10 @@ export const eventValidationSchema = Joi.object({
     'string.required': 'Image url is required',
   }),
 }).options({ abortEarly: false });
+
+export const joinOppSchema = Joi.object({
+  oppId: Joi.string().required().messages({
+    'string.base': 'Opportunity must be a string',
+    'string.required': 'Opportunity is required',
+  }),
+});

@@ -13,16 +13,30 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest, { params }: any) {
   try {
+    const cookieStore = cookies();
+    const userDetailCookie: any = cookieStore.get('userDetails');
+
+    // if (!userDetailCookie) {
+    //   const response = responseHandler(
+    //     401,
+    //     false,
+    //     null,
+    //     'Please login before joining the event',
+    //   );
+    //   return response;
+    // }
+
     const { id }: any = params;
     const opportunitiesRef = collection(db, 'opportunities');
     const docRef = doc(opportunitiesRef, id);
     const docSnap = await getDoc(docRef);
     const opportunityData: any = docSnap.data();
-    if (!opportunityData) {
+    if (!opportunityData || opportunityData.status !== 'APPROVED') {
       const response = responseHandler(
         404,
         false,
@@ -32,7 +46,7 @@ export async function GET(request: NextRequest, { params }: any) {
       return response;
     }
     const foundOppId = docSnap.id;
-
+    opportunityData.id = foundOppId;
     // get opportunityType details
     if (opportunityData.opportunityType) {
       const oppTypeDetail = await getOpportunityTypeById(
@@ -92,7 +106,21 @@ export async function GET(request: NextRequest, { params }: any) {
     const filteredOpportunities = opportunities.filter((opportunity) =>
       Boolean(opportunity),
     );
-
+    //  check if user already
+    if (userDetailCookie) {
+      const convertString = JSON.parse(userDetailCookie.value);
+      const userId = convertString.id;
+      const oppMemberRef = collection(db, 'opportunityMembers');
+      const findUser = query(
+        oppMemberRef,
+        where('opportunityId', '==', id),
+        where('userId', '==', userId),
+      );
+      const alreadyAppliedUser = await getDocs(findUser);
+      opportunityData.alreadyJoined = !alreadyAppliedUser.empty;
+    } else {
+      opportunityData.alreadyJoined = true;
+    }
     const response = responseHandler(
       200,
       false,
