@@ -64,7 +64,6 @@ export const getOpportunityDetails = async (id: string) => {
     const response: any = await callApi(`/opportunity/${id}`);
     return response.data;
   } catch (error: any) {
-    console.log(error, 'Error in getting the detail');
     throw error.data;
   }
 };
@@ -75,6 +74,23 @@ export const volunteerOpportunity = async (oppId: string) => {
     return response.data;
   } catch (error: any) {
     console.log(error, 'Error in joining event');
+    throw error.data;
+  }
+};
+
+export const getUserOpportunityList = async (
+  userId: string,
+  currrentPage?: number,
+) => {
+  try {
+    const response = await callApi(
+      `/opportunity?page=${currrentPage}&userId=${userId}`,
+      'get',
+    );
+    return response.data;
+
+    // setLimit(limit);
+  } catch (error: any) {
     throw error.data;
   }
 };

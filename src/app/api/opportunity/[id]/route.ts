@@ -1,5 +1,6 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
+import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import {
   getOpportunityTypeById,
   getOrgDetailsById,
@@ -36,7 +37,12 @@ export async function GET(request: NextRequest, { params }: any) {
     const docRef = doc(opportunitiesRef, id);
     const docSnap = await getDoc(docRef);
     const opportunityData: any = docSnap.data();
-    if (!opportunityData || opportunityData.status !== 'APPROVED') {
+    const loggedInUser = getUserDetailsCookie();
+
+    if (
+      !opportunityData ||
+      (!loggedInUser && opportunityData.status !== 'APPROVED')
+    ) {
       const response = responseHandler(
         404,
         false,

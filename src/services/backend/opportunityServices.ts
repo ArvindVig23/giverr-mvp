@@ -2,7 +2,16 @@ import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
 import { generateApprovalTemplate } from '@/emailTemplate/approval';
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
@@ -243,6 +252,74 @@ export const joinOpportunity = async (
       false,
       null,
       'Error in Joining the event',
+    );
+    return response;
+  }
+};
+
+export const getWishlistWithUser = async (oppId: string, userId: string) => {
+  const wishlistRef = collection(db, 'userWishList');
+  const q = query(
+    wishlistRef,
+    where('opportunityId', '==', oppId),
+    where('userId', '==', userId),
+  );
+  const wishListRecord = await getDocs(q);
+  return !wishListRecord.empty;
+};
+
+export const addToWishlist = async (oppId: string, id: string) => {
+  try {
+    await addDoc(collection(db, 'userWishList'), {
+      opportunityId: oppId,
+      userId: id,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+    });
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'Opportunity added to wishlist',
+    );
+    return response;
+  } catch (error) {
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error while adding opportunity to wishlist',
+    );
+    return response;
+  }
+};
+
+export const removeFromWishlist = async (oppId: string, id: string) => {
+  try {
+    // Construct a query to find the specific wishlist item
+    const q = query(
+      collection(db, 'userWishList'),
+      where('opportunityId', '==', oppId),
+      where('userId', '==', id),
+    );
+    // Get the document snapshot (if it exists)
+    const querySnapshot = await getDocs(q);
+    // Found the wishlist item, delete it
+    const doc = querySnapshot.docs[0];
+    await deleteDoc(doc.ref);
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'Opportunity removed from wishlist',
+    );
+    return response;
+  } catch (error) {
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error while removing opportunity from wishlist',
     );
     return response;
   }
