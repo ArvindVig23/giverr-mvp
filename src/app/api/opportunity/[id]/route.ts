@@ -117,12 +117,7 @@ export async function GET(request: NextRequest, { params }: any) {
         where('userId', '==', userId),
       );
       const alreadyAppliedUser = await getDocs(findUser);
-
-      if (alreadyAppliedUser.empty) {
-        opportunityData.alreadyJoined = false;
-      } else {
-        opportunityData.alreadyJoined = true;
-      }
+      opportunityData.alreadyJoined = !alreadyAppliedUser.empty;
     } else {
       opportunityData.alreadyJoined = true;
     }

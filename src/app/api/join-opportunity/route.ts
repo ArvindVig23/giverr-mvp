@@ -1,17 +1,26 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
+import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import { joinOpportunity } from '@/services/backend/opportunityServices';
+import { joinOppSchema } from '@/utils/joiSchema';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
     const { oppId } = reqBody;
-    const cookieStore = cookies();
-    const userDetailCookie: any = cookieStore.get('userDetails');
+    const { error } = joinOppSchema.validate({ oppId });
 
+    if (error) {
+      const errorMessage: string = error.details
+        .map((err) => err.message)
+        .join('; ');
+
+      const response = responseHandler(403, false, null, errorMessage);
+      return response;
+    }
+    const userDetailCookie: any = await getUserDetailsCookie();
     if (!userDetailCookie) {
       const response = responseHandler(
         401,

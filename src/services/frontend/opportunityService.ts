@@ -69,8 +69,7 @@ export const getOpportunityDetails = async (id: string) => {
   }
 };
 
-export const volunteerOpportunity = async (id: string) => {
-  const oppId = id;
+export const volunteerOpportunity = async (oppId: string) => {
   try {
     const response: any = await callApi(`/join-opportunity`, 'post', { oppId });
     return response.data;
