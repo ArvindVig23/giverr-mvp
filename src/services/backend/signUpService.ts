@@ -29,6 +29,7 @@ export const createUserService = async (userData: any, token?: any) => {
       isAppleAuth,
       isEmailAuth,
       status,
+      profileUrl: '',
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });
@@ -39,6 +40,8 @@ export const createUserService = async (userData: any, token?: any) => {
         email: email,
         username: username,
         id: userId,
+        profileUrl: '',
+        fullName,
       };
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));

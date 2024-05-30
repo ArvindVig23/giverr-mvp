@@ -78,6 +78,8 @@ export async function POST(req: NextRequest) {
       email: userData.email,
       username: userData.username,
       id: documentId,
+      profileUrl: userData.profileUrl || '',
+      fullName: userData.fullName,
     };
     cookies().set({
       name: 'userDetails',

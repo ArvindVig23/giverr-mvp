@@ -39,29 +39,31 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             Pre-Entry
           </div>
         )}
-        {userNotFound || sameUserOpp ? (
-          <Tooltip
-            content={
-              userNotFound
-                ? 'Log in to update wishlist.'
-                : 'You can not add your opportunity in wishlist '
-            }
-          >
-            <div className="relative cursor-not-allowed">
-              <Image src={heart} alt="heart" />
+        {!statusIsPending && !statusIsRejected ? (
+          userNotFound || sameUserOpp ? (
+            <Tooltip
+              content={
+                userNotFound
+                  ? 'Log in to update wishlist.'
+                  : 'You can not add your opportunity in wishlist '
+              }
+            >
+              <div className="relative cursor-not-allowed">
+                <Image src={heart} alt="heart" />
+              </div>
+            </Tooltip>
+          ) : (
+            <div
+              className="relative cursor-pointer"
+              onClick={() => addRemoveWishlist(opportunity.id)}
+            >
+              <Image
+                src={opportunity?.isWishlist ? stateFill : heart}
+                alt="heart"
+              />
             </div>
-          </Tooltip>
-        ) : (
-          <div
-            className="relative cursor-pointer"
-            onClick={() => addRemoveWishlist(opportunity.id)}
-          >
-            <Image
-              src={opportunity?.isWishlist ? stateFill : heart}
-              alt="heart"
-            />
-          </div>
-        )}
+          )
+        ) : null}
       </div>
 
       <Link
