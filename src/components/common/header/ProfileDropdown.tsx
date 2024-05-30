@@ -59,7 +59,7 @@ export default function ProfileDropdown() {
             <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
             <Menu.Item>
               <Link
-                href="/activity"
+                href="/activity?events=true"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
               >
                 Events & Activity

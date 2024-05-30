@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import UserBasedOpportunityList from '../Opportunities/UserBasedOpportunityList';
+import WishlistOpportunity from '../Opportunities/WishlistOpportunity';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 const ActivityTabs: React.FC = () => {
-  const [openTab, setOpenTab] = React.useState(1);
+  const searchParams = useSearchParams();
+  const eventsTab = searchParams.get('events');
+  const wishlistTab = searchParams.get('wishlist');
+  const router = useRouter();
+  useEffect(() => {
+    if (!eventsTab || !wishlistTab) {
+      router.push('/activity?events=true');
+    }
+    // eslint-disable-next-line
+  }, []);
   return (
     <div className="p-5 relative border-t border-[#E6E3D6]">
       <h1 className="text-[#24181B] font-medium text-[32px] mb-5">
@@ -15,48 +27,40 @@ const ActivityTabs: React.FC = () => {
           role="tablist"
         >
           <li className="">
-            <a
+            <Link
               className={
                 'px-3 py-2.5 inline-flex items-center rounded-xl text-[#24181B80]  ' +
-                (openTab === 1 ? 'text-white bg-[#24181B]' : '')
+                (eventsTab ? 'text-white bg-[#24181B]' : '')
               }
-              onClick={(e) => {
-                e.preventDefault();
-                setOpenTab(1);
-              }}
               data-toggle="tab"
-              href="#link1"
+              href="/activity?events=true"
               role="tablist"
             >
               Events
-            </a>
+            </Link>
           </li>
           <li className="">
-            <a
+            <Link
               className={
                 'px-3 py-2.5 inline-flex items-center rounded-xl text-[#24181B80]  ' +
-                (openTab === 2 ? 'text-white bg-[#24181B]' : '')
+                (wishlistTab ? 'text-white bg-[#24181B]' : '')
               }
-              onClick={(e) => {
-                e.preventDefault();
-                setOpenTab(2);
-              }}
               data-toggle="tab"
-              href="#link2"
+              href="/activity?wishlist=true"
               role="tablist"
             >
               Wishlist
-            </a>
+            </Link>
           </li>
         </ul>
         <div className="relative flex flex-col min-w-0 break-words w-full">
           <div className=" py-5 flex-auto">
             <div className="tab-content tab-space">
-              <div className={openTab === 1 ? 'block' : 'hidden'} id="link1">
-                <UserBasedOpportunityList />
+              <div className={eventsTab ? 'block' : 'hidden'} id="link1">
+                {eventsTab ? <UserBasedOpportunityList /> : null}
               </div>
-              <div className={openTab === 2 ? 'block' : 'hidden'} id="link2">
-                Wishlist
+              <div className={wishlistTab ? 'block' : 'hidden'} id="link2">
+                {wishlistTab ? <WishlistOpportunity /> : null}
               </div>
             </div>
           </div>
