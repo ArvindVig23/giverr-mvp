@@ -38,15 +38,9 @@ export async function GET(request: NextRequest, { params }: any) {
     const docSnap = await getDoc(docRef);
     const opportunityData: any = docSnap.data();
     const loggedInUser = getUserDetailsCookie();
-    let userId = '';
-    if (loggedInUser) {
-      const convertString = JSON.parse(userDetailCookie.value);
-      userId = convertString.id;
-    }
     if (
       !opportunityData ||
-      (!loggedInUser && opportunityData.status !== 'APPROVED') ||
-      userId !== opportunityData.createdBy
+      (!loggedInUser && opportunityData.status !== 'APPROVED')
     ) {
       const response = responseHandler(
         404,
