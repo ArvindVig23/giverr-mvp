@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
       500,
       false,
       null,
-      'Error in fetching the wishlit',
+      'Error in fetching the wishlist',
     );
     return response;
   }
