@@ -2,7 +2,7 @@ import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import { joinOpportunity } from '@/services/backend/opportunityServices';
-import { joinOppSchema } from '@/utils/joiSchema';
+import { oppIdSchema } from '@/utils/joiSchema';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
     const { oppId } = reqBody;
-    const { error } = joinOppSchema.validate({ oppId });
+    const { error } = oppIdSchema.validate({ oppId });
 
     if (error) {
       const errorMessage: string = error.details

@@ -37,4 +37,5 @@ export interface SimilarInterest {
 
 export interface OpportunityCardProps {
   opportunity: any;
+  addRemoveWishlist?: any;
 }
