@@ -233,6 +233,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                     If, for any reason, you are unable to attend, kindly send an
                     email to
                     <Link className="text-[#E60054] hover:underline" href="#">
+                      {' '}
                       events@giverr.com.
                     </Link>
                     This will allow us to open up your spot to another eager

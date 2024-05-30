@@ -181,9 +181,8 @@ export async function GET(req: NextRequest) {
         where('status', '==', 'APPROVED'),
       );
     }
+    const userDetailCookie = getUserDetailsCookie();
     if (userIdRecordsShouldFetch) {
-      const userDetailCookie = getUserDetailsCookie();
-
       if (!userDetailCookie) {
         const response = responseHandler(
           401,
@@ -248,11 +247,10 @@ export async function GET(req: NextRequest) {
         }
         // get the wishlist details
         opportunityData.isWishlist = false;
-        if (userIdRecordsShouldFetch) {
-          const checkIsWishlist = await getWishlistWithUser(
-            docs.id,
-            userIdRecordsShouldFetch,
-          );
+        if (userDetailCookie) {
+          const convertString = JSON.parse(userDetailCookie.value);
+          const { id } = convertString;
+          const checkIsWishlist = await getWishlistWithUser(docs.id, id);
           opportunityData.isWishlist = checkIsWishlist;
         }
         return opportunityData;

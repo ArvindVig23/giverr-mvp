@@ -72,7 +72,7 @@ export const eventValidationSchema = Joi.object({
   }),
 }).options({ abortEarly: false });
 
-export const joinOppSchema = Joi.object({
+export const oppIdSchema = Joi.object({
   oppId: Joi.string().required().messages({
     'string.base': 'Opportunity must be a string',
     'string.required': 'Opportunity is required',

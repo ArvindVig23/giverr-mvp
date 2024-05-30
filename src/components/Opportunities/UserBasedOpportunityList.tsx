@@ -41,7 +41,7 @@ const UserBasedOpportunityList: React.FC = () => {
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
         <div className="text-base text-[#1E1E1E80] font-normal">
-          {totalRecords} Opportunities
+          {totalRecords ? `${totalRecords} Opportunities` : null}
         </div>
       </div>
 

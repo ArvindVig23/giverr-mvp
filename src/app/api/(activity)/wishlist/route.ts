@@ -5,12 +5,23 @@ import {
   getWishlistWithUser,
   removeFromWishlist,
 } from '@/services/backend/opportunityServices';
+import { oppIdSchema } from '@/utils/joiSchema';
 import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
     const { oppId } = reqBody;
+    //  oppId validations
+    const { error } = oppIdSchema.validate({ oppId });
+    if (error) {
+      const errorMessage: string = error.details
+        .map((err) => err.message)
+        .join('; ');
+
+      const response = responseHandler(403, false, null, errorMessage);
+      return response;
+    }
     // logged in user
     const userDetails = getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);

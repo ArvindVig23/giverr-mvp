@@ -279,7 +279,7 @@ export const addToWishlist = async (oppId: string, id: string) => {
     const response = responseHandler(
       200,
       true,
-      null,
+      { opportunityId: oppId, isWishlist: true },
       'Opportunity added to wishlist',
     );
     return response;
@@ -310,7 +310,7 @@ export const removeFromWishlist = async (oppId: string, id: string) => {
     const response = responseHandler(
       200,
       true,
-      null,
+      { opportunityId: oppId, isWishlist: false },
       'Opportunity removed from wishlist',
     );
     return response;

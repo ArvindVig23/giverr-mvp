@@ -3,18 +3,21 @@ import React, { useEffect, useState } from 'react';
 import Filter from '../Opportunities/filter';
 import { useCookies } from 'react-cookie';
 import { useSearchParams } from 'next/navigation';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CurrentPage } from '@/interface/opportunity';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
 import CardSkeleton from '../common/loader/CardSkeleton';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import OpportunityCard from '../common/cards/OpportunityCard';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
   setCurrentPage,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
   const opportunityTypeList = useSelector(
     (state: any) => state.eventListReducer,
   );
@@ -68,6 +71,27 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     opportunityTypeList.length,
   ]);
   const cards = Array(5).fill(null);
+
+  //  addd remove wishlist
+  const addRemoveWishlist = async (oppId: string) => {
+    try {
+      dispatch(setLoader(true));
+      const response = await addRemoveWishlistService(oppId);
+      const { opportunityId, isWishlist } = response.data;
+      console.log(response, 'response');
+      setOpportunityList((prevList: any[]) =>
+        prevList.map((opp) =>
+          opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
+        ),
+      );
+      dispatch(setLoader(false));
+      sweetAlertToast('success', response.message);
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error.data;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
@@ -82,7 +106,10 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
           opportunityList.map((opportunity: any, index: number) => {
             return (
               <div key={index} className="relative group">
-                <OpportunityCard opportunity={opportunity} />
+                <OpportunityCard
+                  opportunity={opportunity}
+                  addRemoveWishlist={addRemoveWishlist}
+                />
               </div>
             );
           })
@@ -90,25 +117,25 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
           <span>No Opportunitites</span>
         )}
       </div>
-      {loading && (
+      {loading ? (
         <div className="grid grid-cols-5 gap-4 mx-5">
           {cards.map((_, index) => (
             <CardSkeleton key={index} />
           ))}
         </div>
-      )}
+      ) : null}
       <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">
         <div className="text-[#1E1E1E80] w-full">
           Showing {opportunityList.length} of {totalRecords}
         </div>
-        {opportunityList.length !== totalRecords && (
+        {opportunityList.length !== totalRecords ? (
           <button
             onClick={() => setCurrentPage(currrentPage! + 1)}
             className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           >
             Load More
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );
