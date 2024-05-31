@@ -13,4 +13,6 @@ export interface UserDetailsCookies {
   email?: string;
   id?: string;
   username?: string;
+  profileUrl?: string;
+  fullName?: string;
 }
