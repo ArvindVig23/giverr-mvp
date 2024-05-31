@@ -7,7 +7,7 @@ export const hocAuth = (OriginalComponent: any) => {
   function HOCAuth(props: any) {
     const [cookies] = useCookies();
     const router = useRouter();
-    const user: any = cookies.userToken;
+    const userToken: any = cookies.userToken;
     const pathName = usePathname();
     const publicPaths = [
       '/sign-in',
@@ -15,17 +15,25 @@ export const hocAuth = (OriginalComponent: any) => {
       '/forgot-password',
       '/reset-password',
     ];
-    const protectedRoutes = ['/activity'];
-    const allowProtectedRoutes = protectedRoutes.includes(pathName) && !user;
-    const isLoggedIn = publicPaths.includes(pathName) && user;
+    const protectedPaths = ['/activity', '/profile'];
+
+    const isPublicPath = publicPaths.includes(pathName);
+    const isProtectedPath = protectedPaths.includes(pathName);
 
     useEffect(() => {
-      if (isLoggedIn || allowProtectedRoutes) {
+      if (isPublicPath && userToken) {
         router.push('/');
+      } else if (isProtectedPath && !userToken) {
+        router.push('/sign-in');
       }
-    }, [isLoggedIn, router, allowProtectedRoutes]);
+    }, [isPublicPath, isProtectedPath, userToken, router, pathName]);
 
-    return isLoggedIn ? null : <OriginalComponent {...props} />;
+    if ((isPublicPath && userToken) || (isProtectedPath && !userToken)) {
+      router.push('/');
+      return null;
+    }
+
+    return <OriginalComponent {...props} />;
   }
 
   HOCAuth.displayName = 'HOCAuth';

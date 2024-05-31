@@ -26,7 +26,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const sameUserOpp = cookies?.userDetails?.id === opportunity.createdBy;
   return (
     <>
-      <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5">
+      <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5 ">
         {statusIsPending || statusIsRejected ? (
           <div
             className={`text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#D5D7FD80]  rounded-full items-center ${statusIsRejected ? 'bg-[#ff0000bf] text-[#fff]' : 'bg-[#D5D7FDE5] text-[#02088B]'}`}
@@ -68,7 +68,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
 
       <Link
         href={`/opportunity/${opportunity.id}`}
-        className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-inherit inline-block w-full h-full"
+        className="bg-white border border-white overflow-hidden rounded-[14px] group-hover:border-[#E6E3D6] group-hover:bg-white inline-block w-full h-full card-shadow"
       >
         <div className="overflow-hidden rounded-[14px] h-[198px]">
           {opportunity?.imageLink && (

@@ -1,21 +1,66 @@
 'use client';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import check from '/public/images/check-circle.svg';
 import Image from 'next/image';
-import { logOut } from '@/services/frontend/userService';
-import { useRouter } from 'next/navigation';
+import { getInitialOfEmail, logOut } from '@/services/frontend/userService';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { encodeUrl } from '@/services/frontend/commonServices';
 
 export default function ProfileDropdown() {
+  const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
+  const [highlightWishlist, setHighlightWishlist] = useState<boolean>(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const [cookies] = useCookies();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (pathname === '/activity') {
+      const eventsTab = searchParams.get('events');
+      const wishlistTab = searchParams.get('wishlist');
+      if (eventsTab) {
+        setHighlightActivity(true);
+        setHighlightWishlist(false);
+      }
+      if (wishlistTab) {
+        setHighlightActivity(false);
+        setHighlightWishlist(true);
+      }
+    }
+  }, [pathname, searchParams]);
+
+  const fullNameOrEmail = () => {
+    if (cookies.userDetails.fullName) {
+      return cookies.userDetails.fullName;
+    } else {
+      return cookies.userDetails.email;
+    }
+  };
+  const displayName =
+    fullNameOrEmail().length > 16
+      ? fullNameOrEmail().slice(0, 16) + '...'
+      : fullNameOrEmail();
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium ">
-          A
+        <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden ">
+          {cookies.userDetails.profileUrl ? (
+            <Image
+              width={40}
+              height={40}
+              src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+              alt="profile"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            getInitialOfEmail(fullNameOrEmail())
+          )}
         </Menu.Button>
       </div>
 
@@ -35,10 +80,20 @@ export default function ProfileDropdown() {
                 href="#"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
               >
-                <div className="w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs">
-                  A
+                <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
+                  {cookies.userDetails.profileUrl ? (
+                    <Image
+                      width={40}
+                      height={40}
+                      src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+                      alt="profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    getInitialOfEmail(fullNameOrEmail())
+                  )}
                 </div>{' '}
-                Anna Smith
+                {displayName}
                 <div className="ml-auto">
                   <Image src={check} alt="check" />
                 </div>
@@ -60,7 +115,7 @@ export default function ProfileDropdown() {
             <Menu.Item>
               <Link
                 href="/activity?events=true"
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightActivity ? 'bg-[#F5F3EF]' : ''}`}
               >
                 Events & Activity
               </Link>
@@ -68,8 +123,8 @@ export default function ProfileDropdown() {
 
             <Menu.Item>
               <Link
-                href="#"
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                href="/activity?wishlist=true"
+                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightWishlist ? 'bg-[#F5F3EF]' : ''}`}
               >
                 Wishlist
               </Link>
