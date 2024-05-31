@@ -18,7 +18,7 @@ const SubmitEvents = () => {
       {showModal && (
         <CommonModal
           heading={'Submit Event'}
-          subHeading={'Event details'}
+          subHeading={'Event Details'}
           showModal={showModal}
           setShowModal={setShowModal}
         >
