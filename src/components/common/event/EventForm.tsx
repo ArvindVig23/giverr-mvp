@@ -52,6 +52,7 @@ const EventForm = ({ setShowModal }: any) => {
       eventDate: null,
       eventTime: null,
       location: '',
+      publishAs: cookies.userDetails.id,
     },
   });
   const radioValue = watch('registrationType');
@@ -88,6 +89,9 @@ const EventForm = ({ setShowModal }: any) => {
     });
     const eventDateTime = utcEventDate.format();
     data.eventDate = eventDateTime;
+    if (data.publishAs !== cookies.userDetails.id) {
+      data.organizationId = data.publishAs;
+    }
     try {
       const response = await callApi('/opportunity', 'post', data);
       const { message } = response;
@@ -155,6 +159,41 @@ const EventForm = ({ setShowModal }: any) => {
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex gap-5 w-full flex-col relative px-5">
+        <div className="flex flex-col w-full relative gap-5">
+          <div className="py-3 px-4 flex items-center w-full mt-1 relative bg-[#EDEBE3] rounded-xl border border-[#E6E3D6]">
+            <div className="flex-shrink-0 px-5 pl-0 text-base text-[#24181B] border-r border-[#D1CFC7]">
+              Publish as
+            </div>
+            <div className="relative w-full">
+              <select
+                id="publishAs"
+                {...register('publishAs')}
+                className="block w-full px-5 text-base text-[#24181B] bg-[#EDEBE3] border-none rounded-xl focus:outline-none focus:ring-0 focus:border-[#E60054] appearance-none peer"
+              >
+                <option value={cookies.userDetails.id} selected disabled hidden>
+                  {cookies.userDetails.fullName
+                    ? cookies.userDetails.fullName
+                    : cookies.userDetails.email}
+                </option>
+                {organizationList.length ? (
+                  organizationList.map((option: any, index: number) => (
+                    <option key={index} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No options to choose</option>
+                )}
+              </select>
+              <Image
+                src={chevronDown}
+                alt="arrow"
+                className="absolute top-0 right-0 pointer-events-none"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="w-full rounded-xl p-5 flex gap-5 bg-[#EDEBE3] flex-col border border-[#E6E3D6]">
           <h4 className="text-base text-[#24181B] m-0">
             Upload image thumbnail
@@ -236,7 +275,6 @@ const EventForm = ({ setShowModal }: any) => {
             </span>
           )}
         </div>
-
         <div className="flex gap-5">
           <div className="relative w-full">
             <Controller
@@ -340,7 +378,7 @@ const EventForm = ({ setShowModal }: any) => {
           </label>
         </div>
 
-        <div className="relative w-full mt-1">
+        {/* <div className="relative w-full mt-1">
           <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
             Organization name
           </label>
@@ -367,7 +405,7 @@ const EventForm = ({ setShowModal }: any) => {
             alt="arrow"
             className="absolute top-[18px] right-4 pointer-events-none"
           />
-        </div>
+        </div> */}
 
         <div className="relative w-full mt-1">
           <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
@@ -412,10 +450,10 @@ const EventForm = ({ setShowModal }: any) => {
                 value: 4,
                 message: 'Minimum 4 characters required.',
               },
-              pattern: {
-                value: min4CharWithoutSpace,
-                message: 'Minimum 4 characters required.',
-              },
+              // pattern: {
+              //   value: min4CharWithoutSpace,
+              //   message: 'Minimum 4 characters required.',
+              // },
             })}
             id="description"
             className="block rounded-xl px-5 pb-2.5 h-[120px] pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"

@@ -27,11 +27,16 @@ export default function ProfileDropdown() {
       if (eventsTab) {
         setHighlightActivity(true);
         setHighlightWishlist(false);
+        return;
       }
       if (wishlistTab) {
         setHighlightActivity(false);
         setHighlightWishlist(true);
+        return;
       }
+    } else {
+      setHighlightActivity(false);
+      setHighlightWishlist(false);
     }
   }, [pathname, searchParams]);
 
