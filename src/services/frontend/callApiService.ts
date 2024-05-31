@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const callApi = async (
   url: string,
-  method: 'get' | 'post' | 'patch' | 'delete' = 'get',
+  method: 'get' | 'post' | 'patch' | 'delete' | 'put' = 'get',
   body: {} | null = null,
 ) => {
   if (url.charAt(0) !== '/') {

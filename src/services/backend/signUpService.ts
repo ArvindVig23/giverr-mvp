@@ -22,7 +22,7 @@ export const createUserService = async (userData: any, token?: any) => {
 
     const createuser = await addDoc(collection(db, 'users'), {
       username: username.toLowerCase().trim(),
-      fullName,
+      fullName: fullName.trim(),
       email: email.toLowerCase().trim(),
       location,
       isGoogleAuth,

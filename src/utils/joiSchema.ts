@@ -78,3 +78,15 @@ export const oppIdSchema = Joi.object({
     'string.required': 'Opportunity is required',
   }),
 });
+
+export const fullNameSchema = Joi.object({
+  fullName: Joi.string()
+    .trim()
+    .allow('')
+    .pattern(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
+    .messages({
+      'string.base': 'Only Alphabets are allowed in fullName',
+      'string.pattern':
+        'Full Name should not contain number or special characters.',
+    }),
+});

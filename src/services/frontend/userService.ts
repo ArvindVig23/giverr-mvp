@@ -26,3 +26,8 @@ export const logOut = async (router: any, dispatch: any) => {
     sweetAlertToast('error', message);
   }
 };
+
+// get the first letter of email
+export const getInitialOfEmail = (email: string) => {
+  return email[0].toUpperCase();
+};

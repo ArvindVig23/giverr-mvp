@@ -39,13 +39,7 @@ const UserBasedOpportunityList: React.FC = () => {
 
   return (
     <div className="pb-16">
-      <div className="flex justify-between px-5 py-2 items-center ">
-        <div className="text-base text-[#1E1E1E80] font-normal">
-          {totalRecords ? `${totalRecords} Opportunities` : null}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
+      <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
         {opportunityList && opportunityList.length > 0 ? (
           opportunityList.map((opportunity: any, index: number) => {
             return (
@@ -62,7 +56,7 @@ const UserBasedOpportunityList: React.FC = () => {
         )}
       </div>
       {loading && (
-        <div className="grid grid-cols-5 gap-4 mx-5">
+        <div className="grid grid-cols-5 gap-4 ">
           {cards.map((_, index) => (
             <CardSkeleton key={index} />
           ))}

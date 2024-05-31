@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
           const orgDetails = await getOrgDetailsById(
             opportunityData.organizationId,
           );
-          opportunityData.organizationDetails = orgDetails;
+          opportunityData.organization = orgDetails;
         }
       }
       return opportunityData;
