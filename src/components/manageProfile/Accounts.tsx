@@ -137,8 +137,7 @@ const OpportunitiesBanner: React.FC = () => {
               },
               pattern: {
                 value: fullNameregex,
-                message:
-                  'Full name must contain only alphabets and be at least 3 characters long.',
+                message: 'Full name must contain only alphabets.',
               },
               minLength: {
                 value: 3, // Minimum length you desire
