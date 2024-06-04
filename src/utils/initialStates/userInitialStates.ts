@@ -1,3 +1,4 @@
+import { OrgDetails } from '@/interface/organization';
 import { userDetail } from '@/interface/user';
 
 export const resetGlobalState: userDetail = {
@@ -9,4 +10,14 @@ export const resetGlobalState: userDetail = {
   isAppleAuth: false,
   isEmailAuth: false,
   status: true,
+};
+
+export const defaultUserOrgDetail: OrgDetails = {
+  id: '',
+  createdBy: '',
+  status: false,
+  avatarLink: '',
+  name: '',
+  username: '',
+  website: '',
 };

@@ -63,7 +63,7 @@ const SignInStep2: React.FC = () => {
       );
       const token = await res.user.getIdToken();
       setCookie('userToken', token, { path: '/' });
-      sweetAlertToast('success', 'Login Successfull');
+      sweetAlertToast('success', 'Login Successfull', 1000);
       router.push('/');
       dispatch(updateUserDetails(resetGlobalState));
       dispatch(setLoader(false));

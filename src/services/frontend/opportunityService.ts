@@ -32,7 +32,7 @@ export const uploadFile = async (file: any, path: string) => {
 // get organization list
 export const getOrganizationList = async (dispatch: any) => {
   try {
-    const list = await callApi('/organization', 'get');
+    const list = await callApi('/organization/get-all', 'get');
 
     dispatch(updateOrganizationList(list.data));
   } catch (error) {

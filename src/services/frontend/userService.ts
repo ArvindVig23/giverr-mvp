@@ -3,6 +3,8 @@ import callApi from './callApiService';
 import { auth } from '@/firebase/config';
 import { sweetAlertToast } from './toastServices';
 import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
+import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 
 export const checkUsernameAndEmail = async (body: any) => {
   try {
@@ -18,9 +20,10 @@ export const logOut = async (router: any, dispatch: any) => {
     await signOut(auth);
     const response = await callApi('/logout', 'get');
     const { message } = response;
-    sweetAlertToast('success', message);
+    sweetAlertToast('success', message, 1000);
     router.push('/');
     dispatch(updateOrganizationList([]));
+    dispatch(updateOrgDetails(defaultUserOrgDetail));
   } catch (error: any) {
     const { message } = error.data;
     sweetAlertToast('error', message);
