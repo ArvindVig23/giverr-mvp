@@ -1,13 +1,37 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import lightSearch from '/public/images/search-light.svg';
 import more from '/public/images/more.svg';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
-import CreateOrganizations from '../manageProfile/CreateOrganizations';
+import { useDispatch, useSelector } from 'react-redux';
+import CommonModal from '../common/modal/CommonModal';
+import OrganizationForm from '../common/organization/OrganizationForm';
+import { encodeUrl } from '@/services/frontend/commonServices';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { getInitialOfEmail } from '@/services/frontend/userService';
+import { getOrgDetail } from '@/services/frontend/organization';
+import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 const Myorganization: React.FC = () => {
+  const [showModal, setShowModal] = React.useState(false);
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!userOrgDetails.id) {
+      (async () => {
+        try {
+          const getDetails = await getOrgDetail();
+          if (getDetails) {
+            dispatch(updateOrgDetails(getDetails));
+          }
+        } catch (error: any) {
+          console.log(error, 'error in getting the org');
+        }
+      })();
+    } // eslint-disable-next-line
+  }, []);
   return (
     <div className="w-full">
       <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
@@ -17,34 +41,62 @@ const Myorganization: React.FC = () => {
       {/* No organization section Start */}
 
       <div className="flex w-full justify-between gap-3 items-center">
-        <div>
-          <span className="text-[#24181B] text-base">No organizations</span>
-          <p className="text-[#24181B80] text-base m-0">You are the owner.</p>
-        </div>
-
-        <CreateOrganizations />
+        {userOrgDetails?.id ? null : ( // currently returning the null as edit functionality is in progress
+          // <button
+          //   onClick={() => setShowModal(true)}
+          //   type="button"
+          //   className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+          // >
+          //   Edit
+          // </button>
+          <>
+            <div>
+              <span className="text-[#24181B] text-base">No organizations</span>
+              <p className="text-[#24181B80] text-base m-0">
+                You are the owner.
+              </p>
+            </div>
+            <button
+              className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]"
+              type="button"
+              onClick={() => setShowModal(true)}
+            >
+              New
+            </button>
+          </>
+        )}
       </div>
       {/* No organization section end */}
 
-      <div className="inline-flex w-full items-center gap-4 justify-between">
-        <div className="inline-flex gap-4 items-center">
-          <div className="w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
-            A
-          </div>
-          <div>
-            <span className="text-[#24181B] w-full">Harmony Helpers</span>
-            <p className="m-0 text-[#24181B80]">
-              You are the owner of this organization
-            </p>
+      {userOrgDetails?.id ? (
+        <div className="inline-flex w-full items-center gap-4 justify-between">
+          <div className="inline-flex gap-4 items-center">
+            <div className="w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
+              {userOrgDetails.avatarLink ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitialOfEmail(
+                  userOrgDetails.name ? userOrgDetails.name : 'O',
+                )
+              )}
+            </div>
+            <div>
+              <span className="text-[#24181B] w-full">
+                {userOrgDetails.name}
+              </span>
+              <p className="m-0 text-[#24181B80]">
+                You are the owner of this organization
+              </p>
+            </div>
           </div>
         </div>
-        <button
-          type="button"
-          className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
-        >
-          Edit
-        </button>
-      </div>
+      ) : null}
 
       <hr className="my-[60px] border-[#E6E3D6]"></hr>
 
@@ -103,7 +155,7 @@ const Myorganization: React.FC = () => {
               </span>
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
+                  <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
                     <Image src={more} alt="more" />
                   </Menu.Button>
                 </div>
@@ -159,7 +211,7 @@ const Myorganization: React.FC = () => {
               </span>
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
+                  <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
                     <Image src={more} alt="more" />
                   </Menu.Button>
                 </div>
@@ -215,7 +267,7 @@ const Myorganization: React.FC = () => {
               </span>
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
+                  <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
                     <Image src={more} alt="more" />
                   </Menu.Button>
                 </div>
@@ -265,6 +317,16 @@ const Myorganization: React.FC = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <CommonModal
+          heading={'Create organization'}
+          subHeading={'Details'}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        >
+          <OrganizationForm setShowModal={setShowModal} />
+        </CommonModal>
+      )}
     </div>
   );
 };

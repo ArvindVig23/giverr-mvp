@@ -30,7 +30,7 @@ export const handleGoogleSignUp = async (
     formData.append('userDetails', JSON.stringify(userData));
     formData.append('token', token);
     await callApi('sign-up', 'post', formData);
-    sweetAlertToast('success', 'Login Successfull');
+    sweetAlertToast('success', 'Login Successfull', 1000);
     router.push('/');
     dispatch(updateUserDetails(resetGlobalState));
     dispatch(setLoader(false));

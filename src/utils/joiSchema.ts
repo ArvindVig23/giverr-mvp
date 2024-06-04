@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { websiteLinkRegex } from './regex';
 
 export const schema = Joi.object({
   fullName: Joi.string()
@@ -84,9 +85,34 @@ export const fullNameSchema = Joi.object({
     .trim()
     .allow('')
     .pattern(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
+    .required()
     .messages({
       'string.base': 'Only Alphabets are allowed in fullName',
       'string.pattern':
         'Full Name should not contain number or special characters.',
+      'string.required': 'Organization name is required',
     }),
+});
+
+export const organizationSchema = Joi.object({
+  name: Joi.string()
+    .trim()
+    .pattern(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
+    .messages({
+      'string.base': 'Only Alphabets are allowed in Organization name',
+      'string.pattern':
+        'Organization Name should not contain number or special characters.',
+    }),
+  username: Joi.string()
+    .required()
+    .pattern(/^[a-zA-Z0-9!@#$%^&*()_+-]+$/)
+    .messages({
+      'string.required': 'Username is required',
+      'string.pattern':
+        'Username should contain alphabets, numbers and special characters only.',
+    }),
+  website: Joi.string().trim().pattern(websiteLinkRegex).messages({
+    'string.base': 'Website url must be a string',
+    'string.pattern': 'Enter valid website url',
+  }),
 });
