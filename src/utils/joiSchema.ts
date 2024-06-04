@@ -115,4 +115,8 @@ export const organizationSchema = Joi.object({
     'string.base': 'Website url must be a string',
     'string.pattern': 'Enter valid website url',
   }),
+  orgId: Joi.string().messages({
+    'string.base': 'Organization id must be a string',
+    'string.required': 'Organization is required',
+  }),
 });

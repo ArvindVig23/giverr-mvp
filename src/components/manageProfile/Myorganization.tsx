@@ -41,14 +41,44 @@ const Myorganization: React.FC = () => {
       {/* No organization section Start */}
 
       <div className="flex w-full justify-between gap-3 items-center">
-        {userOrgDetails?.id ? null : ( // currently returning the null as edit functionality is in progress
-          // <button
-          //   onClick={() => setShowModal(true)}
-          //   type="button"
-          //   className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
-          // >
-          //   Edit
-          // </button>
+        {userOrgDetails?.id ? (
+          <>
+            <div className="inline-flex w-full items-center gap-4 justify-between">
+              <div className="inline-flex gap-4 items-center">
+                <div className="w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
+                  {userOrgDetails.avatarLink ? (
+                    <Image
+                      width={40}
+                      height={40}
+                      src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
+                      alt="avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    getInitialOfEmail(
+                      userOrgDetails.name ? userOrgDetails.name : 'O',
+                    )
+                  )}
+                </div>
+                <div>
+                  <span className="text-[#24181B] w-full">
+                    {userOrgDetails.name}
+                  </span>
+                  <p className="m-0 text-[#24181B80]">
+                    You are the owner of this organization
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              type="button"
+              className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+            >
+              Edit
+            </button>
+          </>
+        ) : (
           <>
             <div>
               <span className="text-[#24181B] text-base">No organizations</span>
@@ -67,36 +97,6 @@ const Myorganization: React.FC = () => {
         )}
       </div>
       {/* No organization section end */}
-
-      {userOrgDetails?.id ? (
-        <div className="inline-flex w-full items-center gap-4 justify-between">
-          <div className="inline-flex gap-4 items-center">
-            <div className="w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
-              {userOrgDetails.avatarLink ? (
-                <Image
-                  width={40}
-                  height={40}
-                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
-                  alt="avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                getInitialOfEmail(
-                  userOrgDetails.name ? userOrgDetails.name : 'O',
-                )
-              )}
-            </div>
-            <div>
-              <span className="text-[#24181B] w-full">
-                {userOrgDetails.name}
-              </span>
-              <p className="m-0 text-[#24181B80]">
-                You are the owner of this organization
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <hr className="my-[60px] border-[#E6E3D6]"></hr>
 
@@ -319,7 +319,9 @@ const Myorganization: React.FC = () => {
       </div>
       {showModal && (
         <CommonModal
-          heading={'Create organization'}
+          heading={
+            userOrgDetails.id ? 'Update organization' : 'Create organization'
+          }
           subHeading={'Details'}
           showModal={showModal}
           setShowModal={setShowModal}
