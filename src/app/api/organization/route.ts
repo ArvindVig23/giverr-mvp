@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     //  userDetails
     const userDetails = getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);
-    const { id } = convertString;
+    const { id, fullName, email } = convertString;
     //  check organization with existing username
     const organizationRef = collection(db, 'organizations');
     const orgQuery = query(
@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
       username,
       avatarLink,
       website,
+      fullName ? fullName : email,
     );
     return newOrganization;
   } catch (error) {
@@ -87,7 +88,6 @@ export async function GET() {
     const queryWhereCondition = query(
       organizationsRef,
       where('createdBy', '==', id),
-      where('status', '==', 'APPROVED'),
     );
     const querySnapshot = await getDocs(queryWhereCondition);
 
@@ -183,7 +183,14 @@ export async function PUT(req: NextRequest) {
     const response = responseHandler(
       200,
       true,
-      { name, username, avatarLink, website, id: orgId },
+      {
+        name,
+        username,
+        avatarLink,
+        website,
+        id: orgId,
+        status: orgData.status,
+      },
       'Organization updated Successfully',
     );
     return response;

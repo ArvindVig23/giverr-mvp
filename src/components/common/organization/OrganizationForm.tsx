@@ -42,10 +42,10 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     }
     try {
       const response = await createOrg(formData);
-      console.log(response, 'response');
-      const { message } = response;
+      const { message, data } = response;
       sweetAlertToast('success', message, 1000);
       setShowModal(false);
+      dispatch(updateOrgDetails(data));
       dispatch(setLoader(false));
     } catch (error: any) {
       dispatch(setLoader(false));
@@ -99,7 +99,6 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     }
     try {
       const response = await updateOrg(formData);
-      console.log(response, 'response');
       const { message, data } = response;
       sweetAlertToast('success', message, 1000);
       setShowModal(false);
