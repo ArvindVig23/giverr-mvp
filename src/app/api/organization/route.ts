@@ -2,15 +2,17 @@ import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import { createOrganization } from '@/services/backend/organization';
-import { organizationSchema } from '@/utils/joiSchema';
+import { orgIdSchema, organizationSchema } from '@/utils/joiSchema';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
@@ -177,7 +179,6 @@ export async function PUT(req: NextRequest) {
       avatarLink,
       website,
     });
-    console.log(updateDoc, 'data');
     const response = responseHandler(
       200,
       true,
@@ -192,6 +193,69 @@ export async function PUT(req: NextRequest) {
       false,
       null,
       'Error in updating organization.',
+    );
+    return response;
+  }
+}
+
+// delete organization
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const orgId: any = searchParams.get('orgId');
+    const { error } = orgIdSchema.validate({ orgId });
+    if (error) {
+      const errorMessage: string = error.details
+        .map((err) => err.message)
+        .join('; ');
+
+      const response = responseHandler(403, false, null, errorMessage);
+      return response;
+    }
+    // check if org exists
+    const orgRef = collection(db, 'organizations');
+    const docRef = doc(orgRef, orgId);
+    const docSnap = await getDoc(docRef);
+    const orgData: any = docSnap.data();
+    if (!orgData) {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Organization not found',
+      );
+      return response;
+    }
+
+    // delete the organization with id
+    await deleteDoc(doc(db, 'organizations', orgId));
+
+    //  delete all the records from the organization member as well
+    const orgMemberRef = collection(db, 'organizationMembers');
+    const q = query(orgMemberRef, where('organizationId', '==', orgId));
+    const existedOrgMembers = await getDocs(q);
+
+    if (!existedOrgMembers.empty) {
+      const batch = writeBatch(db);
+      existedOrgMembers.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+    }
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'Organization deleted Successfully',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in deleting organization');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in deleting organization.',
     );
     return response;
   }

@@ -34,8 +34,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
 
   const handleSaveChanges = async (formData: any) => {
     formData.avatarLink = '';
+    dispatch(setLoader(true));
     if (avatarFile) {
-      dispatch(setLoader(true));
       const filePathName = `organizations/${avatarFile.name}`;
       const pathOfFile = await uploadFile(avatarFile, filePathName);
       formData.avatarLink = `${pathOfFile}?alt=media`;
@@ -44,7 +44,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
       const response = await createOrg(formData);
       console.log(response, 'response');
       const { message, data } = response;
-      sweetAlertToast('success', message);
+      sweetAlertToast('success', message, 1000);
       setShowModal(false);
       dispatch(updateOrgDetails(data));
       dispatch(setLoader(false));

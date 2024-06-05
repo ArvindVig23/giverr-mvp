@@ -14,8 +14,11 @@ import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 import { getOrgDetail } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import CommonDeleteModal from '../common/modal/CommonDeleteModal';
+import DeleteModalContent from '../common/organization/DeleteModalContent';
 const Myorganization: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -317,6 +320,21 @@ const Myorganization: React.FC = () => {
           </div>
         </div>
       </div>
+      <hr />
+      {userOrgDetails?.id ? (
+        <div className="inline-flex w-full items-center gap-4 justify-between m-5">
+          <div className="inline-flex w-full items-center gap-4">
+            <h2 className="flex-grow">Danger Zone</h2>{' '}
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              type="button"
+              className="text-base  h-11 px-4 py-3 justify-end flex items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+            >
+              Delete Organization
+            </button>
+          </div>
+        </div>
+      ) : null}
       {showModal && (
         <CommonModal
           heading={
@@ -328,6 +346,15 @@ const Myorganization: React.FC = () => {
         >
           <OrganizationForm setShowModal={setShowModal} />
         </CommonModal>
+      )}
+      {showDeleteModal && (
+        <CommonDeleteModal
+          heading={'Permanently delete organization'}
+          showModal={showDeleteModal}
+          setShowModal={setShowDeleteModal}
+        >
+          <DeleteModalContent setShowModal={setShowDeleteModal} />
+        </CommonDeleteModal>
       )}
     </div>
   );
