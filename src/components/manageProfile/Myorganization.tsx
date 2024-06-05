@@ -75,9 +75,9 @@ const Myorganization: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <span className="text-[#24181B] w-full">
+                  {/* <span className="text-[#24181B] w-full">
                     {userOrgDetails.name}
-                  </span>
+                  </span> */}
                   <p className="m-0 text-[#24181B80]">
                     You are the owner of this organization
                   </p>
@@ -87,7 +87,7 @@ const Myorganization: React.FC = () => {
             <button
               onClick={() => setShowModal(true)}
               type="button"
-              className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+              className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#ff000040] hover:bg-[#ff000017]"
             >
               Edit
             </button>
@@ -112,7 +112,7 @@ const Myorganization: React.FC = () => {
               </p>
             </div>
             <button
-              className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]"
+              className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
               type="button"
               onClick={() => setShowModal(true)}
             >
