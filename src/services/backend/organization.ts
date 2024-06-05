@@ -16,12 +16,12 @@ export const createOrganization = async (
       name: name.trim(),
       website: website.trim(),
       avatarLink: avatarLink.trim(),
+      status: 'PENDING',
       createdBy: id,
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });
     const createdOrgDoc = await getDoc(createOrg);
-    const createdOrgData = createdOrgDoc.data();
     //  add one enter in the organizationMembers with the role owner
     await addDoc(collection(db, 'organizationMembers'), {
       userId: id,
@@ -34,8 +34,8 @@ export const createOrganization = async (
     const response = responseHandler(
       200,
       true,
-      { ...createdOrgData, id: createdOrgDoc.id },
-      'Organization created Successfully',
+      null,
+      'Organization submitted Successfully and sent for approval',
     );
     return response;
   } catch (error) {

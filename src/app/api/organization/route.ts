@@ -87,6 +87,7 @@ export async function GET() {
     const queryWhereCondition = query(
       organizationsRef,
       where('createdBy', '==', id),
+      where('status', '==', 'APPROVED'),
     );
     const querySnapshot = await getDocs(queryWhereCondition);
 
@@ -140,7 +141,7 @@ export async function PUT(req: NextRequest) {
     const orgRef = doc(db, 'organizations', orgId);
     const organizationDoc = await getDoc(orgRef);
     const orgData = organizationDoc.data();
-    if (!orgData) {
+    if (!orgData || orgData.status !== 'APPROVED') {
       const response = responseHandler(
         404,
         false,
@@ -217,7 +218,7 @@ export async function DELETE(req: NextRequest) {
     const docRef = doc(orgRef, orgId);
     const docSnap = await getDoc(docRef);
     const orgData: any = docSnap.data();
-    if (!orgData) {
+    if (!orgData || orgData.status !== 'APPROVED') {
       const response = responseHandler(
         404,
         false,
