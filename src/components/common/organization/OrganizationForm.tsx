@@ -34,17 +34,16 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
 
   const handleSaveChanges = async (formData: any) => {
     formData.avatarLink = '';
+    dispatch(setLoader(true));
     if (avatarFile) {
-      dispatch(setLoader(true));
       const filePathName = `organizations/${avatarFile.name}`;
       const pathOfFile = await uploadFile(avatarFile, filePathName);
       formData.avatarLink = `${pathOfFile}?alt=media`;
     }
     try {
       const response = await createOrg(formData);
-      console.log(response, 'response');
       const { message, data } = response;
-      sweetAlertToast('success', message);
+      sweetAlertToast('success', message, 1000);
       setShowModal(false);
       dispatch(updateOrgDetails(data));
       dispatch(setLoader(false));
@@ -100,7 +99,6 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     }
     try {
       const response = await updateOrg(formData);
-      console.log(response, 'response');
       const { message, data } = response;
       sweetAlertToast('success', message, 1000);
       setShowModal(false);
@@ -144,7 +142,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
           )}
         </div>
         <div className="flex-1 inline-flex gap-2.5 flex-wrap">
-          <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]">
+          <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]">
             Upload image{' '}
             <input
               accept=".jpg, .png"

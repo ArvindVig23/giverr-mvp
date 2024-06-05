@@ -5,7 +5,7 @@ import responseHandler from '@/lib/responseHandler';
 import { sendEmail } from './emailService';
 import { UserDetailsCookies } from '@/interface/user';
 import { currentUtcDate } from './opportunityServices';
-import { generateEmailTemplate } from '@/emailTemplate/signUpEmail';
+import { compileEmailTemplate } from './handlebars';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -33,9 +33,9 @@ export const createUserService = async (userData: any, token?: any) => {
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });
+    const getCreatedUser = await getDoc(createuser);
+    const userId = getCreatedUser.id;
     if (token) {
-      const getCreatedUser = await getDoc(createuser);
-      const userId = getCreatedUser.id;
       const userCookies: UserDetailsCookies = {
         email: email,
         username: username,
@@ -46,9 +46,23 @@ export const createUserService = async (userData: any, token?: any) => {
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));
     }
-
+    await addDoc(collection(db, 'userSettings'), {
+      userId,
+      allowUpdates: false,
+      acceptSubmission: false,
+      allowVolunteeringUpdates: false,
+      autoTimeZone: false,
+      selectedTimeZone: '',
+      istwentyFourHourTimeFormat: false,
+      isDayMonthYearDateFormat: false,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+    });
     // send email after user created
-    const template = generateEmailTemplate(email);
+    const template = compileEmailTemplate(
+      'src/templates/registerEmailTemplate.html',
+      { email },
+    );
     await sendEmail(
       email,
       'Sign up sucessfull',

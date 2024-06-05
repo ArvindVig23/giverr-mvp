@@ -86,7 +86,6 @@ const OpportunitiesBanner: React.FC = () => {
       <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
         Account
       </h3>
-
       <form
         className="flex gap-5 w-full flex-col"
         onSubmit={handleSubmit(updateDetails)}

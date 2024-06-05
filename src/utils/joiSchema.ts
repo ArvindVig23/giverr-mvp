@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { websiteLinkRegex } from './regex';
+import { min4CharWithoutSpace, websiteLinkRegex } from './regex';
 
 export const schema = Joi.object({
   fullName: Joi.string()
@@ -95,14 +95,11 @@ export const fullNameSchema = Joi.object({
 });
 
 export const organizationSchema = Joi.object({
-  name: Joi.string()
-    .trim()
-    .pattern(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
-    .messages({
-      'string.base': 'Only Alphabets are allowed in Organization name',
-      'string.pattern':
-        'Organization Name should not contain number or special characters.',
-    }),
+  name: Joi.string().trim().pattern(min4CharWithoutSpace).messages({
+    'string.base': 'Only Alphabets are allowed in Organization name',
+    'string.pattern':
+      'Organization Name should not contain number or special characters.',
+  }),
   username: Joi.string()
     .required()
     .pattern(/^[a-zA-Z0-9!@#$%^&*()_+-]+$/)
@@ -118,5 +115,12 @@ export const organizationSchema = Joi.object({
   orgId: Joi.string().messages({
     'string.base': 'Organization id must be a string',
     'string.required': 'Organization is required',
+  }),
+});
+
+export const orgIdSchema = Joi.object({
+  orgId: Joi.string().required().messages({
+    'string.base': 'Organization Id must be a string',
+    'string.required': 'Organization Id is required',
   }),
 });

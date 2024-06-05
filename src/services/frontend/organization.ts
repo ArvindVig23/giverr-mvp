@@ -27,3 +27,12 @@ export const updateOrg = async (formData: OrgDetails) => {
     throw error.data;
   }
 };
+
+export const deleteOrg = async (id: string) => {
+  try {
+    const response: any = await callApi(`/organization?orgId=${id}`, 'delete');
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

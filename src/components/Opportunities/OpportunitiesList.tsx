@@ -78,7 +78,6 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
       const { opportunityId, isWishlist } = response.data;
-      console.log(response, 'response');
       setOpportunityList((prevList: any[]) =>
         prevList.map((opp) =>
           opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,

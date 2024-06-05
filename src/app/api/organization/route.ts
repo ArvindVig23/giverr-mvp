@@ -2,15 +2,17 @@ import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import { createOrganization } from '@/services/backend/organization';
-import { organizationSchema } from '@/utils/joiSchema';
+import { orgIdSchema, organizationSchema } from '@/utils/joiSchema';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     //  userDetails
     const userDetails = getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);
-    const { id } = convertString;
+    const { id, fullName, email } = convertString;
     //  check organization with existing username
     const organizationRef = collection(db, 'organizations');
     const orgQuery = query(
@@ -62,6 +64,7 @@ export async function POST(req: NextRequest) {
       username,
       avatarLink,
       website,
+      fullName ? fullName : email,
     );
     return newOrganization;
   } catch (error) {
@@ -138,7 +141,7 @@ export async function PUT(req: NextRequest) {
     const orgRef = doc(db, 'organizations', orgId);
     const organizationDoc = await getDoc(orgRef);
     const orgData = organizationDoc.data();
-    if (!orgData) {
+    if (!orgData || orgData.status !== 'APPROVED') {
       const response = responseHandler(
         404,
         false,
@@ -177,11 +180,17 @@ export async function PUT(req: NextRequest) {
       avatarLink,
       website,
     });
-    console.log(updateDoc, 'data');
     const response = responseHandler(
       200,
       true,
-      { name, username, avatarLink, website, id: orgId },
+      {
+        name,
+        username,
+        avatarLink,
+        website,
+        id: orgId,
+        status: orgData.status,
+      },
       'Organization updated Successfully',
     );
     return response;
@@ -192,6 +201,69 @@ export async function PUT(req: NextRequest) {
       false,
       null,
       'Error in updating organization.',
+    );
+    return response;
+  }
+}
+
+// delete organization
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const orgId: any = searchParams.get('orgId');
+    const { error } = orgIdSchema.validate({ orgId });
+    if (error) {
+      const errorMessage: string = error.details
+        .map((err) => err.message)
+        .join('; ');
+
+      const response = responseHandler(403, false, null, errorMessage);
+      return response;
+    }
+    // check if org exists
+    const orgRef = collection(db, 'organizations');
+    const docRef = doc(orgRef, orgId);
+    const docSnap = await getDoc(docRef);
+    const orgData: any = docSnap.data();
+    if (!orgData || orgData.status !== 'APPROVED') {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Organization not found',
+      );
+      return response;
+    }
+
+    // delete the organization with id
+    await deleteDoc(doc(db, 'organizations', orgId));
+
+    //  delete all the records from the organization member as well
+    const orgMemberRef = collection(db, 'organizationMembers');
+    const q = query(orgMemberRef, where('organizationId', '==', orgId));
+    const existedOrgMembers = await getDocs(q);
+
+    if (!existedOrgMembers.empty) {
+      const batch = writeBatch(db);
+      existedOrgMembers.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+    }
+    const response = responseHandler(
+      200,
+      true,
+      null,
+      'Organization deleted Successfully',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in deleting organization');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in deleting organization.',
     );
     return response;
   }
