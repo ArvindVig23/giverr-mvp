@@ -6,11 +6,7 @@ export const middleware = async (request: NextRequest) => {
   const userDetails = await getUserDetailsCookie();
   const { pathname } = request.nextUrl;
   //   in future we will add more routes in this array to
-  const protectedRoutes = [
-    '/api/join-opportunity',
-    '/api/wishlist',
-    '/api/organization',
-  ];
+  const protectedRoutes = ['/api/join-opportunity', '/api/wishlist'];
   //   we have different method on this route and that should be public
   if (
     pathname === '/api/opportunity' &&
@@ -33,10 +29,5 @@ export const middleware = async (request: NextRequest) => {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: [
-    '/api/opportunity',
-    '/api/join-opportunity',
-    '/api/wishlist',
-    '/api/organization',
-  ],
+  matcher: ['/api/opportunity', '/api/join-opportunity', '/api/wishlist'],
 };

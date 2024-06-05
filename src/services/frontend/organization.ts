@@ -18,3 +18,12 @@ export const getOrgDetail = async () => {
     throw error.data;
   }
 };
+
+export const updateOrg = async (formData: OrgDetails) => {
+  try {
+    const response: any = await callApi(`/organization`, 'put', formData);
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

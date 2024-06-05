@@ -15,7 +15,7 @@ import Image from 'next/image';
 import { uploadFile } from '@/services/frontend/opportunityService';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { createOrg } from '@/services/frontend/organization';
+import { createOrg, updateOrg } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 
 const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
@@ -31,6 +31,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   } = useForm();
   const dispatch = useDispatch();
   const watchOrganizationName = watch('name');
+
   const handleSaveChanges = async (formData: any) => {
     formData.avatarLink = '';
     if (avatarFile) {
@@ -86,12 +87,37 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     }
   };
 
-  console.log(userOrgDetails, 'userOrgDetails');
-
+  // update form
+  const handleUpdateOrg = async (formData: any) => {
+    dispatch(setLoader(true));
+    formData.avatarLink = userOrgDetails.avatarLink || '';
+    formData.orgId = userOrgDetails.id;
+    if (avatarFile) {
+      dispatch(setLoader(true));
+      const filePathName = `organizations/${avatarFile.name}`;
+      const pathOfFile = await uploadFile(avatarFile, filePathName);
+      formData.avatarLink = `${pathOfFile}?alt=media`;
+    }
+    try {
+      const response = await updateOrg(formData);
+      console.log(response, 'response');
+      const { message, data } = response;
+      sweetAlertToast('success', message, 1000);
+      setShowModal(false);
+      dispatch(updateOrgDetails(data));
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <form
       className="flex gap-5 w-full flex-col relative px-5"
-      onSubmit={handleSubmit(handleSaveChanges)}
+      onSubmit={handleSubmit(
+        userOrgDetails.id ? handleUpdateOrg : handleSaveChanges,
+      )}
     >
       <div className="inline-flex w-full rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
         <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
@@ -218,7 +244,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >
-          Save Changes
+          {userOrgDetails.id ? 'Update' : 'Save'} Changes
         </button>
       </div>
     </form>
