@@ -1,5 +1,4 @@
 import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
-import { generateApprovalTemplate } from '@/emailTemplate/approval';
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import {
@@ -16,7 +15,7 @@ import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
 import { getFormattedLocalTime } from '../frontend/commonServices';
-import createVolunteerEmailTemplate from '@/emailTemplate/createVolunteerEmailTemplate';
+import { compileEmailTemplate } from './handlebars';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -180,20 +179,23 @@ export const sendEmailForApproval = async (
       const user = await getUserDetailsById(createdBy);
       userEmail = user.email;
     }
-
-    const template = generateApprovalTemplate(
+    const emailData = {
       name,
       description,
       frequency,
       activities,
-      time,
+      eventDate: time,
       location,
       approvalUrl,
       rejectUrl,
       volunteerRequirements,
-      org,
+      organizationName: org,
       oppType,
-      userEmail,
+      email: userEmail,
+    };
+    const template = compileEmailTemplate(
+      'src/templates/approvalEmailTemplate.html',
+      emailData,
     );
     const email = await sendEmail(
       ADMIN_EMAIL!,
@@ -229,8 +231,10 @@ export const joinOpportunity = async (
       userId: id,
       opportunityId: oppId,
     });
-
-    const template = createVolunteerEmailTemplate(getEventDetails);
+    const template = compileEmailTemplate(
+      'src/templates/volunteerEmailTemplate.html',
+      getEventDetails,
+    );
     await sendEmail(
       email,
       'Welcome aboard, Volunteer!',
