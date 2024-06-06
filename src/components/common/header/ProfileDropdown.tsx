@@ -139,7 +139,7 @@ export default function ProfileDropdown() {
             <Menu.Item>
               <Link
                 href="/profile"
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
               >
                 Account settings
               </Link>
