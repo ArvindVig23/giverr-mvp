@@ -6,6 +6,7 @@ import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
 import jwt from 'jsonwebtoken';
 import { compileEmailTemplate } from './handlebars';
 import { sendEmail } from './emailService';
+import { approveOrgTemplate } from '@/utils/templates/approveOrgTemplate';
 
 export const createOrganization = async (
   id: string,
@@ -57,10 +58,7 @@ export const createOrganization = async (
       rejectUrl,
     };
 
-    const template = compileEmailTemplate(
-      'src/templates/approveOrgTemplate.html',
-      emailData,
-    );
+    const template = compileEmailTemplate(approveOrgTemplate, emailData);
     await sendEmail(
       ADMIN_EMAIL!,
       'Organization Approval Required',

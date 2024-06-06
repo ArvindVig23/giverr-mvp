@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+export const volunteerEmailTemplate = `<!DOCTYPE html>
 <html>
 
 <head>
@@ -51,3 +51,4 @@
 </body>
 
 </html>
+`;

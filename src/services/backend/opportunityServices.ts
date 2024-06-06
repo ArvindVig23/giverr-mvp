@@ -16,6 +16,8 @@ import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
 import { getFormattedLocalTime } from '../frontend/commonServices';
 import { compileEmailTemplate } from './handlebars';
+import { approveEvent } from '@/utils/templates/approveEvent';
+import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -193,10 +195,7 @@ export const sendEmailForApproval = async (
       oppType,
       email: userEmail,
     };
-    const template = compileEmailTemplate(
-      'src/templates/approvalEmailTemplate.html',
-      emailData,
-    );
+    const template = compileEmailTemplate(approveEvent, emailData);
     const email = await sendEmail(
       ADMIN_EMAIL!,
       'Post Approval Required',
@@ -232,7 +231,7 @@ export const joinOpportunity = async (
       opportunityId: oppId,
     });
     const template = compileEmailTemplate(
-      'src/templates/volunteerEmailTemplate.html',
+      volunteerEmailTemplate,
       getEventDetails,
     );
     await sendEmail(
