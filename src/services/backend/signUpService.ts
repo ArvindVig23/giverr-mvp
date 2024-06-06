@@ -6,6 +6,7 @@ import { sendEmail } from './emailService';
 import { UserDetailsCookies } from '@/interface/user';
 import { currentUtcDate } from './opportunityServices';
 import { compileEmailTemplate } from './handlebars';
+import { registerEmailTemplate } from '@/utils/templates/registerEmailTemplate';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -59,10 +60,7 @@ export const createUserService = async (userData: any, token?: any) => {
       updatedAt: currentUtcDate,
     });
     // send email after user created
-    const template = compileEmailTemplate(
-      'src/templates/registerEmailTemplate.html',
-      { email },
-    );
+    const template = compileEmailTemplate(registerEmailTemplate, { email });
     await sendEmail(
       email,
       'Sign up sucessfull',

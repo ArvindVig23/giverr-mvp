@@ -1,11 +1,12 @@
-import fs from 'fs';
 import Handlebars from 'handlebars';
 import { getFormattedLocalTime } from '@/services/frontend/commonServices';
 
-export function compileEmailTemplate(templatePath: string, data: any): string {
+export function compileEmailTemplate(
+  templateString: string,
+  data: any,
+): string {
   try {
-    const templateFile = fs.readFileSync(templatePath, 'utf8');
-    const template = Handlebars.compile(templateFile);
+    const template = Handlebars.compile(templateString);
     return template(data);
   } catch (error) {
     console.log(error);

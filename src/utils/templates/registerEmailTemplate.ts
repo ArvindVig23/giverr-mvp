@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+export const registerEmailTemplate = `<!DOCTYPE html>
 <html>
 
 <head>
@@ -42,4 +42,4 @@
     </div>
 </body>
 
-</html>
+</html>`;

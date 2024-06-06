@@ -16,3 +16,12 @@ export const encodeUrl = (str: string) => {
   const newString = str.replace(/\//g, '%2F');
   return newString;
 };
+
+// debounce
+export const debounce = (func: any, delay = 5000) => {
+  let timeout: any;
+  return (...args: any) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+};

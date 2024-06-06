@@ -1,3 +1,4 @@
+export const approveOrgTemplate = `
 <!DOCTYPE html>
 <html>
 
@@ -82,4 +83,4 @@
     </div>
 </body>
 
-</html>
+</html>`;

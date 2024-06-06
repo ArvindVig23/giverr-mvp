@@ -19,7 +19,7 @@ import { NextRequest } from 'next/server';
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const { name, username, avatarLink, website } = reqBody;
+    const { name, username, avatarLink, website, members } = reqBody;
     // validations check
     const { error } = organizationSchema.validate({
       name,
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
       avatarLink,
       website,
       fullName ? fullName : email,
+      members,
     );
     return newOrganization;
   } catch (error) {

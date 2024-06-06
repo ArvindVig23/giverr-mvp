@@ -90,7 +90,7 @@ const OpportunitiesBanner: React.FC = () => {
         className="flex gap-5 w-full flex-col"
         onSubmit={handleSubmit(updateDetails)}
       >
-        <div className="inline-flex w-full rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5">
+        <div className="inline-flex items-center w-full rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5">
           <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
             {profileUrl || profileFileUrl ? (
               <Image
@@ -108,7 +108,7 @@ const OpportunitiesBanner: React.FC = () => {
               getInitialOfEmail(email)
             )}
           </div>
-          <div className="flex-1 inline-flex gap-2.5 flex-wrap">
+          <div className="flex-1 inline-flex gap-1.5 flex-wrap ">
             <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]">
               Upload image{' '}
               <input

@@ -17,9 +17,19 @@ import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { createOrg, updateOrg } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { useCookies } from 'react-cookie';
 
 const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  const [cookies]: any = useCookies();
+  const defaultOwner = {
+    id: cookies?.userDetails?.id,
+    email: cookies?.userDetails?.email,
+    username: cookies?.userDetails?.username,
+    fullName: cookies?.userDetails?.fullName,
+    profileUrl: cookies?.userDetails?.profileUrl,
+  };
+  const [memberList, setMemberList] = useState<any[]>([defaultOwner]);
   const [avatarFile, setAvatarFile] = useState<any>();
   const [avatarLink, setAvatarLink] = useState<string>('');
   const [avatarErr, setAvatarErr] = useState<string>('');
@@ -40,6 +50,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
       const pathOfFile = await uploadFile(avatarFile, filePathName);
       formData.avatarLink = `${pathOfFile}?alt=media`;
     }
+    const filteredIds = memberList.map((member) => member.id);
+    formData.members = filteredIds;
     try {
       const response = await createOrg(formData);
       const { message, data } = response;
@@ -117,7 +129,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
         userOrgDetails.id ? handleUpdateOrg : handleSaveChanges,
       )}
     >
-      <div className="inline-flex w-full rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
+      <div className="inline-flex w-full items-center rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
         <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
           {avatarLink || userOrgDetails?.avatarLink ? (
             <Image
@@ -141,7 +153,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
             )
           )}
         </div>
-        <div className="flex-1 inline-flex gap-2.5 flex-wrap">
+        <div className="flex-1 inline-flex gap-1.5 flex-wrap">
           <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]">
             Upload image{' '}
             <input
@@ -236,7 +248,9 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
           </span>
         )}
       </div>
-      <InviteSection />
+      {!userOrgDetails.id ? (
+        <InviteSection memberList={memberList} setMemberList={setMemberList} />
+      ) : null}
       <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
