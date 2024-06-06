@@ -14,6 +14,7 @@ export const createOrganization = async (
   avatarLink: string,
   website: string,
   createdBy: string,
+  members: any[],
 ) => {
   try {
     const createOrg = await addDoc(collection(db, 'organizations'), {
@@ -30,15 +31,17 @@ export const createOrganization = async (
     const createdOrgData = createdOrgDoc.data();
     const orgId = createdOrgDoc.id;
 
-    // organizationMembers with the role owner
-    await addDoc(collection(db, 'organizationMembers'), {
-      userId: id,
-      organizationId: createdOrgDoc.id,
-      status: true, // wil might chnage to false as default value
-      role: 'OWNER',
-      createdAt: currentUtcDate,
-      updatedAt: currentUtcDate,
-    });
+    // create the members
+    const createMembers = await createMember(members, id, orgId);
+    if (!createMembers) {
+      const response = responseHandler(
+        500,
+        false,
+        null,
+        'Error in creating organization.',
+      );
+      return response;
+    }
     // send email for approval
     const token = jwt.sign({ orgId }, TOKEN_SECRET!, {
       expiresIn: '1w',
@@ -60,8 +63,8 @@ export const createOrganization = async (
     );
     await sendEmail(
       ADMIN_EMAIL!,
-      'Post Approval Required',
-      'Post Approval Required',
+      'Organization Approval Required',
+      'Organization Approval Required',
       template,
     );
     const response = responseHandler(
@@ -80,5 +83,66 @@ export const createOrganization = async (
       'Error in creating organization.',
     );
     return response;
+  }
+};
+
+// service to create the member
+export const createMember = async (
+  members: any,
+  userId: string,
+  orgId: string,
+) => {
+  try {
+    await Promise.all(
+      members.map(async (memberId: string) => {
+        // Add document for each member in the array
+        const createMember = await addDoc(
+          collection(db, 'organizationMembers'),
+          {
+            userId: memberId,
+            organizationId: orgId,
+            status: memberId === userId ? 'APPROVED' : 'PENDING',
+            role: memberId === userId ? 'OWNER' : 'MEMBER',
+            createdAt: currentUtcDate,
+            updatedAt: currentUtcDate,
+          },
+        );
+        if (memberId !== userId) {
+          const createdMemberDetails = await getDoc(createMember);
+          await createTokenForInvitation(createdMemberDetails.id);
+        }
+      }),
+    );
+    return true;
+  } catch (error) {
+    console.log(error, 'Error in creating members');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in creating organization.',
+    );
+    throw response;
+  }
+};
+
+export const createTokenForInvitation = async (id: string) => {
+  try {
+    const token = jwt.sign({ id }, TOKEN_SECRET!);
+    await addDoc(collection(db, 'organizationMemberInviteToken'), {
+      memberId: id,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+      token,
+    });
+  } catch (error) {
+    console.log(error, 'Error in creating token entry');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in creating organization.',
+    );
+    throw response;
   }
 };

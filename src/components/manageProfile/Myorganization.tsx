@@ -92,7 +92,7 @@ const Myorganization: React.FC = () => {
           <>
             <div>
               <span className="text-[#24181B] text-base">
-                Your request for organiztion is being reviewed by admin.
+                Your request for organization is being reviewed by admin.
               </span>
               <p className="text-[#24181B80] text-base m-0">
                 It&apos;ll be soon approved, if everything went okay.
