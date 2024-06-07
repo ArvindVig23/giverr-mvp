@@ -1,11 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import lightSearch from '/public/images/search-light.svg';
 import more from '/public/images/more.svg';
+import deleteIcon from '/public/images/delete.svg';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useDispatch, useSelector } from 'react-redux';
+import MemberOption from '../common/organization/MemberOption';
+import { useCookies } from 'react-cookie';
+import CommonDeleteModal from '../common/modal/CommonDeleteModal';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { removeMemberApi } from '@/services/frontend/memberService';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 const Members = () => {
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  const [cookies] = useCookies();
+  const [showDeleteMemberModal, setShowDeleteMemberModal] =
+    useState<boolean>(false);
+  const [removeMemberId, setRemoveMemberId] = useState<string>('');
+
+  const openDeleteModal = (id: string) => {
+    setShowDeleteMemberModal(true);
+    setRemoveMemberId(id);
+  };
+
+  const dispatch = useDispatch();
+  const removeMember = async () => {
+    try {
+      dispatch(setLoader(true));
+      const response = await removeMemberApi(removeMemberId, userOrgDetails.id);
+      const orgDetails = { ...userOrgDetails };
+      const members = [...orgDetails.members];
+      const memberIndex = members.findIndex(
+        (member: any) => member.id === removeMemberId,
+      );
+      if (memberIndex > -1) {
+        members.splice(memberIndex, 1);
+        orgDetails.members = members;
+        dispatch(updateOrgDetails(orgDetails));
+      }
+      const { message } = response;
+      sweetAlertToast('success', message, 1500);
+      setShowDeleteMemberModal(false);
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="flex w-full flex-col gap-5">
       <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
@@ -27,202 +72,126 @@ const Members = () => {
           Invite members
         </button>
       </div>
+      {userOrgDetails?.members?.length > 0
+        ? userOrgDetails.members.map((member: any, index: number) => (
+            <div
+              className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]"
+              key={index}
+            >
+              <MemberOption member={member.userDetails} />
 
-      <div className="w-full">
-        <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
-          <div className="flex gap-2.5 items-center">
-            <div className="w-8 h-8 flex items-center justify-center font-medium overflow-hidden rounded-full text-xs bg-[#BAA388] text-[#24181B]">
-              A
-            </div>
+              <div className="ml-auto flex gap-2 items-center">
+                {cookies.userDetails.id === member.userId ? (
+                  <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                    Owner
+                  </span>
+                ) : member.status === 'PENDING' ? (
+                  <div className="ml-auto flex gap-2 items-center">
+                    <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full">
+                      Invite pending
+                    </span>
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
+                          <Image src={more} alt="more" />
+                        </Menu.Button>
+                      </div>
 
-            <div className="text-base">Anna Danielle Smith</div>
-            <span className="text-[#24181B80]">@anna.smith</span>
-          </div>
-
-          <div className="ml-auto flex gap-2 items-center">
-            <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-              Owner
-            </span>
-          </div>
-        </div>
-
-        <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
-          <div className="flex gap-2.5 items-center">
-            <div className="w-8 h-8 flex items-center justify-center font-medium overflow-hidden text-xs rounded-full bg-[#D3D496] text-[#24181B]">
-              T
-            </div>
-
-            <div className="text-base">Terry Gouse Bator</div>
-            <span className="text-[#24181B80]">@terry.bator</span>
-          </div>
-
-          <div className="ml-auto flex gap-2 items-center">
-            <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-              Owner
-            </span>
-            <Menu as="div" className="relative inline-block text-left">
-              <div>
-                <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
-                  <Image src={more} alt="more" />
-                </Menu.Button>
-              </div>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
-                  <div className="p-1.5 flex flex-col gap-0.5">
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
                       >
-                        Edit
-                      </Link>
-                    </Menu.Item>
+                        <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
+                          <div className="p-1.5 flex flex-col gap-0.5">
+                            <Menu.Item>
+                              <Link
+                                href="#"
+                                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                              >
+                                Resend invite
+                              </Link>
+                            </Menu.Item>
 
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                      >
-                        Remove
-                      </Link>
-                    </Menu.Item>
+                            <Menu.Item>
+                              <Link
+                                href="#"
+                                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                              >
+                                Copy invite link
+                              </Link>
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              <Link
+                                href="#"
+                                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg text-[#F93742]"
+                              >
+                                Revoke invite
+                              </Link>
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
                   </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-        </div>
-
-        <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
-          <div className="flex gap-2.5 items-center">
-            <div className="w-8 h-8 flex items-center justify-center font-medium overflow-hidden text-xs rounded-full bg-[#D3D496] text-[#24181B]">
-              T
-            </div>
-
-            <div className="text-base">Terry Gouse Bator</div>
-            <span className="text-[#24181B80]">@terry.bator</span>
-          </div>
-
-          <div className="ml-auto flex gap-2 items-center">
-            <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-              Owner
-            </span>
-            <Menu as="div" className="relative inline-block text-left">
-              <div>
-                <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
-                  <Image src={more} alt="more" />
-                </Menu.Button>
-              </div>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
-                  <div className="p-1.5 flex flex-col gap-0.5">
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                      >
-                        Edit
-                      </Link>
-                    </Menu.Item>
-
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                      >
-                        Remove
-                      </Link>
-                    </Menu.Item>
+                ) : member.status === 'APPROVED' ? (
+                  <div className="ml-auto flex gap-2 items-center">
+                    <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                      Member
+                    </span>
+                    <button
+                      onClick={() => openDeleteModal(member.id)}
+                      className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    >
+                      <Image
+                        className="brightness-0 group-hover:brightness-0 "
+                        src={deleteIcon}
+                        alt="delete"
+                      />
+                    </button>
                   </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-        </div>
-
-        <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
-          <div className="flex gap-2.5 items-center opacity-50">
-            <div className="w-8 h-8 flex items-center justify-center font-medium overflow-hidden text-xs rounded-full bg-[#D3D496] text-[#24181B]">
-              T
-            </div>
-
-            <div className="text-base">Terry Gouse Bator</div>
-            <span className="text-[#24181B80]">@terry.bator</span>
-          </div>
-
-          <div className="ml-auto flex gap-2 items-center">
-            <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full">
-              Invite pending
-            </span>
-            <Menu as="div" className="relative inline-block text-left">
-              <div>
-                <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
-                  <Image src={more} alt="more" />
-                </Menu.Button>
+                ) : null}
               </div>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
+            </div>
+          ))
+        : null}
+      {showDeleteMemberModal ? (
+        <CommonDeleteModal
+          heading={'Remove Member'}
+          showModal={showDeleteMemberModal}
+          setShowModal={setShowDeleteMemberModal}
+        >
+          <div>
+            <div className="relative p-5 flex-auto flex flex-col gap-5 max-h-modal overflow-auto">
+              <p className="text-base text-[#24181B] m-0">
+                Are you sure you want to remove this member?
+              </p>
+            </div>
+            {/*footer*/}
+            <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b gap-2.5">
+              <button
+                className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                type="button"
+                onClick={() => setShowDeleteMemberModal(false)}
               >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
-                  <div className="p-1.5 flex flex-col gap-0.5">
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                      >
-                        Resend invite
-                      </Link>
-                    </Menu.Item>
-
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                      >
-                        Copy invite link
-                      </Link>
-                    </Menu.Item>
-
-                    <Menu.Item>
-                      <Link
-                        href="#"
-                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg text-[#F93742]"
-                      >
-                        Revoke invite
-                      </Link>
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                Cancel
+              </button>
+              <button
+                className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]`}
+                type="button"
+                onClick={() => removeMember()}
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </CommonDeleteModal>
+      ) : null}
     </div>
   );
 };

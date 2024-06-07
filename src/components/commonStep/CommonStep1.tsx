@@ -41,7 +41,7 @@ const CommonStep1: React.FC = () => {
       router.push(redirectUrl);
       dispatch(setLoader(false));
     } catch (error: any) {
-      const { message } = error.response.data;
+      const { message } = error;
       sweetAlertToast('error', message);
       dispatch(setLoader(false));
       return;

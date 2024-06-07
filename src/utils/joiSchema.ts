@@ -124,3 +124,14 @@ export const orgIdSchema = Joi.object({
     'string.required': 'Organization Id is required',
   }),
 });
+
+export const orgIdAndMemberSchema = Joi.object({
+  orgId: Joi.string().required().messages({
+    'string.base': 'Organization Id must be a string',
+    'string.required': 'Organization Id is required',
+  }),
+  memberId: Joi.string().required().messages({
+    'string.base': 'Member Id must be a string',
+    'string.required': 'Member Id is required',
+  }),
+});

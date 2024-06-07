@@ -1,7 +1,10 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
-import { createOrganization } from '@/services/backend/organization';
+import {
+  createOrganization,
+  getMembersForOrganization,
+} from '@/services/backend/organization';
 import { orgIdSchema, organizationSchema } from '@/utils/joiSchema';
 import {
   collection,
@@ -95,9 +98,14 @@ export async function GET() {
     let data = null;
     if (!querySnapshot.empty) {
       const organizationData = querySnapshot.docs[0].data();
-      organizationData.id = querySnapshot.docs[0].id;
+      const orgId = querySnapshot.docs[0].id;
+      organizationData.id = orgId;
       data = organizationData;
+      //  get members that are invitied for the organization or members of the organization
+      const memberList = await getMembersForOrganization(orgId);
+      data.members = memberList;
     }
+
     const response = responseHandler(
       200,
       false,
@@ -106,7 +114,7 @@ export async function GET() {
     );
     return response;
   } catch (error) {
-    console.log(error, 'Error in sign up');
+    console.log(error, 'Error in getting organization');
     const response = responseHandler(
       500,
       false,

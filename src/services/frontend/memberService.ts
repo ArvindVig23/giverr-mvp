@@ -9,3 +9,16 @@ export const getMembersList = async (keyword: String) => {
     throw error.data;
   }
 };
+
+export const removeMemberApi = async (memberId: string, orgId: string) => {
+  try {
+    const response: any = await callApi(
+      `/member?memberId=${memberId}&orgId=${orgId}`,
+      'delete',
+    );
+    return response;
+  } catch (error: any) {
+    console.log(error, 'Error in removing member');
+    throw error.data;
+  }
+};
