@@ -68,7 +68,7 @@ export async function DELETE(req: NextRequest) {
       500,
       false,
       null,
-      'Error in deleting organizationMember.',
+      'Error in deleting organization Member.',
     );
     return response;
   }

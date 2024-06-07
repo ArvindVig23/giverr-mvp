@@ -188,6 +188,10 @@ export const getMembersForOrganization = async (orgId: string) => {
           id: doc.id,
           ...doc.data(),
           userDetails: await getUserDetailsById(doc.data().userId), // Call getUserDetailsById here
+          inviteToken:
+            doc.data().role !== 'OWNER'
+              ? await getInviteTokenDetails(doc.id, orgId)
+              : null,
         };
         return memberData;
       }),
@@ -239,5 +243,27 @@ export const deleteInviteUser = async (orgId: string, memberId: string) => {
       'Error in Deleting organization member.',
     );
     throw response;
+  }
+};
+
+export const getInviteTokenDetails = async (
+  memberId: String,
+  orgId: string,
+) => {
+  const membersRef = collection(db, 'organizationMemberInviteToken');
+  const querySnapshot = await getDocs(
+    query(
+      membersRef,
+      where('organizationId', '==', orgId),
+      where('memberId', '==', memberId),
+    ),
+  );
+  const memberDoc = querySnapshot.docs[0];
+  const memberTokenData: any = memberDoc.data();
+
+  if (!memberTokenData) {
+    return null;
+  } else {
+    return memberTokenData;
   }
 };

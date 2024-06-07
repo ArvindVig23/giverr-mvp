@@ -1,6 +1,6 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -8,21 +8,27 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const keyword = searchParams.get('keyword');
     const usersRef = collection(db, 'users');
+    let fullNameQuery, usernameQuery;
+
+    if (keyword) {
+      fullNameQuery = query(
+        usersRef,
+        where('fullName', '>=', keyword),
+        where('fullName', '<', keyword + '\uf8ff'),
+      );
+      usernameQuery = query(
+        usersRef,
+        where('username', '>=', keyword),
+        where('username', '<', keyword + '\uf8ff'),
+      );
+    } else {
+      fullNameQuery = query(usersRef, limit(10));
+      usernameQuery = query(usersRef, limit(10));
+    }
+
     const [fullNameSnapshot, usernameSnapshot] = await Promise.all([
-      getDocs(
-        query(
-          usersRef,
-          where('fullName', '>=', keyword),
-          where('fullName', '<', keyword + '\uf8ff'),
-        ),
-      ),
-      getDocs(
-        query(
-          usersRef,
-          where('username', '>=', keyword),
-          where('username', '<', keyword + '\uf8ff'),
-        ),
-      ),
+      getDocs(fullNameQuery),
+      getDocs(usernameQuery),
     ]);
 
     // Combine results on the client-side

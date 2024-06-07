@@ -14,8 +14,12 @@ import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { removeMemberApi } from '@/services/frontend/memberService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { Tooltip } from '@material-tailwind/react';
+import { DOMAIN_URL } from '@/constants/constants';
 const Members = () => {
+  const [showCopiedTooltip, setShowCopiedTooltip] = useState<boolean>(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  const [isRevokeInvite, setIsRevokeInvite] = useState<boolean>(false);
   const [cookies] = useCookies();
   const [showDeleteMemberModal, setShowDeleteMemberModal] =
     useState<boolean>(false);
@@ -24,6 +28,12 @@ const Members = () => {
   const openDeleteModal = (id: string) => {
     setShowDeleteMemberModal(true);
     setRemoveMemberId(id);
+  };
+
+  const revokeInviteModal = (id: string) => {
+    setShowDeleteMemberModal(true);
+    setRemoveMemberId(id);
+    setIsRevokeInvite(true);
   };
 
   const dispatch = useDispatch();
@@ -42,14 +52,28 @@ const Members = () => {
         dispatch(updateOrgDetails(orgDetails));
       }
       const { message } = response;
-      sweetAlertToast('success', message, 1500);
+      sweetAlertToast(
+        'success',
+        isRevokeInvite ? 'Invite revoked successfully' : message,
+        1500,
+      );
       setShowDeleteMemberModal(false);
       dispatch(setLoader(false));
+      setIsRevokeInvite(false);
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error;
       sweetAlertToast('error', message);
     }
+  };
+
+  const copyToClipboard = (token: string) => {
+    const inviteLink = `${DOMAIN_URL}/api/member-approval?token=${token}&status=APPROVED`;
+    navigator.clipboard.writeText(inviteLink);
+    setShowCopiedTooltip(true);
+    setTimeout(() => {
+      setShowCopiedTooltip(false);
+    }, 5500);
   };
   return (
     <div className="flex w-full flex-col gap-5">
@@ -82,9 +106,13 @@ const Members = () => {
 
               <div className="ml-auto flex gap-2 items-center">
                 {cookies.userDetails.id === member.userId ? (
-                  <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                    Owner
-                  </span>
+                  <Tooltip
+                    content={'Owners can manage events and member permissions.'}
+                  >
+                    <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                      Owner
+                    </span>
+                  </Tooltip>
                 ) : member.status === 'PENDING' ? (
                   <div className="ml-auto flex gap-2 items-center">
                     <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full">
@@ -118,21 +146,36 @@ const Members = () => {
                             </Menu.Item>
 
                             <Menu.Item>
-                              <Link
-                                href="#"
-                                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                              >
-                                Copy invite link
-                              </Link>
+                              {showCopiedTooltip ? (
+                                <Tooltip content={'copied'}>
+                                  <button
+                                    onClick={() =>
+                                      copyToClipboard(member.inviteToken.token)
+                                    }
+                                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                                  >
+                                    Copy invite link
+                                  </button>
+                                </Tooltip>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    copyToClipboard(member.inviteToken.token)
+                                  }
+                                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                                >
+                                  Copy invite link
+                                </button>
+                              )}
                             </Menu.Item>
 
                             <Menu.Item>
-                              <Link
-                                href="#"
+                              <button
+                                onClick={() => revokeInviteModal(member.id)}
                                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg text-[#F93742]"
                               >
                                 Revoke invite
-                              </Link>
+                              </button>
                             </Menu.Item>
                           </div>
                         </Menu.Items>
@@ -141,9 +184,11 @@ const Members = () => {
                   </div>
                 ) : member.status === 'APPROVED' ? (
                   <div className="ml-auto flex gap-2 items-center">
-                    <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                      Member
-                    </span>
+                    <Tooltip content={'Members currently have no permissions.'}>
+                      <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                        Member
+                      </span>
+                    </Tooltip>
                     <button
                       onClick={() => openDeleteModal(member.id)}
                       className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -169,7 +214,9 @@ const Members = () => {
           <div>
             <div className="relative p-5 flex-auto flex flex-col gap-5 max-h-modal overflow-auto">
               <p className="text-base text-[#24181B] m-0">
-                Are you sure you want to remove this member?
+                {isRevokeInvite
+                  ? 'Are you sure you want to revoke this invite?'
+                  : 'Are you sure you want to remove this member?'}
               </p>
             </div>
             {/*footer*/}
@@ -186,7 +233,7 @@ const Members = () => {
                 type="button"
                 onClick={() => removeMember()}
               >
-                Delete
+                {isRevokeInvite ? 'Revoke Invite' : 'Delete'}
               </button>
             </div>
           </div>
