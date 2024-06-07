@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const organizationRef = collection(db, 'organizations');
     const orgQuery = query(
       organizationRef,
-      where('createdBy', '==', id),
+      where('createdBy', '!=', id),
       where('username', '==', username.trim().toLowerCase()),
     );
     const usernameExist = await getDocs(orgQuery);
