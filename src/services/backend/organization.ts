@@ -1,6 +1,12 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
-import { addDoc, collection, getDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import { currentUtcDate } from './opportunityServices';
 import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
 import jwt from 'jsonwebtoken';
@@ -91,24 +97,39 @@ export const createMember = async (
   orgId: string,
 ) => {
   try {
+    const batch = writeBatch(db);
+
+    // Store the references for the members that need a token
+    const membersNeedingTokens: any[] = [];
+
+    members.forEach((memberId: string) => {
+      // Create a new document reference for each member
+      const memberRef = doc(collection(db, 'organizationMembers'));
+
+      // Add the operation to the batch
+      batch.set(memberRef, {
+        userId: memberId,
+        organizationId: orgId,
+        status: memberId === userId ? 'APPROVED' : 'PENDING',
+        role: memberId === userId ? 'OWNER' : 'MEMBER',
+        createdAt: currentUtcDate,
+        updatedAt: currentUtcDate,
+      });
+
+      // Collect member references that need tokens
+      if (memberId !== userId) {
+        membersNeedingTokens.push(memberRef);
+      }
+    });
+
+    // Commit the batch
+    await batch.commit();
+
+    // Handle token creation for the members that need it
     await Promise.all(
-      members.map(async (memberId: string) => {
-        // Add document for each member in the array
-        const createMember = await addDoc(
-          collection(db, 'organizationMembers'),
-          {
-            userId: memberId,
-            organizationId: orgId,
-            status: memberId === userId ? 'APPROVED' : 'PENDING',
-            role: memberId === userId ? 'OWNER' : 'MEMBER',
-            createdAt: currentUtcDate,
-            updatedAt: currentUtcDate,
-          },
-        );
-        if (memberId !== userId) {
-          const createdMemberDetails = await getDoc(createMember);
-          await createTokenForInvitation(createdMemberDetails.id);
-        }
+      membersNeedingTokens.map(async (memberRef) => {
+        const createdMemberDetails = await getDoc(memberRef);
+        await createTokenForInvitation(createdMemberDetails.id);
       }),
     );
     return true;
