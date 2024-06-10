@@ -20,4 +20,5 @@ export const defaultUserOrgDetail: OrgDetails = {
   name: '',
   username: '',
   website: '',
+  members: [],
 };

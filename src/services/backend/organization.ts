@@ -3,11 +3,15 @@ import responseHandler from '@/lib/responseHandler';
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
   writeBatch,
 } from 'firebase/firestore';
-import { currentUtcDate } from './opportunityServices';
+import { currentUtcDate, getUserDetailsById } from './opportunityServices';
 import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
 import jwt from 'jsonwebtoken';
 import { compileEmailTemplate } from './handlebars';
@@ -129,7 +133,7 @@ export const createMember = async (
     await Promise.all(
       membersNeedingTokens.map(async (memberRef) => {
         const createdMemberDetails = await getDoc(memberRef);
-        await createTokenForInvitation(createdMemberDetails.id);
+        await createTokenForInvitation(createdMemberDetails.id, orgId);
       }),
     );
     return true;
@@ -145,7 +149,7 @@ export const createMember = async (
   }
 };
 
-export const createTokenForInvitation = async (id: string) => {
+export const createTokenForInvitation = async (id: string, orgId: string) => {
   try {
     const token = jwt.sign({ id }, TOKEN_SECRET!);
     await addDoc(collection(db, 'organizationMemberInviteToken'), {
@@ -153,6 +157,7 @@ export const createTokenForInvitation = async (id: string) => {
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
       token,
+      organizationId: orgId,
     });
   } catch (error) {
     console.log(error, 'Error in creating token entry');
@@ -163,5 +168,102 @@ export const createTokenForInvitation = async (id: string) => {
       'Error in creating organization.',
     );
     throw response;
+  }
+};
+
+// get members associated with organization
+export const getMembersForOrganization = async (orgId: string) => {
+  try {
+    const membersRef = collection(db, 'organizationMembers');
+    const querySnapshot = await getDocs(
+      query(
+        membersRef,
+        where('organizationId', '==', orgId),
+        where('status', '!=', 'REJECTED'),
+      ),
+    );
+    const listOfMembers = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const memberData = {
+          id: doc.id,
+          ...doc.data(),
+          userDetails: await getUserDetailsById(doc.data().userId), // Call getUserDetailsById here
+          inviteToken:
+            doc.data().role !== 'OWNER'
+              ? await getInviteTokenDetails(doc.id, orgId)
+              : null,
+        };
+        return memberData;
+      }),
+    );
+    listOfMembers.sort((a: any, b: any) => {
+      if (a.role === 'OWNER') return -1;
+      if (b.role === 'OWNER') return 1;
+      return 0;
+    });
+    return listOfMembers;
+  } catch (error) {
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in creating organization.',
+    );
+    throw response;
+  }
+};
+
+//  delete org members
+export const deleteInviteUser = async (orgId: string, memberId: string) => {
+  try {
+    // Create a query to find the invite document
+    const q = query(
+      collection(db, 'organizationMemberInviteToken'),
+      where('memberId', '==', memberId),
+      where('organizationId', '==', orgId),
+    );
+
+    // Get a reference to the document
+    const querySnapshot = await getDocs(q);
+
+    // Check if a document was found
+    if (querySnapshot.size === 0) {
+      return;
+    }
+
+    const doc = querySnapshot.docs[0].ref;
+    await deleteDoc(doc);
+  } catch (error) {
+    console.log(error, 'Error in deleting the associated token record');
+
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in Deleting organization member.',
+    );
+    throw response;
+  }
+};
+
+export const getInviteTokenDetails = async (
+  memberId: String,
+  orgId: string,
+) => {
+  const membersRef = collection(db, 'organizationMemberInviteToken');
+  const querySnapshot = await getDocs(
+    query(
+      membersRef,
+      where('organizationId', '==', orgId),
+      where('memberId', '==', memberId),
+    ),
+  );
+  const memberDoc = querySnapshot.docs[0];
+  const memberTokenData: any = memberDoc.data();
+
+  if (!memberTokenData) {
+    return null;
+  } else {
+    return memberTokenData;
   }
 };

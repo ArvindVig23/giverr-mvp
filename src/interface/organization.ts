@@ -8,4 +8,5 @@ export interface OrgDetails {
   website?: string;
   createdAt?: string; // as we are converting the date to string
   updatedAt?: string; // as we are converting the date to string
+  members?: any[];
 }

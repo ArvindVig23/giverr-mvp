@@ -125,7 +125,7 @@ const Myorganization: React.FC = () => {
           <Members />
         </>
       ) : null}
-      <hr className="my-[60px] border-[#E6E3D6]"></hr>
+      <hr></hr>
       {showOrganization ? (
         <div className="inline-flex w-full items-center gap-4 justify-between m-5">
           <div className="inline-flex w-full items-center gap-4">

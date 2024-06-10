@@ -55,7 +55,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     try {
       const response = await createOrg(formData);
       const { message, data } = response;
-      sweetAlertToast('success', message, 1000);
+      sweetAlertToast('success', message);
       setShowModal(false);
       dispatch(updateOrgDetails(data));
       dispatch(setLoader(false));
