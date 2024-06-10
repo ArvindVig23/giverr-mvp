@@ -287,22 +287,23 @@ export const getInviteTokenDetails = async (
 
 export const sendEmailForInvitation = async (userId: string, orgId: string) => {
   try {
-    const { email } = await getUserDetailsById(userId);
+    const userDetails = await getUserDetailsById(userId);
 
     // get organization details
-    const { name } = await getOrgDetailsById(orgId);
-
-    const emailData = {
-      name,
-      loginUrl: `${DOMAIN_URL}/sign-in`,
-    };
-    const template = compileEmailTemplate(inviteEmail, emailData);
-    await sendEmail(
-      email,
-      'Organization Invitation',
-      'Organization Invitation',
-      template,
-    );
+    const orgDetails = await getOrgDetailsById(orgId);
+    if (userDetails && userDetails.email && orgDetails) {
+      const emailData = {
+        name: orgDetails.name,
+        loginUrl: `${DOMAIN_URL}/sign-in`,
+      };
+      const template = compileEmailTemplate(inviteEmail, emailData);
+      await sendEmail(
+        userDetails.email,
+        'Organization Invitation',
+        'Organization Invitation',
+        template,
+      );
+    }
   } catch (error) {
     console.log(error, 'Error in sending invitation email');
     const response = responseHandler(
