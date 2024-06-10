@@ -1,6 +1,9 @@
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
-import { createMember } from '@/services/backend/organization';
+import {
+  createMember,
+  getMembersForOrganization,
+} from '@/services/backend/organization';
 import { orgIdSchema } from '@/utils/joiSchema';
 import { NextRequest } from 'next/server';
 
@@ -22,10 +25,11 @@ export async function POST(req: NextRequest) {
     const convertString = JSON.parse(userDetails.value);
     const { id } = convertString;
     await createMember(members, id, orgId);
+    const membersList = await getMembersForOrganization(orgId);
     const response = responseHandler(
       200,
       true,
-      null,
+      { members: membersList },
       'Invite sent successfully',
     );
     return response;

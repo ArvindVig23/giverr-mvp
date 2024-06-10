@@ -16,7 +16,10 @@ import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { Tooltip } from '@material-tailwind/react';
 import { DOMAIN_URL } from '@/constants/constants';
+import CommonModal from '../common/modal/CommonModal';
+import ModalInvite from '../common/organization/ModalInvite';
 const Members = () => {
+  const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
   const [showCopiedTooltip, setShowCopiedTooltip] = useState<boolean>(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [isRevokeInvite, setIsRevokeInvite] = useState<boolean>(false);
@@ -92,7 +95,10 @@ const Members = () => {
           />
         </div>
 
-        <button className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]">
+        <button
+          onClick={() => setInviteMembersModal(true)}
+          className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+        >
           Invite members
         </button>
       </div>
@@ -238,6 +244,16 @@ const Members = () => {
             </div>
           </div>
         </CommonDeleteModal>
+      ) : null}
+      {inviteMembersModal ? (
+        <CommonModal
+          heading={'Invite Members'}
+          subHeading={'Send Invite to'}
+          showModal={inviteMembersModal}
+          setShowModal={setInviteMembersModal}
+        >
+          <ModalInvite setShowModal={setInviteMembersModal} />
+        </CommonModal>
       ) : null}
     </div>
   );

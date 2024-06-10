@@ -114,7 +114,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
       const { message, data } = response;
       sweetAlertToast('success', message, 1000);
       setShowModal(false);
-      dispatch(updateOrgDetails(data));
+      const updatedData = { ...userOrgDetails, ...data };
+      dispatch(updateOrgDetails(updatedData));
       dispatch(setLoader(false));
     } catch (error: any) {
       dispatch(setLoader(false));
