@@ -32,3 +32,13 @@ export const sendInvite = async (data: any) => {
     throw error.data;
   }
 };
+
+export const resendInviteEmail = async (data: any) => {
+  try {
+    const response: any = await callApi(`/resend-invite`, 'post', data);
+    return response;
+  } catch (error: any) {
+    console.log(error, 'Error in sending invite');
+    throw error.data;
+  }
+};

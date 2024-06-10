@@ -101,13 +101,9 @@ const ModalInvite = ({ setShowModal }: any) => {
       try {
         const response = await sendInvite(membersData);
         const { message, data } = response;
-        console.log(data, 'data');
-
         sweetAlertToast('success', message);
         setShowModal(false);
         const updatedOrgData = { ...userOrgDetails, members: data.members };
-        console.log(updatedOrgData, 'updated data');
-
         dispatch(updateOrgDetails(updatedOrgData));
         dispatch(setLoader(false));
       } catch (error: any) {
@@ -159,7 +155,7 @@ const ModalInvite = ({ setShowModal }: any) => {
       </div>
       {memberList.map((member: any, index: number) => (
         <div className="w-full" key={index}>
-          <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
+          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl hover:cursor-pointer hover:bg-[#EDEBE3]">
             <MemberOption member={member} />
 
             <div className="ml-auto flex gap-2 items-center">

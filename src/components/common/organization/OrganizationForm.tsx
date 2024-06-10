@@ -252,7 +252,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
       {!userOrgDetails.id ? (
         <InviteSection memberList={memberList} setMemberList={setMemberList} />
       ) : null}
-      <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
+      <div className="flex items-center justify-end border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"

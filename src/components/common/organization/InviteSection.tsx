@@ -76,7 +76,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
             {...register('searchMember')}
             type="text"
             className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
-            placeholder="Search Members"
+            placeholder="Invite by name or username"
             onFocus={() => setIsDropdownOpen(true)}
           />
           <Image
@@ -103,7 +103,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
       </div>
       {memberList.map((member: any, index: number) => (
         <div className="w-full" key={index}>
-          <div className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]">
+          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl">
             <MemberOption member={member} />
 
             <div className="ml-auto flex gap-2 items-center">
