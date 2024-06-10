@@ -156,7 +156,7 @@ const ModalInvite = ({ setShowModal }: any) => {
       {memberList.map((member: any, index: number) => (
         <div className="w-full" key={index}>
           <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl hover:cursor-pointer hover:bg-[#EDEBE3]">
-            <MemberOption member={member} />
+            {<MemberOption member={member} />}
 
             <div className="ml-auto flex gap-2 items-center">
               {cookies.userDetails.id === member.id ? (
