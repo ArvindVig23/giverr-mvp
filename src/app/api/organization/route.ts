@@ -259,6 +259,22 @@ export async function DELETE(req: NextRequest) {
       });
       await batch.commit();
     }
+
+    // delete records from the token table as well
+    const tokemMemberRef = collection(db, 'organizationMemberInviteToken');
+    const memQuery = query(
+      tokemMemberRef,
+      where('organizationId', '==', orgId),
+    );
+    const membersWithToken = await getDocs(memQuery);
+
+    if (!membersWithToken.empty) {
+      const batch = writeBatch(db);
+      membersWithToken.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+    }
     const response = responseHandler(
       200,
       true,

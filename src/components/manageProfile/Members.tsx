@@ -4,19 +4,24 @@ import more from '/public/images/more.svg';
 import deleteIcon from '/public/images/delete.svg';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import MemberOption from '../common/organization/MemberOption';
 import { useCookies } from 'react-cookie';
 import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { removeMemberApi } from '@/services/frontend/memberService';
+import {
+  removeMemberApi,
+  resendInviteEmail,
+} from '@/services/frontend/memberService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { Tooltip } from '@material-tailwind/react';
 import { DOMAIN_URL } from '@/constants/constants';
+import CommonModal from '../common/modal/CommonModal';
+import ModalInvite from '../common/organization/ModalInvite';
 const Members = () => {
+  const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
   const [showCopiedTooltip, setShowCopiedTooltip] = useState<boolean>(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [isRevokeInvite, setIsRevokeInvite] = useState<boolean>(false);
@@ -75,9 +80,29 @@ const Members = () => {
       setShowCopiedTooltip(false);
     }, 5500);
   };
+
+  const resendInvite = async (memId: string, userId: string) => {
+    try {
+      dispatch(setLoader(true));
+      const data = {
+        memId,
+        userId,
+        orgId: userOrgDetails.id,
+      };
+      const resend = await resendInviteEmail(data);
+      const { message } = resend;
+      sweetAlertToast('success', message, 1500);
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="flex w-full flex-col gap-5">
       <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
+      <span>All new members will be invited with no permissions.</span>
       <div className="flex gap-5">
         <div className="relative flex-1">
           <input
@@ -92,14 +117,17 @@ const Members = () => {
           />
         </div>
 
-        <button className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]">
-          Invite members
+        <button
+          onClick={() => setInviteMembersModal(true)}
+          className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+        >
+          Invite member
         </button>
       </div>
       {userOrgDetails?.members?.length > 0
         ? userOrgDetails.members.map((member: any, index: number) => (
             <div
-              className="flex py-3 items-center gap-3 border-b border-[#E6E3D6]"
+              className="flex p-3 items-center gap-3 border-b border-[#E6E3D6]"
               key={index}
             >
               <MemberOption member={member.userDetails} />
@@ -137,12 +165,14 @@ const Members = () => {
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
                           <div className="p-1.5 flex flex-col gap-0.5">
                             <Menu.Item>
-                              <Link
-                                href="#"
+                              <button
+                                onClick={() =>
+                                  resendInvite(member.id, member.userId)
+                                }
                                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
                               >
                                 Resend invite
-                              </Link>
+                              </button>
                             </Menu.Item>
 
                             <Menu.Item>
@@ -238,6 +268,16 @@ const Members = () => {
             </div>
           </div>
         </CommonDeleteModal>
+      ) : null}
+      {inviteMembersModal ? (
+        <CommonModal
+          heading={'Invite Members'}
+          subHeading={'Send Invite to'}
+          showModal={inviteMembersModal}
+          setShowModal={setInviteMembersModal}
+        >
+          <ModalInvite setShowModal={setInviteMembersModal} />
+        </CommonModal>
       ) : null}
     </div>
   );

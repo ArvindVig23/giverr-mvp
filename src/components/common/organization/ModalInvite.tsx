@@ -4,12 +4,20 @@ import lightSearch from '/public/images/search-light.svg';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { debounce } from '@/services/frontend/commonServices';
-import { getMembersList } from '@/services/frontend/memberService';
+import { getMembersList, sendInvite } from '@/services/frontend/memberService';
 import cross from '/public/images/cross.svg';
 import MemberOption from './MemberOption';
 import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 
-const InviteSection = ({ memberList, setMemberList }: any) => {
+const ModalInvite = ({ setShowModal }: any) => {
+  const [memberList, setMemberList] = useState<any[]>([]);
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  //   existed members
+  const [existedMembers, setExistedMembers] = useState<string[]>([]);
   const [cookies] = useCookies();
   const { register, watch } = useForm();
   const searchValue = watch('searchMember');
@@ -66,9 +74,47 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
     members.splice(index, 1);
     setMemberList(members);
   };
+
+  //    to avoid showing already existed members
+  useEffect(() => {
+    if (userOrgDetails && userOrgDetails.members) {
+      const memberIds = userOrgDetails.members.map(
+        (member: any) => member.userId,
+      );
+      setExistedMembers(memberIds);
+    } // eslint-disable-next-line
+  }, [userOrgDetails?.members?.length]);
+
+  const includesIdOrNot = (id: string) => {
+    return !existedMembers.includes(id);
+  };
+
+  const dispatch = useDispatch();
+  const handleSendInvite = async () => {
+    if (memberList.length > 0) {
+      dispatch(setLoader(true));
+      const membersData: any = {
+        orgId: userOrgDetails.id,
+      };
+      const filteredIds = memberList.map((member) => member.id);
+      membersData.members = filteredIds;
+      try {
+        const response = await sendInvite(membersData);
+        const { message, data } = response;
+        sweetAlertToast('success', message);
+        setShowModal(false);
+        const updatedOrgData = { ...userOrgDetails, members: data.members };
+        dispatch(updateOrgDetails(updatedOrgData));
+        dispatch(setLoader(false));
+      } catch (error: any) {
+        dispatch(setLoader(false));
+        const { message } = error;
+        sweetAlertToast('error', message);
+      }
+    }
+  };
   return (
-    <div className="flex w-full flex-col gap-5 mt-5" ref={dropdownRef}>
-      <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
+    <div className="flex w- flex-col p-2 gap-5" ref={dropdownRef}>
       <div className="relative flex gap-5">
         <div className="relative flex-1">
           <input
@@ -76,7 +122,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
             {...register('searchMember')}
             type="text"
             className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
-            placeholder="Invite by name or username"
+            placeholder="Search Members"
             onFocus={() => setIsDropdownOpen(true)}
           />
           <Image
@@ -86,24 +132,30 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
           />
           {isDropdownOpen && searchResults.length > 0 && (
             <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
-              {searchResults.map((result, index) => (
-                <li
-                  key={index}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    addMember(result);
-                  }}
-                >
-                  {result.fullName || result.email}
-                </li>
-              ))}
+              {searchResults.map(
+                (result: any, index) =>
+                  includesIdOrNot(result.id) && (
+                    <li
+                      key={index}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        addMember(result);
+                      }}
+                    >
+                      {result.fullName || result.email}
+                    </li>
+                  ),
+              )}
             </ul>
           )}
+          <span className="text-gray-400">
+            All new members will be invited with no permissions.
+          </span>
         </div>
       </div>
       {memberList.map((member: any, index: number) => (
         <div className="w-full" key={index}>
-          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl">
+          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl hover:cursor-pointer hover:bg-[#EDEBE3]">
             <MemberOption member={member} />
 
             <div className="ml-auto flex gap-2 items-center">
@@ -127,8 +179,17 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
           </div>
         </div>
       ))}
+      <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
+        <button
+          onClick={handleSendInvite}
+          disabled={memberList.length === 0}
+          className={`text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${memberList.length === 0 ? 'cursor-not-allowed' : ''}`}
+        >
+          Send Invites
+        </button>
+      </div>
     </div>
   );
 };
 
-export default InviteSection;
+export default ModalInvite;

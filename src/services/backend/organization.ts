@@ -11,12 +11,17 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
-import { currentUtcDate, getUserDetailsById } from './opportunityServices';
+import {
+  currentUtcDate,
+  getOrgDetailsById,
+  getUserDetailsById,
+} from './opportunityServices';
 import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
 import jwt from 'jsonwebtoken';
 import { compileEmailTemplate } from './handlebars';
 import { sendEmail } from './emailService';
 import { approveOrgTemplate } from '@/utils/templates/approveOrgTemplate';
+import { inviteEmail } from '@/utils/templates/inviteTemplate';
 
 export const createOrganization = async (
   id: string,
@@ -132,8 +137,12 @@ export const createMember = async (
     // Handle token creation for the members that need it
     await Promise.all(
       membersNeedingTokens.map(async (memberRef) => {
-        const createdMemberDetails = await getDoc(memberRef);
-        await createTokenForInvitation(createdMemberDetails.id, orgId);
+        const createdMemberDetails: any = await getDoc(memberRef);
+        await createTokenForInvitation(
+          createdMemberDetails.id,
+          orgId,
+          createdMemberDetails.data().userId,
+        );
       }),
     );
     return true;
@@ -149,9 +158,15 @@ export const createMember = async (
   }
 };
 
-export const createTokenForInvitation = async (id: string, orgId: string) => {
+export const createTokenForInvitation = async (
+  id: string,
+  orgId: string,
+  userId: string,
+) => {
   try {
-    const token = jwt.sign({ id }, TOKEN_SECRET!);
+    console.log(userId, 'userId');
+
+    const token = jwt.sign({ memId: id, userId, orgId }, TOKEN_SECRET!);
     await addDoc(collection(db, 'organizationMemberInviteToken'), {
       memberId: id,
       createdAt: currentUtcDate,
@@ -159,6 +174,8 @@ export const createTokenForInvitation = async (id: string, orgId: string) => {
       token,
       organizationId: orgId,
     });
+    //  send invitation email as well
+    await sendEmailForInvitation(userId, orgId);
   } catch (error) {
     console.log(error, 'Error in creating token entry');
     const response = responseHandler(
@@ -265,5 +282,35 @@ export const getInviteTokenDetails = async (
     return null;
   } else {
     return memberTokenData;
+  }
+};
+
+export const sendEmailForInvitation = async (userId: string, orgId: string) => {
+  try {
+    const { email } = await getUserDetailsById(userId);
+
+    // get organization details
+    const { name } = await getOrgDetailsById(orgId);
+
+    const emailData = {
+      name,
+      loginUrl: `${DOMAIN_URL}/sign-in`,
+    };
+    const template = compileEmailTemplate(inviteEmail, emailData);
+    await sendEmail(
+      email,
+      'Organization Invitation',
+      'Organization Invitation',
+      template,
+    );
+  } catch (error) {
+    console.log(error, 'Error in sending invitation email');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in sending invitation email.',
+    );
+    throw response;
   }
 };
