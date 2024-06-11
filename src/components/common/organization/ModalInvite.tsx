@@ -16,8 +16,6 @@ import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 const ModalInvite = ({ setShowModal }: any) => {
   const [memberList, setMemberList] = useState<any[]>([]);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
-  //   existed members
-  const [existedMembers, setExistedMembers] = useState<string[]>([]);
   const [cookies] = useCookies();
   const { register, watch } = useForm();
   const searchValue = watch('searchMember');
@@ -28,7 +26,16 @@ const ModalInvite = ({ setShowModal }: any) => {
   const fetchMembers = async (query: string) => {
     try {
       const response = await getMembersList(query);
-      setSearchResults(response);
+      const memberIds = userOrgDetails.members.map(
+        (member: any) => member.userId,
+      );
+
+      // Filter the response to exclude members whose id is in memberIds
+      const filteredResponse = response.filter(
+        (member: any) => !memberIds.includes(member.id),
+      );
+
+      setSearchResults(filteredResponse);
     } catch (error) {
       console.error('Error fetching members:', error);
     }
@@ -75,20 +82,6 @@ const ModalInvite = ({ setShowModal }: any) => {
     setMemberList(members);
   };
 
-  //    to avoid showing already existed members
-  useEffect(() => {
-    if (userOrgDetails && userOrgDetails.members) {
-      const memberIds = userOrgDetails.members.map(
-        (member: any) => member.userId,
-      );
-      setExistedMembers(memberIds);
-    } // eslint-disable-next-line
-  }, [userOrgDetails?.members?.length]);
-
-  const includesIdOrNot = (id: string) => {
-    return !existedMembers.includes(id);
-  };
-
   const dispatch = useDispatch();
   const handleSendInvite = async () => {
     if (memberList.length > 0) {
@@ -130,21 +123,24 @@ const ModalInvite = ({ setShowModal }: any) => {
             src={lightSearch}
             alt="search"
           />
-          {isDropdownOpen && searchResults.length > 0 && (
+          {isDropdownOpen && (
             <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
-              {searchResults.map(
-                (result: any, index) =>
-                  includesIdOrNot(result.id) && (
-                    <li
-                      key={index}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        addMember(result);
-                      }}
-                    >
-                      {result.fullName || result.email}
-                    </li>
-                  ),
+              {searchResults.length > 0 ? (
+                searchResults.map((result: any, index) => (
+                  <li
+                    key={index}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      addMember(result);
+                    }}
+                  >
+                    {result.fullName || result.email}
+                  </li>
+                ))
+              ) : (
+                <li className="px-4 py-2 text-gray-500 cursor-default">
+                  No options
+                </li>
               )}
             </ul>
           )}
