@@ -7,6 +7,7 @@ import {
   updateOrgInviteStatus,
 } from '@/services/frontend/organization';
 import DisplayMemberItem from '../common/organization/DisplayMemberItem';
+import { removeMemberApi } from '@/services/frontend/memberService';
 
 const Organizations: React.FC = () => {
   const [refetchList, setRefetchList] = useState<boolean>(false);
@@ -54,6 +55,21 @@ const Organizations: React.FC = () => {
       sweetAlertToast('error', message);
     }
   };
+
+  const dispatch = useDispatch();
+  const leave = async (removeMemberId: string, orgId: string) => {
+    try {
+      dispatch(setLoader(true));
+      await removeMemberApi(removeMemberId, orgId);
+      sweetAlertToast('success', 'Leave successfully submitted');
+      setRefetchList(!refetchList);
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="w-full">
       <h3 className="text-[32px] font-medium mb-2 mt-0 leading-[36px]">
@@ -70,6 +86,13 @@ const Organizations: React.FC = () => {
               className="inline-flex w-full items-center gap-4 justify-between mt-5"
             >
               <DisplayMemberItem orgMember={orgMember} />
+              <button
+                onClick={() => leave(orgMember.id, orgMember.organizationId)}
+                type="button"
+                className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+              >
+                Leave
+              </button>
             </div>
           ))}
         </>
