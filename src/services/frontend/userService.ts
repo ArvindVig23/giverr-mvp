@@ -34,3 +34,12 @@ export const logOut = async (router: any, dispatch: any) => {
 export const getInitialOfEmail = (email: string) => {
   return email[0].toUpperCase();
 };
+
+export const deleteAccountApi = async () => {
+  try {
+    const response = await callApi('/delete-account', 'delete');
+    return response.data;
+  } catch (error: any) {
+    throw error.data;
+  }
+};
