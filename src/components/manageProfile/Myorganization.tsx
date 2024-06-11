@@ -47,9 +47,6 @@ const Myorganization: React.FC = () => {
       <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
         My Organization
       </h3>
-
-      {/* No organization section Start */}
-
       <div className="flex w-full justify-between gap-3 items-center">
         {showOrganization ? (
           <>

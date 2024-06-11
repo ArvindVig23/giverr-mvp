@@ -94,7 +94,7 @@ const ModalInvite = ({ setShowModal }: any) => {
       try {
         const response = await sendInvite(membersData);
         const { message, data } = response;
-        sweetAlertToast('success', message);
+        sweetAlertToast('success', message, 1000);
         setShowModal(false);
         const updatedOrgData = { ...userOrgDetails, members: data.members };
         dispatch(updateOrgDetails(updatedOrgData));
