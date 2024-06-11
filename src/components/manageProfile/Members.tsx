@@ -108,7 +108,7 @@ const Members = () => {
   );
 
   useEffect(() => {
-    if (searchMember === '' || !searchMember) {
+    if (!searchMember) {
       setFilteredMembers(userOrgDetails?.members || []);
     } else {
       const filtered = userOrgDetails.members.filter((member: any) => {

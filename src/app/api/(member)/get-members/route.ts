@@ -41,16 +41,14 @@ export async function GET(req: NextRequest) {
       ...doc.data(),
     }));
     const combinedResults = [...fullNameResults, ...usernameResults];
-
-    const uniqueUsersMap = new Map();
-
-    combinedResults.forEach((user) => {
-      if (!uniqueUsersMap.has(user.id)) {
-        uniqueUsersMap.set(user.id, user);
-      }
+    const userIds = Array.from(
+      new Set(
+        combinedResults.filter((val: any) => val.id).map((val: any) => val.id),
+      ),
+    );
+    const users = userIds.map((val) => {
+      return combinedResults.find((res) => res.id === val);
     });
-
-    const users = Array.from(uniqueUsersMap.values());
 
     const response = responseHandler(
       200,
