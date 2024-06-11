@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import responseHandler from '../../../../lib/responseHandler';
+import responseHandler from '../../../../../lib/responseHandler';
 import { db } from '@/firebase/config';
 import { cookies } from 'next/headers';
 
