@@ -1,8 +1,13 @@
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import chevronDown from '/public/images/chevron-down.svg';
+import { useForm } from 'react-hook-form';
 
 const Notifications: React.FC = () => {
+  const { register, watch } = useForm();
+  const value = watch('name');
+  console.log(value);
+
   return (
     <div className="w-full">
       <h3 className="text-[32px] font-medium mb-1 mt-0 leading-[36px]">
@@ -18,9 +23,14 @@ const Notifications: React.FC = () => {
             </p>
           </div>
 
-          <label className="flex items-center cursor-pointer select-none text-dark ">
+          <label className="flex items-center cursor-pointer select-none text-dark">
             <div className="relative">
-              <input type="checkbox" id="toggleTwo" className="peer sr-only" />
+              <input
+                type="checkbox"
+                id={'allowUpdates'}
+                {...register('allowUpdates')}
+                className="peer sr-only"
+              />
               <div className="block border border-[#E6E3D6] h-8 rounded-full bg-[#EDEBE3] w-[52px] peer-checked:bg-[#E60054] peer-checked:border-[#E60054]"></div>
               <div className="absolute w-7 h-7 transition bg-white rounded-full dot left-[2px] top-[2px] peer-checked:translate-x-[74%] peer-checked:bg-primary"></div>
             </div>
@@ -34,7 +44,12 @@ const Notifications: React.FC = () => {
 
           <label className="flex items-center cursor-pointer select-none text-dark ">
             <div className="relative">
-              <input type="checkbox" id="toggleTwo" className="peer sr-only" />
+              <input
+                id={'acceptSubmission'}
+                {...register('acceptSubmission')}
+                type="checkbox"
+                className="peer sr-only"
+              />
               <div className="block border border-[#E6E3D6] h-8 rounded-full bg-[#EDEBE3] w-[52px] peer-checked:bg-[#E60054] peer-checked:border-[#E60054]"></div>
               <div className="absolute w-7 h-7 transition bg-white rounded-full dot left-[2px] top-[2px] peer-checked:translate-x-[74%] peer-checked:bg-primary"></div>
             </div>
@@ -53,7 +68,12 @@ const Notifications: React.FC = () => {
 
           <label className="flex items-center cursor-pointer select-none text-dark ">
             <div className="relative">
-              <input type="checkbox" id="toggleTwo" className="peer sr-only" />
+              <input
+                type="checkbox"
+                id={'allowVolunteeringUpdates'}
+                {...register('allowVolunteeringUpdates')}
+                className="peer sr-only"
+              />
               <div className="block border border-[#E6E3D6] h-8 rounded-full bg-[#EDEBE3] w-[52px] peer-checked:bg-[#E60054] peer-checked:border-[#E60054]"></div>
               <div className="absolute w-7 h-7 transition bg-white rounded-full dot left-[2px] top-[2px] peer-checked:translate-x-[74%] peer-checked:bg-primary"></div>
             </div>
@@ -68,14 +88,6 @@ const Notifications: React.FC = () => {
               appears
             </p>
           </div>
-
-          <label className="flex items-center cursor-pointer select-none text-dark ">
-            <div className="relative">
-              <input type="checkbox" id="toggleTwo" className="peer sr-only" />
-              <div className="block border border-[#E6E3D6] h-8 rounded-full bg-[#EDEBE3] w-[52px] peer-checked:bg-[#E60054] peer-checked:border-[#E60054]"></div>
-              <div className="absolute w-7 h-7 transition bg-white rounded-full dot left-[2px] top-[2px] peer-checked:translate-x-[74%] peer-checked:bg-primary"></div>
-            </div>
-          </label>
         </div>
 
         <div className="relative w-full mt-1">
@@ -83,7 +95,7 @@ const Notifications: React.FC = () => {
             Categories
           </label>
           <select className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
-            <option>Select location (optional)</option>
+            <option>All </option>
             <option>1</option>
             <option>2</option>
             <option>3</option>

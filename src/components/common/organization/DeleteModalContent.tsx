@@ -65,7 +65,7 @@ const DeleteModalContent = ({ setShowModal }: any) => {
           type="button"
           onClick={() => setShowModal(false)}
         >
-          Continue using Giverr
+          Cancel
         </button>
         <button
           disabled={usernameValue !== userOrgDetails.username}
@@ -73,7 +73,7 @@ const DeleteModalContent = ({ setShowModal }: any) => {
           type="button"
           onClick={() => handleDeleteOrg()}
         >
-          Permanently delete account
+          Permanently delete organization
         </button>
       </div>
     </div>
