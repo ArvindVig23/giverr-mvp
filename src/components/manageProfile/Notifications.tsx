@@ -52,7 +52,7 @@ const Notifications: React.FC = () => {
     // eslint-disable-next-line
   }, [opportunityTypeList.length]);
 
-  // handle all three checkbox 
+  // handle all three checkbox
   const handleCheckboxChange = async (event: any) => {
     const { name, checked } = event.target;
     const updatedSettings = { ...notificationValues, [name]: checked };
