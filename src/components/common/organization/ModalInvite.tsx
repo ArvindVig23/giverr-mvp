@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lightSearch from '/public/images/search-light.svg';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
-import { debounce } from '@/services/frontend/commonServices';
+import { debounce, encodeUrl } from '@/services/frontend/commonServices';
 import { getMembersList, sendInvite } from '@/services/frontend/memberService';
 import cross from '/public/images/cross.svg';
 import MemberOption from './MemberOption';
@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { getInitialOfEmail } from '@/services/frontend/userService';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 
 const ModalInvite = ({ setShowModal }: any) => {
   const [memberList, setMemberList] = useState<any[]>([]);
@@ -114,6 +116,7 @@ const ModalInvite = ({ setShowModal }: any) => {
         </h4>
         <div className="relative flex-1 mb-5">
           <input
+            autoComplete="off"
             id="searchMember"
             {...register('searchMember')}
             type="text"
@@ -139,12 +142,24 @@ const ModalInvite = ({ setShowModal }: any) => {
                       }}
                     >
                       <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
-                        a
+                        {result.profileUrl ? (
+                          <Image
+                            width={20}
+                            height={20}
+                            src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(result.profileUrl)}`}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitialOfEmail(result.email)
+                        )}
                       </div>
                       {result.fullName || result.email}
-                      <span className="text-[#24181B80] text-base">
-                        @adamanderson
-                      </span>
+                      {result.username ? (
+                        <span className="text-[#24181B80] text-base">
+                          @{result.username}
+                        </span>
+                      ) : null}
                     </li>
                   ))
                 ) : (

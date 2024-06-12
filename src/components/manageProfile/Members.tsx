@@ -130,12 +130,13 @@ const Members = () => {
       <div className="flex gap-5">
         <div className="relative flex-1">
           <input
+            autoComplete="off"
             id="searchMember"
             {...register('searchMember')}
             type="text"
             className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
             placeholder="Search Members"
-          ></input>
+          />
           <Image
             className="absolute top-3 left-3 pointer-events-none"
             src={lightSearch}

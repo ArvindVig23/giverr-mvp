@@ -38,13 +38,13 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
   };
   return (
     <div>
-      <div className="relative p-5 flex-auto flex flex-col gap-5 max-h-modal overflow-auto">
+      <div className="relative p-5 pt-2.5 flex-auto flex flex-col gap-5 overflow-auto">
         <p className="text-base text-[#24181B] m-0">
           By deleting your account you and your organization will lose access to
           Giverr and all data will be lost. This is a permanent action and
           cannot be undone.
         </p>
-        <p>
+        <p className="text-xs mb-2">
           Please type your username &apos;
           {cookies.userDetails.username}
           &apos; below to confirm deletion.
@@ -63,9 +63,9 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
         </div>
       </div>
       {/*footer*/}
-      <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b gap-2.5">
+      <div className="flex flex-col items-center justify-end p-6 pt-5  rounded-b gap-2.5">
         <button
-          className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+          className="text-base text-[#24181B]  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium   border border-[#E6E3D6] hover:bg-[#EDEBE3]"
           type="button"
           onClick={() => setShowModal(false)}
         >
@@ -73,11 +73,11 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
         </button>
         <button
           disabled={usernameValue !== cookies.userDetails.username}
-          className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${usernameValue !== cookies.userDetails.username ? 'cursor-not-allowed' : ''}`}
+          className={`text-base w-full h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${usernameValue !== cookies.userDetails.username ? 'cursor-not-allowed' : ''}`}
           type="button"
           onClick={() => deleteAccount()}
         >
-          Delete Account
+          Permanently delete account
         </button>
       </div>
     </div>

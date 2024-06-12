@@ -3,11 +3,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lightSearch from '/public/images/search-light.svg';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
-import { debounce } from '@/services/frontend/commonServices';
+import { debounce, encodeUrl } from '@/services/frontend/commonServices';
 import { getMembersList } from '@/services/frontend/memberService';
 import cross from '/public/images/cross.svg';
 import MemberOption from './MemberOption';
 import { useCookies } from 'react-cookie';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { getInitialOfEmail } from '@/services/frontend/userService';
 
 const InviteSection = ({ memberList, setMemberList }: any) => {
   const [cookies] = useCookies();
@@ -72,6 +74,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
       <div className="relative flex gap-5">
         <div className="relative flex-1">
           <input
+            autoComplete="off"
             id="searchMember"
             {...register('searchMember')}
             type="text"
@@ -85,19 +88,45 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
             alt="search"
           />
           {isDropdownOpen && searchResults.length > 0 && (
-            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
-              {searchResults.map((result, index) => (
-                <li
-                  key={index}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    addMember(result);
-                  }}
-                >
-                  {result.fullName || result.email}
-                </li>
-              ))}
-            </ul>
+            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-xl mt-1  overflow-hidden ">
+              <ul className="overflow-auto max-h-60 p-1">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result: any, index) => (
+                    <li
+                      key={index}
+                      className="px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-pointer items-center text-[#24181B] text-base"
+                      onClick={() => {
+                        addMember(result);
+                      }}
+                    >
+                      <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                        {result.profileUrl ? (
+                          <Image
+                            width={20}
+                            height={20}
+                            src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(result.profileUrl)}`}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitialOfEmail(result.fullName || result.email)
+                        )}
+                      </div>
+                      {result.fullName || result.email}
+                      {result.username ? (
+                        <span className="text-[#24181B80] text-base">
+                          @{result.username}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-2 text-gray-500 cursor-default">
+                    No options
+                  </li>
+                )}
+              </ul>
+            </div>
           )}
         </div>
       </div>
