@@ -14,7 +14,7 @@ const ManageProfile: React.FC = () => {
         <div className="flex flex-wrap">
           <div className="w-full flex">
             <ul
-              className="flex flex-col mb-0 list-none max-w-[252px] w-full py-5 border-r border-[#E6E3D6] min-h-[800px] relative before:absolute before:h-6 before:w-1 before:border-r before:border-[#E6E3D6] before:content:[''] before:-bottom-[24px] before:-right-[1px] zex-[1]"
+              className="flex flex-col mb-0 list-none max-w-[252px] w-full py-5 border-r border-[#E6E3D6] min-h-[800px] relative before:absolute before:h-6 before:w-1 before:border-r before:border-[#E6E3D6] before:content:[''] before:-bottom-[24px] before:-right-[1px] z-[1]"
               role="tablist"
             >
               <li className="">

@@ -24,7 +24,9 @@ const MemberOption = ({ member }: any) => {
       <div className="text-base">
         {member.fullName ? member.fullName : member.email}
       </div>
-      <span className="text-[#24181B80]">@{member.username}</span>
+      {member.username ? (
+        <span className="text-[#24181B80]">@{member.username}</span>
+      ) : null}
     </div>
   );
 };

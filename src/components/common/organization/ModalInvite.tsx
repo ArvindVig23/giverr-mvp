@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lightSearch from '/public/images/search-light.svg';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
-import { debounce } from '@/services/frontend/commonServices';
+import { debounce, encodeUrl } from '@/services/frontend/commonServices';
 import { getMembersList, sendInvite } from '@/services/frontend/memberService';
 import cross from '/public/images/cross.svg';
 import MemberOption from './MemberOption';
@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { getInitialOfEmail } from '@/services/frontend/userService';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 
 const ModalInvite = ({ setShowModal }: any) => {
   const [memberList, setMemberList] = useState<any[]>([]);
@@ -107,10 +109,14 @@ const ModalInvite = ({ setShowModal }: any) => {
     }
   };
   return (
-    <div className="flex w- flex-col p-2 gap-5" ref={dropdownRef}>
-      <div className="relative flex gap-5">
-        <div className="relative flex-1">
+    <div className="flex w- flex-col" ref={dropdownRef}>
+      <div className="px-5 py-5 max-h-modal overflow-auto">
+        <h4 className="text-[#24181B] text-2xl font-medium mb-5">
+          Send Invite to
+        </h4>
+        <div className="relative flex-1 mb-5">
           <input
+            autoComplete="off"
             id="searchMember"
             {...register('searchMember')}
             type="text"
@@ -123,58 +129,82 @@ const ModalInvite = ({ setShowModal }: any) => {
             src={lightSearch}
             alt="search"
           />
-          {isDropdownOpen && (
-            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
-              {searchResults.length > 0 ? (
-                searchResults.map((result: any, index) => (
-                  <li
-                    key={index}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      addMember(result);
-                    }}
-                  >
-                    {result.fullName || result.email}
+          {isDropdownOpen && searchResults.length > 0 && (
+            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-xl mt-1  overflow-hidden ">
+              <ul className="overflow-auto max-h-60 p-1">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result: any, index) => (
+                    <li
+                      key={index}
+                      className="px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-pointer items-center text-[#24181B] text-base"
+                      onClick={() => {
+                        addMember(result);
+                      }}
+                    >
+                      <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                        {result.profileUrl ? (
+                          <Image
+                            width={20}
+                            height={20}
+                            src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(result.profileUrl)}`}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitialOfEmail(result.email)
+                        )}
+                      </div>
+                      {result.fullName || result.email}
+                      {result.username ? (
+                        <span className="text-[#24181B80] text-base">
+                          @{result.username}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-2 text-gray-500 cursor-default">
+                    No options
                   </li>
-                ))
-              ) : (
-                <li className="px-4 py-2 text-gray-500 cursor-default">
-                  No options
-                </li>
-              )}
-            </ul>
+                )}
+              </ul>
+            </div>
           )}
-          <span className="text-gray-400">
+          <span className="text-[#24181B80] text-xs">
             All new members will be invited with no permissions.
           </span>
         </div>
-      </div>
-      {memberList.map((member: any, index: number) => (
-        <div className="w-full" key={index}>
-          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl hover:cursor-pointer hover:bg-[#EDEBE3]">
-            {<MemberOption member={member} />}
+        <div className="relative flex gap-2 flex-col">
+          {memberList.map((member: any, index: number) => (
+            <div className="w-full" key={index}>
+              <div className="group flex p-1 items-center gap-3 border border-[#E6E3D6] rounded-xl hover:cursor-pointer">
+                <div className="px-3 py-2.5 flex gap-3 w-full items-center rounded-xl group-hover:bg-[#EDEBE3]">
+                  {<MemberOption member={member} />}
 
-            <div className="ml-auto flex gap-2 items-center">
-              {cookies.userDetails.id === member.id ? (
-                <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                  Owner
-                </span>
-              ) : (
-                <button
-                  onClick={() => handleRemoveMember(index)}
-                  className="group w-[20px] h-[20px] ml-auto  hover:bg-[#24181B] border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                >
-                  <Image
-                    className="brightness-0 group-hover:brightness-0 group-hover:invert"
-                    src={cross}
-                    alt="close"
-                  />
-                </button>
-              )}
+                  <div className="ml-auto flex gap-2 items-center">
+                    {cookies.userDetails.id === member.id ? (
+                      <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                        Owner
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleRemoveMember(index)}
+                        className="group w-[20px] h-[20px] ml-auto  border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                      >
+                        <Image
+                          className="hidden brightness-0  group-hover:block"
+                          src={cross}
+                          alt="close"
+                        />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      ))}
+      </div>
       <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           onClick={handleSendInvite}

@@ -12,8 +12,11 @@ import { useDispatch } from 'react-redux';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import CommonDeleteModal from '../common/modal/CommonDeleteModal';
+import DeleteAcoountModalContent from '../common/settings/DeleteAcoountModalContent';
 
 const OpportunitiesBanner: React.FC = () => {
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [profileFile, setProfileFile] = useState<any>();
   const [profileFileUrl, setProfileFileUrl] = useState<string>();
   const [fileError, setFileError] = useState<string>('');
@@ -215,6 +218,28 @@ const OpportunitiesBanner: React.FC = () => {
           Update Details
         </button>
       </form>
+      <hr className="mt-2"></hr>
+      <div className="inline-flex w-full items-center gap-4 justify-between m-5">
+        <div className="inline-flex w-full items-center gap-4">
+          <h2 className="flex-grow">Danger Zone</h2>{' '}
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            type="button"
+            className="text-base  h-11 px-4 py-3 justify-end flex items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+          >
+            Delete Account
+          </button>
+        </div>
+      </div>
+      {showDeleteModal && (
+        <CommonDeleteModal
+          heading={'Permanently delete account'}
+          showModal={showDeleteModal}
+          setShowModal={setShowDeleteModal}
+        >
+          <DeleteAcoountModalContent setShowModal={setShowDeleteModal} />
+        </CommonDeleteModal>
+      )}
     </div>
   );
 };

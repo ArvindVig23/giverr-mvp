@@ -61,7 +61,7 @@ const Organizations: React.FC = () => {
     try {
       dispatch(setLoader(true));
       await removeMemberApi(removeMemberId, orgId);
-      sweetAlertToast('success', 'Leave successfully submitted');
+      sweetAlertToast('success', 'Leave successfully submitted', 1000);
       setRefetchList(!refetchList);
       dispatch(setLoader(false));
     } catch (error: any) {

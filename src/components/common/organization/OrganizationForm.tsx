@@ -125,134 +125,140 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   };
   return (
     <form
-      className="flex gap-5 w-full flex-col relative px-5"
+      className="flex  w-full flex-col relative"
       onSubmit={handleSubmit(
         userOrgDetails.id ? handleUpdateOrg : handleSaveChanges,
       )}
     >
-      <div className="inline-flex w-full items-center rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
-        <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
-          {avatarLink || userOrgDetails?.avatarLink ? (
-            <Image
-              width={20}
-              height={20}
-              src={
-                avatarLink
-                  ? avatarLink
-                  : `${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`
-              }
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            getInitialOfEmail(
-              watchOrganizationName
-                ? watchOrganizationName
-                : userOrgDetails.name
-                  ? userOrgDetails.name
-                  : 'O',
-            )
+      <div className="max-h-modal overflow-auto flex gap-5 w-full flex-col  p-5">
+        <h4 className="text-[#24181B] text-2xl font-medium">Details</h4>
+        <div className="inline-flex w-full items-center rounded-xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
+          <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
+            {avatarLink || userOrgDetails?.avatarLink ? (
+              <Image
+                width={20}
+                height={20}
+                src={
+                  avatarLink
+                    ? avatarLink
+                    : `${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`
+                }
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              getInitialOfEmail(
+                watchOrganizationName
+                  ? watchOrganizationName
+                  : userOrgDetails.name
+                    ? userOrgDetails.name
+                    : 'O',
+              )
+            )}
+          </div>
+          <div className="flex-1 inline-flex gap-1.5 flex-wrap">
+            <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]">
+              Upload image{' '}
+              <input
+                accept=".jpg, .png"
+                className="hidden"
+                onChange={(e) => handleFileChange(e)}
+                type="file"
+              ></input>
+            </label>
+            <p className="text-[#24181B80] text-xs w-full">
+              We support PNGs and JPGs under 10MB
+            </p>
+          </div>
+        </div>
+        {avatarErr && <span className="text-red-500">{avatarErr}</span>}
+        <div className="relative w-full">
+          <input
+            defaultValue={userOrgDetails.name}
+            {...register('name', {
+              required: 'Organization Name is required',
+              min: {
+                value: 4,
+                message: 'Minimum 4 characters required.',
+              },
+              pattern: {
+                value: min4CharWithoutSpace,
+                message: 'Minimum 4 characters required.',
+              },
+            })}
+            type="type"
+            id="name"
+            className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            placeholder=" "
+          />
+          <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+            Organization name
+          </label>
+          {errors.name && (
+            <span className="text-red-500">
+              {(errors.name as { message: string }).message}
+            </span>
           )}
         </div>
-        <div className="flex-1 inline-flex gap-1.5 flex-wrap">
-          <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]">
-            Upload image{' '}
-            <input
-              accept=".jpg, .png"
-              className="hidden"
-              onChange={(e) => handleFileChange(e)}
-              type="file"
-            ></input>
+
+        <div className="relative w-full">
+          <input
+            defaultValue={userOrgDetails.username}
+            {...register('username', {
+              required: 'Username is required',
+              pattern: {
+                value: userNameRegex,
+                message:
+                  'Username should not contain spaces & must contain 4 characters',
+              },
+            })}
+            type="type"
+            id="username"
+            className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            placeholder=" "
+          />
+          <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+            Username
           </label>
-          <p className="text-[#24181B80] text-xs w-full">
-            We support PNGs and JPGs under 10MB
-          </p>
+          {errors.username && (
+            <span className="text-red-500">
+              {(errors.username as { message: string }).message}
+            </span>
+          )}
         </div>
-      </div>
-      {avatarErr && <span className="text-red-500">{avatarErr}</span>}
-      <div className="relative w-full">
-        <input
-          defaultValue={userOrgDetails.name}
-          {...register('name', {
-            required: 'Organization Name is required',
-            min: {
-              value: 4,
-              message: 'Minimum 4 characters required.',
-            },
-            pattern: {
-              value: min4CharWithoutSpace,
-              message: 'Minimum 4 characters required.',
-            },
-          })}
-          type="type"
-          id="name"
-          className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          placeholder=" "
-        />
-        <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-          Organization name
-        </label>
-        {errors.name && (
-          <span className="text-red-500">
-            {(errors.name as { message: string }).message}
-          </span>
-        )}
-      </div>
 
-      <div className="relative w-full">
-        <input
-          defaultValue={userOrgDetails.username}
-          {...register('username', {
-            required: 'Username is required',
-            pattern: {
-              value: userNameRegex,
-              message:
-                'Username should not contain spaces & must contain 4 characters',
-            },
-          })}
-          type="type"
-          id="username"
-          className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          placeholder=" "
-        />
-        <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-          Username
-        </label>
-        {errors.username && (
-          <span className="text-red-500">
-            {(errors.username as { message: string }).message}
-          </span>
-        )}
+        <div className="relative w-full">
+          <input
+            defaultValue={userOrgDetails.website}
+            {...register('website', {
+              required: 'Website link is required.',
+              pattern: {
+                value: websiteLinkRegex,
+                message: 'Enter valid website link',
+              },
+            })}
+            type="type"
+            id="website"
+            className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            placeholder=" "
+          />
+          <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+            Website
+          </label>
+          {errors.website && (
+            <span className="text-red-500">
+              {(errors.website as { message: string }).message}
+            </span>
+          )}
+        </div>
+        {!userOrgDetails.id ? (
+          <InviteSection
+            memberList={memberList}
+            setMemberList={setMemberList}
+          />
+        ) : null}
       </div>
-
-      <div className="relative w-full">
-        <input
-          defaultValue={userOrgDetails.website}
-          {...register('website', {
-            required: 'Website link is required.',
-            pattern: {
-              value: websiteLinkRegex,
-              message: 'Enter valid website link',
-            },
-          })}
-          type="type"
-          id="website"
-          className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          placeholder=" "
-        />
-        <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-          Website
-        </label>
-        {errors.website && (
-          <span className="text-red-500">
-            {(errors.website as { message: string }).message}
-          </span>
-        )}
-      </div>
-      {!userOrgDetails.id ? (
-        <InviteSection memberList={memberList} setMemberList={setMemberList} />
-      ) : null}
-      <div className="flex items-center justify-end border-t border-solid border-[#1E1E1E0D] rounded-b">
+      <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
