@@ -36,3 +36,25 @@ export const deleteOrg = async (id: string) => {
     throw error.data;
   }
 };
+
+//  get the list of org members of and pending invites
+
+export const getOrgInvitesAndMemberOf = async () => {
+  try {
+    const response: any = await callApi(`/organization-invites`);
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};
+
+export const updateOrgInviteStatus = async (status: string, token: string) => {
+  try {
+    const response: any = await callApi(
+      `/org-invite-update?status=${status}&token=${token}`,
+    );
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

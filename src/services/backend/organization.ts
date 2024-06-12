@@ -275,12 +275,12 @@ export const getInviteTokenDetails = async (
       where('memberId', '==', memberId),
     ),
   );
-  const memberDoc = querySnapshot.docs[0];
-  const memberTokenData: any = memberDoc.data();
 
-  if (!memberTokenData) {
+  if (querySnapshot.size === 0) {
     return null;
   } else {
+    const memberDoc = querySnapshot.docs[0];
+    const memberTokenData: any = memberDoc.data();
     return memberTokenData;
   }
 };

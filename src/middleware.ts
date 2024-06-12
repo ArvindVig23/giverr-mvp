@@ -12,6 +12,8 @@ export const middleware = async (request: NextRequest) => {
     '/api/organization',
     '/api/member',
     '/api/resend-invite',
+    '/api/organization-invites',
+    '/api/org-invite-update',
   ];
   //   we have different method on this route and that should be public
   if (
@@ -42,5 +44,7 @@ export const config = {
     '/api/organization',
     '/api/member',
     '/api/resend-invite',
+    '/api/organization-invites',
+    '/api/org-invite-update',
   ],
 };

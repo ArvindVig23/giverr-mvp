@@ -16,8 +16,6 @@ import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 const ModalInvite = ({ setShowModal }: any) => {
   const [memberList, setMemberList] = useState<any[]>([]);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
-  //   existed members
-  const [existedMembers, setExistedMembers] = useState<string[]>([]);
   const [cookies] = useCookies();
   const { register, watch } = useForm();
   const searchValue = watch('searchMember');
@@ -28,7 +26,16 @@ const ModalInvite = ({ setShowModal }: any) => {
   const fetchMembers = async (query: string) => {
     try {
       const response = await getMembersList(query);
-      setSearchResults(response);
+      const memberIds = userOrgDetails.members.map(
+        (member: any) => member.userId,
+      );
+
+      // Filter the response to exclude members whose id is in memberIds
+      const filteredResponse = response.filter(
+        (member: any) => !memberIds.includes(member.id),
+      );
+
+      setSearchResults(filteredResponse);
     } catch (error) {
       console.error('Error fetching members:', error);
     }
@@ -75,20 +82,6 @@ const ModalInvite = ({ setShowModal }: any) => {
     setMemberList(members);
   };
 
-  //    to avoid showing already existed members
-  useEffect(() => {
-    if (userOrgDetails && userOrgDetails.members) {
-      const memberIds = userOrgDetails.members.map(
-        (member: any) => member.userId,
-      );
-      setExistedMembers(memberIds);
-    } // eslint-disable-next-line
-  }, [userOrgDetails?.members?.length]);
-
-  const includesIdOrNot = (id: string) => {
-    return !existedMembers.includes(id);
-  };
-
   const dispatch = useDispatch();
   const handleSendInvite = async () => {
     if (memberList.length > 0) {
@@ -101,7 +94,7 @@ const ModalInvite = ({ setShowModal }: any) => {
       try {
         const response = await sendInvite(membersData);
         const { message, data } = response;
-        sweetAlertToast('success', message);
+        sweetAlertToast('success', message, 1000);
         setShowModal(false);
         const updatedOrgData = { ...userOrgDetails, members: data.members };
         dispatch(updateOrgDetails(updatedOrgData));
@@ -136,25 +129,28 @@ const ModalInvite = ({ setShowModal }: any) => {
           {isDropdownOpen && searchResults.length > 0 && (
             <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-xl mt-1  overflow-hidden ">
               <ul className="overflow-auto max-h-60 p-1">
-                {searchResults.map(
-                  (result: any, index) =>
-                    includesIdOrNot(result.id) && (
-                      <li
-                        key={index}
-                        className="px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-pointer items-center text-[#24181B] text-base"
-                        onClick={() => {
-                          addMember(result);
-                        }}
-                      >
-                        <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
-                          a
-                        </div>
-                        {result.fullName || result.email}
-                        <span className="text-[#24181B80] text-base">
-                          @adamanderson
-                        </span>
-                      </li>
-                    ),
+                {searchResults.length > 0 ? (
+                  searchResults.map((result: any, index) => (
+                    <li
+                      key={index}
+                      className="px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-pointer items-center text-[#24181B] text-base"
+                      onClick={() => {
+                        addMember(result);
+                      }}
+                    >
+                      <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                        a
+                      </div>
+                      {result.fullName || result.email}
+                      <span className="text-[#24181B80] text-base">
+                        @adamanderson
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-2 text-gray-500 cursor-default">
+                    No options
+                  </li>
                 )}
               </ul>
             </div>
