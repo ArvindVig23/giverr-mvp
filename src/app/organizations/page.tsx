@@ -1,8 +1,14 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import OrganizationsPage from '../../components/organizations/Organization';
 
 const Organizations: React.FC = () => {
-  return <OrganizationsPage />;
+  const [currrentPage, setCurrentPage] = useState<number>(1);
+  return (
+    <OrganizationsPage
+      currrentPage={currrentPage}
+      setCurrentPage={setCurrentPage}
+    />
+  );
 };
 export default Organizations;

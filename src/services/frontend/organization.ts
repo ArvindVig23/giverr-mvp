@@ -1,5 +1,6 @@
 import { OrgDetails } from '@/interface/organization';
 import callApi from './callApiService';
+import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
 
 export const createOrg = async (data: OrgDetails) => {
   try {
@@ -7,6 +8,16 @@ export const createOrg = async (data: OrgDetails) => {
     return response;
   } catch (error: any) {
     throw error.data;
+  }
+};
+
+export const getOrganizationList = async (dispatch: any) => {
+  try {
+    const orgsList = await callApi('/organization/get-all', 'get');
+    dispatch(updateOrganizationList(orgsList.data));
+    return orgsList;
+  } catch (error) {
+    console.log(error, 'error in getting the organization list');
   }
 };
 
