@@ -54,7 +54,7 @@ body {
   }
 }
 .max-h-modal {
-  max-height: calc(100vh - 230px);
+  height: calc(100vh - 230px);
 }
 /* width */
 ::-webkit-scrollbar {
@@ -231,4 +231,10 @@ body {
 
 .card-shadow:hover {
   box-shadow: 0px 8px 20px 0px #24181b0d;
+
+}
+
+.react-datepicker-wrapper
+{
+  width: 100%;
 }

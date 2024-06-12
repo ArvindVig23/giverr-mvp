@@ -158,7 +158,8 @@ const EventForm = ({ setShowModal }: any) => {
   }, [radioValue]);
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
-      <div className="flex gap-5 w-full flex-col relative px-5">
+      <div className="flex gap-5 w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
+        <h4 className="text-[#24181B] text-2xl font-medium">Event Details</h4>
         <div className="flex flex-col w-full relative gap-5">
           <div className="py-3 px-4 flex items-center w-full mt-1 relative bg-[#EDEBE3] rounded-xl border border-[#E6E3D6]">
             <div className="flex-shrink-0 px-5 pl-0 text-base text-[#24181B] border-r border-[#D1CFC7]">
@@ -589,7 +590,7 @@ const EventForm = ({ setShowModal }: any) => {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-end p-6 pb-0 border-t border-solid border-[#1E1E1E0D] rounded-b">
+      <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
