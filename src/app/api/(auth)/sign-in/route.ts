@@ -5,6 +5,10 @@ import { db } from '@/firebase/config';
 import { schema } from '@/utils/joiSchema';
 import { cookies } from 'next/headers';
 import { UserDetailsCookies } from '@/interface/user';
+import {
+  getNotificationSettings,
+  getSubscribeCategorySettings,
+} from '@/services/backend/commonServices';
 
 /**
  * @swagger
@@ -74,12 +78,19 @@ export async function POST(req: NextRequest) {
     const userData = userDoc.data();
     const documentId = userDoc.id;
 
+    //  get the notification settings details with user id
+    const notificationSetting = await getNotificationSettings(documentId);
+
+    // get the category subscribe details on the basis of user ID
+    const categorySubscribe = await getSubscribeCategorySettings(documentId);
     const cookiesNeedsToSet: UserDetailsCookies = {
       email: userData.email,
       username: userData.username,
       id: documentId,
       profileUrl: userData.profileUrl || '',
       fullName: userData.fullName,
+      notificationSetting,
+      categorySubscribe,
     };
     cookies().set({
       name: 'userDetails',

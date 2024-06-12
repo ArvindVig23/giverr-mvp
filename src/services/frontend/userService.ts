@@ -43,3 +43,14 @@ export const deleteAccountApi = async () => {
     throw error.data;
   }
 };
+
+//  update users notification
+
+export const updateUsersNotificationSetting = async (data: any) => {
+  try {
+    const response = await callApi('/notification-settings', 'put', data);
+    return response.data;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

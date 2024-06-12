@@ -146,3 +146,9 @@ export const orgIdAndUserIdSchema = Joi.object({
     'string.required': 'User Id is required',
   }),
 });
+
+export const booleanSchema = Joi.object({
+  allowUpdates: Joi.boolean().required(),
+  acceptSubmission: Joi.boolean().required(),
+  allowVolunteeringUpdates: Joi.boolean().required(),
+});

@@ -10,7 +10,7 @@ const ActivityTabs: React.FC = () => {
   const wishlistTab = searchParams.get('wishlist');
   const router = useRouter();
   useEffect(() => {
-    if (!eventsTab || !wishlistTab) {
+    if (!wishlistTab) {
       router.push('/activity?events=true');
     }
     // eslint-disable-next-line
