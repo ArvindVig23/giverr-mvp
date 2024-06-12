@@ -6,10 +6,18 @@ import Select, { MultiValue } from 'react-select';
 import { OptionType } from '@/interface/organization';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { updateUsersNotificationSetting } from '@/services/frontend/userService';
+import {
+  selectedOptionsFromCategory,
+  updateUsersNotificationSetting,
+} from '@/services/frontend/userService';
+import {
+  createSubscribeCat,
+  deleteSubscribeCat,
+} from '@/services/frontend/notificationService';
 
 const Notifications: React.FC = () => {
   const [cookies] = useCookies();
+  const existingSubscribeCat = cookies.userDetails.categorySubscribe;
   const existingSetting = cookies.userDetails.notificationSetting;
   const [notificationValues, setNotificationValues] = useState<any>({
     allowUpdates: existingSetting.allowUpdates,
@@ -17,6 +25,10 @@ const Notifications: React.FC = () => {
     allowVolunteeringUpdates: existingSetting.allowVolunteeringUpdates,
   });
   const defaultOption = { label: 'All Categories', value: '0' };
+  // for category dropdown
+  const [selectedOptions, setSelectedOptions] = useState<
+    MultiValue<OptionType>
+  >([]);
   const [options, setOptions] = useState<OptionType[]>([]);
   const dispatch = useDispatch();
   const opportunityTypeList = useSelector(
@@ -30,15 +42,76 @@ const Notifications: React.FC = () => {
     } // eslint-disable-next-line
   }, []);
 
-  const [selectedOptions, setSelectedOptions] = useState<
-    MultiValue<OptionType>
-  >([defaultOption]);
-
-  const handleChange = (selected: MultiValue<OptionType>) => {
+  const handleChange = async (selected: MultiValue<OptionType>) => {
+    dispatch(setLoader(true));
     if (selected.some((option) => option.value === '0')) {
       setSelectedOptions([{ label: 'All Categories', value: '0' }]);
+      const data = {
+        opportunityTypeId: '0',
+      };
+      try {
+        const response = await createSubscribeCat(data);
+        console.log(response, 'response');
+        dispatch(setLoader(false));
+      } catch (error: any) {
+        dispatch(setLoader(false));
+        const { message } = error;
+        sweetAlertToast('error', message);
+      }
+      return;
     } else {
       setSelectedOptions(selected);
+      let needToCreateRecord: string[] = [];
+      let needToDelete: string[] = [];
+
+      // Extract IDs from selected options
+      const selectedIds = selected.map((option) => option.value);
+
+      // Check for IDs to create
+      selectedIds.forEach((id) => {
+        if (
+          !existingSubscribeCat.some((cat: any) => cat.opportunityTypeId === id)
+        ) {
+          needToCreateRecord.push(id);
+        }
+      });
+
+      // Check for IDs to delete
+      existingSubscribeCat.forEach((cat: any) => {
+        if (!selectedIds.includes(cat.opportunityTypeId)) {
+          needToDelete.push(cat.opportunityTypeId);
+        }
+      });
+
+      console.log(needToCreateRecord, 'needToCreate');
+      console.log(needToDelete, 'needToDelete');
+      if (needToCreateRecord.length > 0) {
+        const data = {
+          opportunityTypeId: needToCreateRecord[0],
+        };
+        try {
+          const response = await createSubscribeCat(data);
+          console.log(response, 'response');
+          dispatch(setLoader(false));
+        } catch (error: any) {
+          dispatch(setLoader(false));
+          const { message } = error;
+          sweetAlertToast('error', message);
+        }
+        return;
+      }
+      if (needToDelete.length > 0) {
+        try {
+          const response = await deleteSubscribeCat(needToDelete[0]);
+          console.log(response, 'response');
+          dispatch(setLoader(false));
+        } catch (error: any) {
+          dispatch(setLoader(false));
+          const { message } = error;
+          sweetAlertToast('error', message);
+        }
+        return;
+      }
     }
   };
 
@@ -68,6 +141,16 @@ const Notifications: React.FC = () => {
       sweetAlertToast('error', message);
     }
   };
+
+  //  set the values of selected categories
+  useEffect(() => {
+    if (existingSubscribeCat.length > 0) {
+      const options = existingSubscribeCat.map((item: any) => {
+        return selectedOptionsFromCategory(item);
+      });
+      setSelectedOptions(options);
+    } //eslint-disable-next-line
+  }, [existingSubscribeCat]);
 
   return (
     <div className="w-full">

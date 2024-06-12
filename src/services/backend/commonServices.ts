@@ -58,7 +58,6 @@ export const getNotificationSettings = async (userId: string) => {
       allowVolunteeringUpdates:
         notificationSettingData.allowVolunteeringUpdates,
     };
-    console.log(data, 'data');
 
     return data;
   }
@@ -70,13 +69,16 @@ export const getSubscribeCategorySettings = async (userId: string) => {
     query(catSubscribeRef, where('userId', '==', userId)),
   );
   if (querySnapshot.size === 0) {
-    return null;
+    return [];
   } else {
     const catSubscribePromises = querySnapshot.docs.map(async (docs) => {
-      const catData = docs.data();
-      catData.id = docs.id;
-      const opportunityTypeId = catData.opportunityTypeId;
-      catData.opportunityTypeData = null;
+      const allData = docs.data();
+      const catData = {
+        id: docs.id,
+        opportunityTypeData: null,
+        opportunityTypeId: allData.opportunityTypeId,
+      };
+      const opportunityTypeId = allData.opportunityTypeId;
       // Option 1: Fetch organization data using a separate query (for complex data)
       if (opportunityTypeId !== '0') {
         const oppCatDetails = await getOppTypeDetails(opportunityTypeId);

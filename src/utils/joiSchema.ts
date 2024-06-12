@@ -152,3 +152,10 @@ export const booleanSchema = Joi.object({
   acceptSubmission: Joi.boolean().required(),
   allowVolunteeringUpdates: Joi.boolean().required(),
 });
+
+export const oppTypeIdSchema = Joi.object({
+  opportunityTypeId: Joi.string().required().messages({
+    'string.base': 'Pooprtunity Type Id must be a string',
+    'string.required': 'Pooprtunity Type Id is required',
+  }),
+});
