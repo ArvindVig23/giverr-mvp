@@ -122,11 +122,11 @@ const Myorganization: React.FC = () => {
           <Members />
         </>
       ) : null}
-      <hr className="mt-2"></hr>
+      <hr className="my-[60px]"></hr>
       {showOrganization ? (
-        <div className="inline-flex w-full items-center gap-4 justify-between m-5">
+        <div className="inline-flex w-full items-center gap-4 justify-between">
           <div className="inline-flex w-full items-center gap-4">
-            <h2 className="flex-grow">Danger Zone</h2>{' '}
+            <h2 className="flex-grow font-medium text-2xl">Danger Zone</h2>{' '}
             <button
               onClick={() => setShowDeleteModal(true)}
               type="button"
@@ -142,7 +142,6 @@ const Myorganization: React.FC = () => {
           heading={
             userOrgDetails.id ? 'Update organization' : 'Create organization'
           }
-          subHeading={'Details'}
           showModal={showModal}
           setShowModal={setShowModal}
         >
