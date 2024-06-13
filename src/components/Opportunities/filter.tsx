@@ -1,18 +1,75 @@
 'use client';
-import { useState } from 'react'; // Import useState, useEffect, and useRef
-// import { Menu, Transition } from '@headlessui/react';
-// import { Fragment } from 'react';
-// import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import filtericon from '/public/images/filter.svg';
 import physical from '/public/images/physical.svg';
 import virtual from '/public/images/virtual.svg';
 import check from '/public/images/check.svg';
 import CommonModal from '../common/modal/CommonModal';
+import Datepicker from 'react-tailwindcss-datepicker';
+import { getOpportunityList } from '@/services/frontend/opportunityService';
+import { useDispatch } from 'react-redux';
+import { updateOpportunityDetails } from '@/app/redux/slices/opportunitySlice';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { OpportunityDetails } from '@/interface/opportunity';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 
-export default function ProfileDropdown() {
+export default function ProfileDropdown(props: {
+  opportunityIds: string;
+  setCurrentPage: Function;
+  setTotalRecords: Function;
+}) {
   const [showModal, setShowModal] = useState(false); // State to track menu open/close
   const [isButtonClicked, setIsButtonClicked] = useState(false); // State to track filter button click
+  const { opportunityIds, setCurrentPage, setTotalRecords } = props;
+  const dispatch = useDispatch();
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: '',
+    endDate: '',
+  });
+  const [opportunities, setOpportunities] = useState<OpportunityDetails[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const handleValueChange = (dateRange: any) => {
+    console.log('newValue:', dateRange);
+    setDateRange(dateRange);
+  };
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) {
+      (async () => {
+        try {
+          dispatch(setLoader(true));
+          setLoading(true);
+          const getList = await getOpportunityList(
+            opportunityIds,
+            1,
+            dateRange.startDate,
+            dateRange.endDate,
+          );
+          const { opportunities, page, totalRecords } = getList;
+          setOpportunities(opportunities);
+          setPage(page);
+          setTotalCount(totalRecords);
+          setLoading(false);
+        } catch (error: any) {
+          setLoading(false);
+          const { message } = error;
+          sweetAlertToast('error', message);
+        } finally {
+          dispatch(setLoader(false));
+        }
+      })();
+    }
+    //eslint-disable-next-line
+  }, [dateRange.startDate, dateRange.endDate]);
+
+  const handleShowRecords = () => {
+    dispatch(updateOpportunityDetails(opportunities));
+    setCurrentPage(page);
+    setTotalRecords(totalCount);
+    setShowModal(false);
+  };
 
   return (
     // <Menu
@@ -206,16 +263,15 @@ export default function ProfileDropdown() {
               <div className="w-full flex flex-col gap-5">
                 <h4 className="text-[#24181B] text-2xl font-medium">Date</h4>
                 <div className="relative w-full">
-                  <input
-                    id="name"
-                    className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                    placeholder=" "
-                    type="text"
-                    name="name"
-                  />
-                  <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                  {/* <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                     Select Date
-                  </label>
+                  </label> */}
+                  <Datepicker
+                    useRange={false}
+                    value={dateRange}
+                    onChange={handleValueChange}
+                    placeholder="Select Date"
+                  />
                 </div>
               </div>
 
@@ -239,14 +295,19 @@ export default function ProfileDropdown() {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
-              <button
-                className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
-                type="submit"
-              >
-                Show 366 opportunities
-              </button>
-            </div>
+            {!loading ? (
+              <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
+                <button
+                  onClick={() => handleShowRecords()}
+                  className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                  type="submit"
+                >
+                  {totalCount
+                    ? `Show ${totalCount} opportunities.`
+                    : 'No Record Found.'}
+                </button>
+              </div>
+            ) : null}
           </div>
         </CommonModal>
       )}

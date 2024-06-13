@@ -10,6 +10,7 @@ import CardSkeleton from '../common/loader/CardSkeleton';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import OpportunityCard from '../common/cards/OpportunityCard';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { updateOpportunityDetails } from '@/app/redux/slices/opportunitySlice';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
@@ -21,8 +22,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const opportunityTypeList = useSelector(
     (state: any) => state.eventListReducer,
   );
-  const [opportunityList, setOpportunityList] = useState<any>([]);
-
+  const opportunityList = useSelector((state: any) => state.opportunityReducer);
+  const [opportunityIds, setOpportunityIds] = useState('');
   const [totalRecords, setTotalRecords] = useState<number>(0);
   // const [limit, setLimit] = useState<number>(20);
   const [cookies] = useCookies();
@@ -45,15 +46,18 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   };
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
+    setOpportunityIds(opportunityIds);
     (async () => {
       try {
         setLoading(true);
         const getList = await getOpportunityList(opportunityIds, currrentPage);
         const { opportunities, page, totalRecords } = getList;
         if (page > 1) {
-          setOpportunityList([...opportunityList, ...opportunities]);
+          dispatch(
+            updateOpportunityDetails([...opportunityList, ...opportunities]),
+          );
         } else {
-          setOpportunityList(opportunities);
+          dispatch(updateOpportunityDetails(opportunities));
         }
         setCurrentPage(page);
         setTotalRecords(totalRecords);
@@ -78,9 +82,11 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
       const { opportunityId, isWishlist } = response.data;
-      setOpportunityList((prevList: any[]) =>
-        prevList.map((opp) =>
-          opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
+      dispatch(
+        updateOpportunityDetails((prevList: any[]) =>
+          prevList.map((opp) =>
+            opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
+          ),
         ),
       );
       dispatch(setLoader(false));
@@ -97,7 +103,11 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
         <div className="text-base text-[#1E1E1E80] font-normal">
           {totalRecords} Opportunities
         </div>
-        <Filter />
+        <Filter
+          opportunityIds={opportunityIds}
+          setCurrentPage={setCurrentPage}
+          setTotalRecords={setTotalRecords}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
