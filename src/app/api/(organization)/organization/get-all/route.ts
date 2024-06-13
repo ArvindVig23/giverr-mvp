@@ -1,7 +1,14 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  limit as firestoreLimit,
+  startAfter,
+} from 'firebase/firestore';
 import responseHandler from '../../../../../lib/responseHandler';
 import { db } from '@/firebase/config';
-import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 
 /**
  * @swagger
@@ -48,32 +55,63 @@ import { cookies } from 'next/headers';
  *               description: Error message
  */
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const userDetailCookie: any = cookieStore.get('userDetails');
-    const convertString = JSON.parse(userDetailCookie.value);
-
-    const { id } = convertString;
-
+    const { searchParams } = new URL(req.url);
+    const page = +(searchParams.get('page') || '1');
+    const limit = +(searchParams.get('limit') || '20');
     const organizationsRef = collection(db, 'organizations');
-    const queryWhereCondition = query(
-      organizationsRef,
-      where('createdBy', '==', id),
+    let querySnapshot = await getDocs(organizationsRef);
+    const totalRecords = querySnapshot.size;
+    if (page === 1) {
+      querySnapshot = await getDocs(
+        query(organizationsRef, firestoreLimit(limit)),
+      );
+    } else {
+      const previousPageSnapshot = await getDocs(
+        query(organizationsRef, firestoreLimit((page - 1) * limit)),
+      );
+      const lastVisible =
+        previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+      querySnapshot = await getDocs(
+        query(organizationsRef, startAfter(lastVisible), firestoreLimit(limit)),
+      );
+    }
+
+    const organizationIds = querySnapshot.docs.map((doc) => doc.id);
+
+    const opportunitiesRef = collection(db, 'opportunities');
+    const opportunitiesQuery = query(
+      opportunitiesRef,
+      where('organizationId', 'in', organizationIds),
     );
-    const querySnapshot = await getDocs(queryWhereCondition);
+    const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
 
     const organizations: any = [];
     querySnapshot.forEach((doc) => {
       const organizationData = doc.data();
-      organizationData.id = doc.id;
+      const organizationId = doc.id;
+
+      const organizationOpportunities = opportunitiesSnapshot.docs
+        .filter(
+          (opportunityDoc) =>
+            opportunityDoc.data().organizationId === organizationId,
+        )
+        .map((opportunityDoc) => ({
+          id: opportunityDoc.id,
+          ...opportunityDoc.data(),
+        }));
+
+      organizationData.id = organizationId;
+      organizationData.opportunities = organizationOpportunities;
+
       organizations.push(organizationData);
     });
 
     const response = responseHandler(
       200,
       true,
-      organizations,
+      { organizations, totalRecords, page, limit },
       'Organizations fetched successfully',
     );
     return response;
