@@ -114,3 +114,37 @@ export const setUserDetailsCookie = (updatedCookies: any) => {
     value: JSON.stringify(updatedCookies),
   });
 };
+
+// get notification setting with user id
+export const getNotificationSettingsById = async (userId: string) => {
+  const userSettingsRef = collection(db, 'userNotificationSettings');
+  const querySnapshot = await getDocs(
+    query(userSettingsRef, where('userId', '==', userId)),
+  );
+  if (querySnapshot.size === 0) {
+    return null;
+  } else {
+    const member = querySnapshot.docs[0];
+    return member.data();
+  }
+};
+
+// get all the users subscription setting except the user created the event
+export const getAllUsersSubscribeForOppType = async (
+  matchArrayOfOppTypeId: string[],
+  userId: string,
+) => {
+  const userSettingsRef = collection(db, 'userCategorySubscription');
+  const querySnapshot = await getDocs(
+    query(
+      userSettingsRef,
+      where('opportunityTypeId', 'in', matchArrayOfOppTypeId),
+      where('userId', '!=', userId),
+    ),
+  );
+  if (querySnapshot.size === 0) {
+    return [];
+  } else {
+    return querySnapshot.docs.map((doc) => doc.data());
+  }
+};
