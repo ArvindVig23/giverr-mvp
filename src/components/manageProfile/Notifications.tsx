@@ -246,11 +246,14 @@ const Notifications: React.FC = () => {
           </div>
         </div>
 
-        <div className="relative w-full mt-1">
+        <div
+          className={`relative w-full mt-1 ${!notificationValues.allowUpdates ? 'cursor-not-allowed' : ''}`}
+        >
           <label className="text-xs text-[#24181B] absolute top-[10px] left-5 z-10 mb-1 font-medium">
             Categories
           </label>
           <Select
+            isDisabled={!notificationValues.allowUpdates}
             className="basic-multi-select block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
             isMulti
             value={selectedOptions}
