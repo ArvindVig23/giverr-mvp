@@ -18,6 +18,8 @@ import { getFormattedLocalTime } from '../frontend/commonServices';
 import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
+import { getNotificationSettingsById } from './commonServices';
+import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -230,16 +232,19 @@ export const joinOpportunity = async (
       userId: id,
       opportunityId: oppId,
     });
-    const template = compileEmailTemplate(
-      volunteerEmailTemplate,
-      getEventDetails,
-    );
-    await sendEmail(
-      email,
-      'Welcome aboard, Volunteer!',
-      'Welcome aboard, Volunteer!',
-      template,
-    );
+    const getNotificationSetting: any = await getNotificationSettingsById(id);
+    if (getNotificationSetting && getNotificationSetting.allowUpdates) {
+      const template = compileEmailTemplate(
+        volunteerEmailTemplate,
+        getEventDetails,
+      );
+      await sendEmail(
+        email,
+        'Welcome aboard, Volunteer!',
+        'Welcome aboard, Volunteer!',
+        template,
+      );
+    }
 
     const response = responseHandler(
       200,
@@ -325,5 +330,50 @@ export const removeFromWishlist = async (oppId: string, id: string) => {
       'Error while removing opportunity from wishlist',
     );
     return response;
+  }
+};
+
+export const sendEmailsForSubscribeCatUser = async (
+  data: any,
+  emailsString: string,
+) => {
+  try {
+    const time = getFormattedLocalTime(data.eventDate);
+    let org = '';
+    if (data.organizationId) {
+      const organization = await getOrgDetailsById(data.organizationId);
+      org = organization.name;
+    }
+    let oppType = '';
+    if (data.opportunityType) {
+      const opportunity = await getOpportunityTypeById(data.opportunityType);
+      oppType = opportunity.name;
+    }
+    let userEmail = '';
+    if (data.createdBy) {
+      const user = await getUserDetailsById(data.createdBy);
+      userEmail = user.email;
+    }
+    const emailData = {
+      name: data.name,
+      description: data.description,
+      frequency: data.frequency,
+      activities: data.activities,
+      eventDate: time,
+      location: data.location,
+      volunteerRequirements: data.volunteerRequirements,
+      organizationName: org,
+      email: userEmail,
+      oppType,
+    };
+    const template = compileEmailTemplate(eventAddedToSubscribeCat, emailData);
+    await sendEmail(
+      emailsString,
+      'Event Added to your subscribe category',
+      'Event Added to your subscribe category',
+      template,
+    );
+  } catch (error) {
+    console.log('Error in sending email to subscribed users');
   }
 };

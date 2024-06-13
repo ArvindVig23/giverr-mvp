@@ -13,6 +13,10 @@ import { cookies } from 'next/headers';
 import { createUserService } from '@/services/backend/signUpService';
 import { schema } from '@/utils/joiSchema';
 import { UserDetailsCookies } from '@/interface/user';
+import {
+  getNotificationSettings,
+  getSubscribeCategorySettings,
+} from '@/services/backend/commonServices';
 
 /**
  * @swagger
@@ -116,10 +120,17 @@ export async function POST(req: NextRequest) {
           isGoogleAuth: true,
           isAppleAuth: false,
         });
+        //  get the notification settings details with user id
+        const notificationSetting = await getNotificationSettings(userId);
+
+        // get the category subscribe details on the basis of user ID
+        const categorySubscribe = await getSubscribeCategorySettings(userId);
         const userCookies: UserDetailsCookies = {
           email: userDocData.email,
           username: userDocData.username,
           id: userDoc.id,
+          notificationSetting,
+          categorySubscribe,
         };
         cookies().set('userDetails', JSON.stringify(userCookies));
         cookies().set('userToken', token);

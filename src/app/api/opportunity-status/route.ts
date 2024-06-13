@@ -4,6 +4,14 @@ import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import {
+  getAllUsersSubscribeForOppType,
+  getNotificationSettingsById,
+} from '@/services/backend/commonServices';
+import {
+  getUserDetailsById,
+  sendEmailsForSubscribeCatUser,
+} from '@/services/backend/opportunityServices';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -42,6 +50,7 @@ export async function GET(req: NextRequest) {
       const docRef = doc(opportunitiesRef, opportunityId);
       const docSnap = await getDoc(docRef);
       const opportunityData: any = docSnap.data();
+      console.log(opportunityData, 'opportunityData');
 
       if (!opportunityData) {
         const response = responseHandler(
@@ -64,17 +73,62 @@ export async function GET(req: NextRequest) {
       }
       const updatedData = { ...opportunityData, status }; // Efficiently merge data
       await updateDoc(docRef, updatedData);
+
+      // send email to the user who have subscribe for this category or to all category
+      const matchArrayOfOppTypeId = ['0', opportunityData.opportunityType];
+      const usersSubscribeForOppType = await getAllUsersSubscribeForOppType(
+        matchArrayOfOppTypeId,
+        opportunityData.createdBy,
+      );
+      console.log(usersSubscribeForOppType, 'usersSubscribeForOppType');
+
+      if (usersSubscribeForOppType.length > 0) {
+        const userIdsWithUpdatesAllowed = await Promise.all(
+          usersSubscribeForOppType.map(async (user) => {
+            const userId = user.userId;
+            const notificationSettings =
+              await getNotificationSettingsById(userId);
+
+            if (notificationSettings && notificationSettings.allowUpdates) {
+              return userId;
+            } else {
+              return null;
+            }
+          }),
+        );
+
+        // Filter out null values
+        const filteredUserIds = userIdsWithUpdatesAllowed.filter(
+          (userId) => userId !== null,
+        );
+        console.log(filteredUserIds, 'filteredUserIds');
+
+        if (filteredUserIds.length > 0) {
+          const userEmails = await Promise.all(
+            filteredUserIds.map(async (userId) => {
+              const userDetails = await getUserDetailsById(userId);
+              return userDetails ? userDetails.email : null;
+            }),
+          );
+
+          // Filter out null values
+          const filteredUserEmails = userEmails.filter(
+            (email) => email !== null,
+          );
+          const emailsString = filteredUserEmails.join();
+          console.log(emailsString, 'emailStrin');
+          await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
+        }
+      }
+
       const message =
         status === 'APPROVED'
           ? 'Opportunity status updated to Approved'
           : 'Opportunity status updated to Rejected';
       const response = responseHandler(200, true, null, message);
       return response;
-
-      // Proceed with your logic here based on opportunityId
     } catch (err) {
       console.log(err, 'erri');
-
       // Token verification failed
       const response = responseHandler(
         400,
@@ -85,6 +139,7 @@ export async function GET(req: NextRequest) {
       return response;
     }
   } catch (error) {
+    console.log(error, 'Error in updating the status');
     const response = responseHandler(
       500,
       false,
