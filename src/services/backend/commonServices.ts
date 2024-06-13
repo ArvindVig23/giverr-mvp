@@ -1,5 +1,12 @@
 import { db } from '@/firebase/config';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import { cookies } from 'next/headers';
 
 export const getUserDetailsCookie = () => {
@@ -30,4 +37,80 @@ export const getMemberTokenDetailsById = async (
     const member = memberTokenDetails.docs[0];
     return member.data();
   }
+};
+
+//  get the notification settings details with user id
+export const getNotificationSettings = async (userId: string) => {
+  const notificationRef = collection(db, 'userNotificationSettings');
+  const querySnapshot = await getDocs(
+    query(notificationRef, where('userId', '==', userId)),
+  );
+  if (querySnapshot.size === 0) {
+    return null;
+  } else {
+    const memberDoc = querySnapshot.docs[0];
+    const notificationSettingData: any = memberDoc.data();
+    // get only fields that are important
+    const data = {
+      id: memberDoc.id,
+      allowUpdates: notificationSettingData.allowUpdates,
+      acceptSubmission: notificationSettingData.acceptSubmission,
+      allowVolunteeringUpdates:
+        notificationSettingData.allowVolunteeringUpdates,
+    };
+
+    return data;
+  }
+};
+// get the category subscribe details on the basis of user ID
+export const getSubscribeCategorySettings = async (userId: string) => {
+  const catSubscribeRef = collection(db, 'userCategorySubscription');
+  const querySnapshot = await getDocs(
+    query(catSubscribeRef, where('userId', '==', userId)),
+  );
+  if (querySnapshot.size === 0) {
+    return [];
+  } else {
+    const catSubscribePromises = querySnapshot.docs.map(async (docs) => {
+      const allData = docs.data();
+      const catData = {
+        id: docs.id,
+        opportunityTypeData: null,
+        opportunityTypeId: allData.opportunityTypeId,
+      };
+      const opportunityTypeId = allData.opportunityTypeId;
+      // Option 1: Fetch organization data using a separate query (for complex data)
+      if (opportunityTypeId !== '0') {
+        const oppCatDetails = await getOppTypeDetails(opportunityTypeId);
+        if (oppCatDetails) {
+          catData.opportunityTypeData = oppCatDetails;
+        }
+      }
+      return catData;
+    });
+    const catSubscribed = await Promise.all(catSubscribePromises);
+    return catSubscribed;
+  }
+};
+
+// get opportunity type details on the basis of ID
+export const getOppTypeDetails = async (oppTypeId: string) => {
+  const oppTyprRef = collection(db, 'opportunityTypes');
+
+  const docRef = doc(oppTyprRef, oppTypeId);
+  const docSnap = await getDoc(docRef);
+  const oppTypeData: any = docSnap.data();
+  if (!oppTypeData) {
+    return null;
+  } else {
+    return oppTypeData;
+  }
+};
+
+// set userDetails cookie
+export const setUserDetailsCookie = (updatedCookies: any) => {
+  cookies().set({
+    name: 'userDetails',
+    value: JSON.stringify(updatedCookies),
+  });
 };

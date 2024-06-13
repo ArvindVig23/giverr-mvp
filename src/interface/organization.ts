@@ -10,3 +10,9 @@ export interface OrgDetails {
   updatedAt?: string; // as we are converting the date to string
   members?: any[];
 }
+
+// org type options
+export type OptionType = {
+  value: string;
+  label: string;
+};

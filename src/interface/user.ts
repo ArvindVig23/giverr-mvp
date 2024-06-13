@@ -15,4 +15,6 @@ export interface UserDetailsCookies {
   username?: string;
   profileUrl?: string;
   fullName?: string;
+  notificationSetting?: any;
+  categorySubscribe?: any;
 }

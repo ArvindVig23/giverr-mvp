@@ -43,3 +43,26 @@ export const deleteAccountApi = async () => {
     throw error.data;
   }
 };
+
+//  update users notification
+
+export const updateUsersNotificationSetting = async (data: any) => {
+  try {
+    const response = await callApi('/notification-settings', 'put', data);
+    return response.data;
+  } catch (error: any) {
+    throw error.data;
+  }
+};
+
+// create options from the category  details
+export const selectedOptionsFromCategory = (item: any) => {
+  if (item.opportunityTypeId === '0') {
+    return { label: 'All Categories', value: '0' };
+  } else {
+    return {
+      label: item.opportunityTypeData.name,
+      value: item.opportunityTypeId,
+    };
+  }
+};
