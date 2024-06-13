@@ -3,9 +3,9 @@ import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
-import search from '/public/images/search.svg';
+import lightSearch from '/public/images/search-light.svg';
 import ProfileDropdown from './ProfileDropdown';
-import Daterange from './Daterange';
+// import Daterange from './Daterange';
 import { useCookies } from 'react-cookie';
 import SubmitEvents from '../../manageProfile/SubmitEvents';
 import { usePathname } from 'next/navigation';
@@ -39,18 +39,23 @@ const Header: React.FC = () => {
           </div>
 
           <div className="flex w-full max-w-[654px] ">
-            <form className="relative items-center flex border border-[#D1CFC7] rounded-xl h-11 w-full">
+            <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
               <input
                 placeholder="Search location"
-                className="placeholder-[#1E1E1E80] h-full rounded-xl px-4 focus:outline-0 bg-transparent"
+                className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
               ></input>
-              <div className="bg-[#D1CFC7] h-6 w-px mr-4"></div>
+              <Image
+                className="absolute top-2.5 left-3 pointer-events-none"
+                src={lightSearch}
+                alt="search"
+              />
+              {/* <div className="bg-[#D1CFC7] h-6 w-px mr-4"></div>
               <div className="flex-1 daterange">
                 <Daterange />
               </div>
               <button className="bg-[#1E1E1E] min-w-9 w-9 h-9 flex items-center justify-center rounded-[10px] mx-1">
                 <Image className="h-10" src={search} alt="Search" />
-              </button>
+              </button> */}
             </form>
           </div>
           <div className="flex items-center gap-2.5">
