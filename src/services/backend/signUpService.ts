@@ -36,29 +36,45 @@ export const createUserService = async (userData: any, token?: any) => {
     });
     const getCreatedUser = await getDoc(createuser);
     const userId = getCreatedUser.id;
+    // add records in user notification collection
+    const createNotification = await addDoc(
+      collection(db, 'userNotificationSettings'),
+      {
+        userId,
+        allowUpdates: false,
+        acceptSubmission: false,
+        allowVolunteeringUpdates: false,
+        createdAt: currentUtcDate,
+        updatedAt: currentUtcDate,
+      },
+    );
+
+    // // create record in the userCategorySubscription
+    // const createCatSubscribe = await addDoc(
+    //   collection(db, 'userCategorySubscription'),
+    //   {
+    //     userId,
+    //     opportunityTypeId: '0',
+    //     createdAt: currentUtcDate,
+    //     updatedAt: currentUtcDate,
+    //   },
+    // );
     if (token) {
+      const notificationSettings = await getDoc(createNotification);
+      // const subscribeCat = await getDoc(createCatSubscribe);
       const userCookies: UserDetailsCookies = {
         email: email,
         username: username,
         id: userId,
         profileUrl: '',
         fullName,
+        notificationSetting: notificationSettings.data(),
+        categorySubscribe: [],
       };
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));
     }
-    await addDoc(collection(db, 'userSettings'), {
-      userId,
-      allowUpdates: false,
-      acceptSubmission: false,
-      allowVolunteeringUpdates: false,
-      autoTimeZone: false,
-      selectedTimeZone: '',
-      istwentyFourHourTimeFormat: false,
-      isDayMonthYearDateFormat: false,
-      createdAt: currentUtcDate,
-      updatedAt: currentUtcDate,
-    });
+
     // send email after user created
     const template = compileEmailTemplate(registerEmailTemplate, { email });
     await sendEmail(
