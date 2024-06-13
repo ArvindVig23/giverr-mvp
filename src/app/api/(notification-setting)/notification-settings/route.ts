@@ -12,7 +12,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   query,
   updateDoc,
@@ -152,7 +151,6 @@ export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const opportunityTypeId: any = searchParams.get('opportunityTypeId');
-    console.log(typeof opportunityTypeId, 'opportunityTypeId');
 
     const { error } = oppTypeIdSchema.validate({ opportunityTypeId });
     if (error) {
@@ -195,10 +193,14 @@ export async function DELETE(req: NextRequest) {
       return response;
     }
     const categoryRef = collection(db, 'userCategorySubscription');
-    const docRef = doc(categoryRef, opportunityTypeId);
-    const docSnap = await getDoc(docRef);
-    const subscribeCatData: any = docSnap.data();
-    if (!subscribeCatData) {
+    const q = query(
+      categoryRef,
+      where('opportunityTypeId', '==', opportunityTypeId),
+      where('userId', '==', id),
+    );
+
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
       const response = responseHandler(
         404,
         false,
@@ -208,7 +210,9 @@ export async function DELETE(req: NextRequest) {
       return response;
     }
 
-    await deleteDoc(doc(db, 'userCategorySubscription', opportunityTypeId));
+    querySnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
 
     // to set the updated categories in cookies
     const categorySubscribe = await getSubscribeCategorySettings(id);
