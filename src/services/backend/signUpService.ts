@@ -7,6 +7,7 @@ import { UserDetailsCookies } from '@/interface/user';
 import { currentUtcDate } from './opportunityServices';
 import { compileEmailTemplate } from './handlebars';
 import { registerEmailTemplate } from '@/utils/templates/registerEmailTemplate';
+import { getNotificationSettings } from './commonServices';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -37,17 +38,14 @@ export const createUserService = async (userData: any, token?: any) => {
     const getCreatedUser = await getDoc(createuser);
     const userId = getCreatedUser.id;
     // add records in user notification collection
-    const createNotification = await addDoc(
-      collection(db, 'userNotificationSettings'),
-      {
-        userId,
-        allowUpdates: false,
-        acceptSubmission: false,
-        allowVolunteeringUpdates: false,
-        createdAt: currentUtcDate,
-        updatedAt: currentUtcDate,
-      },
-    );
+    await addDoc(collection(db, 'userNotificationSettings'), {
+      userId,
+      allowUpdates: true,
+      acceptSubmission: true,
+      allowVolunteeringUpdates: true,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+    });
 
     // // create record in the userCategorySubscription
     // const createCatSubscribe = await addDoc(
@@ -60,7 +58,8 @@ export const createUserService = async (userData: any, token?: any) => {
     //   },
     // );
     if (token) {
-      const notificationSettings = await getDoc(createNotification);
+      const notificationSetting = await getNotificationSettings(userId);
+
       // const subscribeCat = await getDoc(createCatSubscribe);
       const userCookies: UserDetailsCookies = {
         email: email,
@@ -68,7 +67,7 @@ export const createUserService = async (userData: any, token?: any) => {
         id: userId,
         profileUrl: '',
         fullName,
-        notificationSetting: notificationSettings.data(),
+        notificationSetting,
         categorySubscribe: [],
       };
       cookies().set('userToken', token);
