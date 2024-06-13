@@ -137,7 +137,9 @@ const Organization: React.FC<{
                   >
                     <div className="w-full flex flex-wrap gap-5">
                       <div className="flex-1 flex gap-4 items-center">
-                        <div className="w-11 h-11 overflow-hidden rounded-full">
+                        <div
+                          className={`w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${open === organization.id ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
+                        >
                           {organization.avatarLink ? (
                             <Image
                               width={40}
@@ -202,9 +204,9 @@ const Organization: React.FC<{
                           el: '.swiper-pagination',
                         }}
                       >
-                        <SwiperSlide>
-                          {organization.opportunities.map(
-                            (oppurtunity: any) => (
+                        {organization.opportunities.map((oppurtunity: any) => (
+                          <SwiperSlide key={oppurtunity.id}>
+                            <div className="relative group">
                               <OpportunityCard
                                 opportunity={oppurtunity}
                                 addRemoveWishlist={() =>
@@ -213,12 +215,10 @@ const Organization: React.FC<{
                                     organization.id,
                                   )
                                 }
-                                key={oppurtunity.id}
                               />
-                            ),
-                          )}
-                        </SwiperSlide>
-
+                            </div>
+                          </SwiperSlide>
+                        ))}
                         {/* Pagination and navigation container */}
                         {organization.opportunities.length > 2 ? (
                           <div className="swiper-controls">

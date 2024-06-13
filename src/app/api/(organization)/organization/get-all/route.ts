@@ -77,33 +77,37 @@ export async function GET(req: NextRequest) {
         query(organizationsRef, startAfter(lastVisible), firestoreLimit(limit)),
       );
     }
-    const organizations = [];
-    for (const doc of querySnapshot.docs) {
+
+    const organizationIds = querySnapshot.docs.map((doc) => doc.id);
+
+    const opportunitiesRef = collection(db, 'opportunities');
+    const opportunitiesQuery = query(
+      opportunitiesRef,
+      where('organizationId', 'in', organizationIds),
+    );
+    const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
+
+    const organizations: any = [];
+    querySnapshot.forEach((doc) => {
       const organizationData = doc.data();
       const organizationId = doc.id;
 
-      // fetching opportunities of this organization
-      const opportunitiesRef = collection(db, 'opportunities');
-      const opportunitiesQuery = query(
-        opportunitiesRef,
-        where('organizationId', '==', organizationId),
-      );
-      const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
-      const opportunities: any = [];
-
-      opportunitiesSnapshot.forEach((opportunityDoc) => {
-        const opportunityData = opportunityDoc.data();
-        opportunities.push({
+      const organizationOpportunities = opportunitiesSnapshot.docs
+        .filter(
+          (opportunityDoc) =>
+            opportunityDoc.data().organizationId === organizationId,
+        )
+        .map((opportunityDoc) => ({
           id: opportunityDoc.id,
-          ...opportunityData,
-        });
-      });
+          ...opportunityDoc.data(),
+        }));
 
       organizationData.id = organizationId;
-      organizationData.opportunities = opportunities;
+      organizationData.opportunities = organizationOpportunities;
 
       organizations.push(organizationData);
-    }
+    });
+
     const response = responseHandler(
       200,
       true,
