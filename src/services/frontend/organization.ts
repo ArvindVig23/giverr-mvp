@@ -11,9 +11,15 @@ export const createOrg = async (data: OrgDetails) => {
   }
 };
 
-export const getOrganizationList = async (dispatch: any) => {
+export const getOrganizationList = async (
+  dispatch: any,
+  currentPage: number,
+) => {
   try {
-    const orgsList = await callApi('/organization/get-all', 'get');
+    const orgsList = await callApi(
+      `/organization/get-all?page=${currentPage}`,
+      'get',
+    );
     dispatch(updateOrganizationList(orgsList.data));
     return orgsList;
   } catch (error) {

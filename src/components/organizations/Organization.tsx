@@ -5,9 +5,9 @@ import {
   AccordionBody,
 } from '@material-tailwind/react';
 import Image from 'next/image';
-import dummy from '/public/images/dummy.jpg';
 import externalLink from '/public/images/external-link.svg';
 import arrowDown from '/public/images/chevron-down.svg';
+import arrowUp from '/public/images/chevron-up.svg';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
@@ -25,31 +25,36 @@ import OpportunityCard from '../common/cards/OpportunityCard';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 import OpportunityCardEmpty from '../common/cards/OpportunityCardEmpty';
-import { CurrentPage } from '@/interface/opportunity';
+import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import { encodeUrl } from '@/services/frontend/commonServices';
+import { getInitialOfEmail } from '@/services/frontend/userService';
 SwiperCore.use([Navigation]);
 
-const Organization: React.FC<CurrentPage> = ({
-  currrentPage,
-  setCurrentPage,
-}) => {
-  console.log(currrentPage, setCurrentPage);
+const Organization: React.FC<{
+  currentPage: number;
+  setCurrentPage: Function;
+}> = ({ currentPage, setCurrentPage }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [orgsList, setOrgsList] = useState<any>({
-    organizations: [],
-    totalRecords: 0,
-    page: 1,
-    limit: 20,
-  });
+  const [orgsList, setOrgsList] = useState<any>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
   // console.log('=== orgs =', orgsList);
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState<number>(1);
+  const [open, setOpen] = React.useState<string>('');
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const { data } = await getOrganizationList(dispatch);
-        setOrgsList(data);
-        setOpen(data?.organizations[0]?.id);
+        const { data } = await getOrganizationList(dispatch, currentPage);
+        const { organizations, page, totalRecords } = data;
+        if (page > 1) {
+          setOrgsList([...orgsList, ...organizations]);
+        } else {
+          setOrgsList(organizations);
+        }
+        setCurrentPage(page);
+        setTotalRecords(totalRecords);
+        console.log('== data ', open);
+        setOpen(open ? open : organizations[0]?.id);
       } catch (error: any) {
         const { message } = error;
         sweetAlertToast('error', message);
@@ -58,16 +63,14 @@ const Organization: React.FC<CurrentPage> = ({
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPage]);
   const addRemoveWishlist = async (oppId: string, organizationId: string) => {
     try {
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
       const { opportunityId, isWishlist } = response.data;
-      const orgsToUpdate = orgsList.filter(
-        (org: any) => org.id == organizationId,
-      );
-      orgsToUpdate.opportunities = orgsToUpdate.opportunities.filter(
+      const orgToUpdate = orgsList.find((org: any) => org.id == organizationId);
+      orgToUpdate.opportunities = orgToUpdate.opportunities.filter(
         (opp: any) => opp.id !== oppId,
       );
 
@@ -80,7 +83,7 @@ const Organization: React.FC<CurrentPage> = ({
         }
         return org;
       });
-      setOrgsList({ ...orgsList, organizations: updatedOrgs });
+      setOrgsList(updatedOrgs);
       dispatch(setLoader(false));
       sweetAlertToast('success', response.message);
     } catch (error: any) {
@@ -89,6 +92,14 @@ const Organization: React.FC<CurrentPage> = ({
       sweetAlertToast('error', message);
     }
   };
+  const fullNameOrUserName = (organizationDetails: any) => {
+    if (organizationDetails.name) {
+      return organizationDetails.name;
+    } else {
+      return organizationDetails.username;
+    }
+  };
+
   return (
     <div className="w-full border-t border-[#E6E3D6] p-5 organization-section">
       <div className="max-w-[652px] m-auto w-full">
@@ -104,10 +115,10 @@ const Organization: React.FC<CurrentPage> = ({
               </div>
             </div>
           )}
-          {!loading && !orgsList.organizations.length && <OrganizationEmpty />}
+          {!loading && !orgsList.length && <OrganizationEmpty />}
           {!loading && (
             <>
-              {orgsList.organizations.map((organization: any) => (
+              {orgsList.map((organization: any) => (
                 <Accordion
                   open={open === organization.id}
                   placeholder={undefined}
@@ -116,24 +127,32 @@ const Organization: React.FC<CurrentPage> = ({
                   key={organization.id}
                 >
                   <AccordionHeader
-                    onClick={() => setOpen(organization.id)}
+                    onClick={() =>
+                      setOpen(open === organization.id ? '' : organization.id)
+                    }
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
-                    className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${open === 1 ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
+                    className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${open === organization.id ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
                   >
                     <div className="w-full flex flex-wrap gap-5">
                       <div className="flex-1 flex gap-4 items-center">
                         <div className="w-11 h-11 overflow-hidden rounded-full">
-                          <Image
-                            className="w-full h-full object-cover"
-                            src={dummy}
-                            alt="avatar"
-                          />
+                          {organization.avatarLink ? (
+                            <Image
+                              width={40}
+                              height={40}
+                              src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(organization.avatarLink)}`}
+                              alt="profile"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            getInitialOfEmail(fullNameOrUserName(organization))
+                          )}
                         </div>
                         <div className="flex flex-col justify-center">
                           <h5 className="text-base font-medium text-[#24181B] m-0 leading-[22px]">
-                            Planet Caretakers
+                            {organization.name}
                           </h5>
                           <span className="text-base text-[#24181B80]">
                             {organization.opportunities.length}
@@ -160,7 +179,10 @@ const Organization: React.FC<CurrentPage> = ({
                         </Link>
                       </div>
 
-                      <Image src={arrowDown} alt="arrow" />
+                      <Image
+                        src={open === organization.id ? arrowUp : arrowDown}
+                        alt="arrow"
+                      />
                     </div>
                   </AccordionHeader>
                   <AccordionBody className="bg-[#EAE7DC] px-2.5 rounded-b-xl">
@@ -218,13 +240,16 @@ const Organization: React.FC<CurrentPage> = ({
           )}
         </>
 
-        {orgsList.organizations.length ? (
+        {orgsList.length ? (
           <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">
             <div className="text-[#1E1E1E80] w-full">
-              Showing {orgsList.organizations.length} of {orgsList.totalRecords}
+              Showing {orgsList.length} of {totalRecords}
             </div>
-            {orgsList.organizations.length !== orgsList.totalRecords ? (
-              <button className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]">
+            {orgsList.length !== totalRecords ? (
+              <button
+                onClick={() => setCurrentPage(currentPage! + 1)}
+                className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+              >
                 Load More
               </button>
             ) : null}
