@@ -6,7 +6,7 @@ import {
   setUserDetailsCookie,
 } from '@/services/backend/commonServices';
 import { currentUtcDate } from '@/services/backend/opportunityServices';
-import { booleanSchema, oppTypeIdSchema } from '@/utils/joiSchema';
+import { notificationSettingSchema, oppTypeIdSchema } from '@/utils/joiSchema';
 import {
   addDoc,
   collection,
@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
     const reqBody = await req.json();
     const { allowUpdates, acceptSubmission, allowVolunteeringUpdates } =
       reqBody;
-    const { error } = booleanSchema.validate(
+    const { error } = notificationSettingSchema.validate(
       {
         allowUpdates,
         acceptSubmission,

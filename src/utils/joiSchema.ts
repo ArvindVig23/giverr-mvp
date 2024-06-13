@@ -147,7 +147,7 @@ export const orgIdAndUserIdSchema = Joi.object({
   }),
 });
 
-export const booleanSchema = Joi.object({
+export const notificationSettingSchema = Joi.object({
   allowUpdates: Joi.boolean().required(),
   acceptSubmission: Joi.boolean().required(),
   allowVolunteeringUpdates: Joi.boolean().required(),
