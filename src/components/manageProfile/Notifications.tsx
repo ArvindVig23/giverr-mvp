@@ -132,7 +132,6 @@ const Notifications: React.FC = () => {
     try {
       dispatch(setLoader(true));
       const update = await updateUsersNotificationSetting(updatedSettings);
-      console.log(update);
       setNotificationValues(update);
       dispatch(setLoader(false));
     } catch (error: any) {

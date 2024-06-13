@@ -24,7 +24,7 @@ export const sendEmail = async (
   try {
     await transporter.sendMail({
       from: process.env.SMTP_FROM, // sender address
-      to: to,
+      to: to.split(',').map((email) => email.trim()),
       subject: subject,
       text: text,
       html: html,
