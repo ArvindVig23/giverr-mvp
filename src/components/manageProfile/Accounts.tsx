@@ -112,7 +112,7 @@ const OpportunitiesBanner: React.FC = () => {
             )}
           </div>
           <div className="flex-1 inline-flex gap-1.5 flex-wrap ">
-            <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#E60054] bg-inherit rounded-xl font-medium text-[#E60054] hover:text-white hover:bg-[#E60054]">
+            <label className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]">
               Upload image{' '}
               <input
                 onChange={(e) => handleFileChange(e)}
@@ -218,10 +218,10 @@ const OpportunitiesBanner: React.FC = () => {
           Update Details
         </button>
       </form>
-      <hr className="mt-2"></hr>
-      <div className="inline-flex w-full items-center gap-4 justify-between m-5">
+      <hr className="mb-[60px]"></hr>
+      <div className="inline-flex w-full items-center gap-4 justify-between">
         <div className="inline-flex w-full items-center gap-4">
-          <h2 className="flex-grow">Danger Zone</h2>{' '}
+          <h2 className="flex-grow font-medium text-2xl">Danger Zone</h2>{' '}
           <button
             onClick={() => setShowDeleteModal(true)}
             type="button"

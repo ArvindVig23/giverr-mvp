@@ -20,10 +20,9 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
     try {
       dispatch(setLoader(true));
       //   remove user from the firestore
-      await deleteAccountApi();
-      //  delete user from the firebase auth
       const user: any = auth.currentUser;
       deleteUser(user);
+      await deleteAccountApi();
       dispatch(updateOrganizationList([]));
       dispatch(updateOrgDetails(defaultUserOrgDetail));
       dispatch(setLoader(false));
