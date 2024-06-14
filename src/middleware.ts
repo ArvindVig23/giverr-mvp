@@ -15,6 +15,7 @@ export const middleware = async (request: NextRequest) => {
     '/api/organization-invites',
     '/api/org-invite-update',
     '/api/notification-settings',
+    '/api/timezone-settings',
   ];
   //   we have different method on this route and that should be public
   if (
@@ -48,5 +49,6 @@ export const config = {
     '/api/organization-invites',
     '/api/org-invite-update',
     '/api/notification-settings',
+    '/api/timezone-settings',
   ],
 };
