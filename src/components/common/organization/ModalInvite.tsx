@@ -121,7 +121,7 @@ const ModalInvite = ({ setShowModal }: any) => {
             {...register('searchMember')}
             type="text"
             className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
-            placeholder="Search Members"
+            placeholder="Name or username"
             onFocus={() => setIsDropdownOpen(true)}
           />
           <Image

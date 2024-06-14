@@ -17,4 +17,5 @@ export interface UserDetailsCookies {
   fullName?: string;
   notificationSetting?: any;
   categorySubscribe?: any;
+  timeZoneSettings?: any;
 }

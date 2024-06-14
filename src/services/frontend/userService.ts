@@ -5,6 +5,7 @@ import { sweetAlertToast } from './toastServices';
 import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
+import { TimeZoneSettings } from '@/interface/settings';
 
 export const checkUsernameAndEmail = async (body: any) => {
   try {
@@ -61,8 +62,19 @@ export const selectedOptionsFromCategory = (item: any) => {
     return { label: 'All Categories', value: '0' };
   } else {
     return {
-      label: item.opportunityTypeData.name,
-      value: item.opportunityTypeId,
+      label: item.opportunityTypeData?.name,
+      value: item?.opportunityTypeId,
     };
+  }
+};
+
+// update user settings
+export const updateUserTimezoneSetting = async (data: TimeZoneSettings) => {
+  try {
+    const response: any = await callApi(`/timezone-settings`, 'put', data);
+    return response;
+  } catch (error: any) {
+    console.log(error, 'Error in updating the users setting');
+    throw error.data;
   }
 };

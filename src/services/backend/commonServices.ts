@@ -148,3 +148,28 @@ export const getAllUsersSubscribeForOppType = async (
     return querySnapshot.docs.map((doc) => doc.data());
   }
 };
+
+// get timezone as per user id
+export const getTimeZoneSettingAsPerUser = async (userId: string) => {
+  const settingsRef = collection(db, 'userSettings');
+  const querySnapshot = await getDocs(
+    query(settingsRef, where('userId', '==', userId)),
+  );
+  if (querySnapshot.size === 0) {
+    return null;
+  } else {
+    const settingsDoc = querySnapshot.docs[0];
+    const settingData: any = settingsDoc.data();
+    // get only fields that are important
+    const data = {
+      id: settingsDoc.id,
+      autoTimeZone: settingData.autoTimeZone,
+      selectedTimeZone: settingData.selectedTimeZone,
+      istwentyFourHourTimeFormat: settingData.istwentyFourHourTimeFormat,
+      isDayMonthYearDateFormat: settingData.isDayMonthYearDateFormat,
+      userId,
+    };
+
+    return data;
+  }
+};

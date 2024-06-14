@@ -7,7 +7,7 @@ import React from 'react';
 const DisplayMemberItem = ({ orgMember }: any) => {
   return (
     <div className="inline-flex gap-4 items-center">
-      <div className="w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
+      <div className="w-11 min-w-11 h-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
         {orgMember.orgDetails.avatarLink ? (
           <Image
             width={20}

@@ -159,3 +159,13 @@ export const oppTypeIdSchema = Joi.object({
     'string.required': 'Pooprtunity Type Id is required',
   }),
 });
+
+export const userSettingsSchema = Joi.object({
+  autoTimeZone: Joi.boolean().required(),
+  istwentyFourHourTimeFormat: Joi.boolean().required(),
+  isDayMonthYearDateFormat: Joi.boolean().required(),
+  id: Joi.string().required().messages({
+    'string.base': 'User settings id must be a string',
+    'string.required': 'User settings Id is required',
+  }),
+});

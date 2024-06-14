@@ -7,7 +7,10 @@ import { UserDetailsCookies } from '@/interface/user';
 import { currentUtcDate } from './opportunityServices';
 import { compileEmailTemplate } from './handlebars';
 import { registerEmailTemplate } from '@/utils/templates/registerEmailTemplate';
-import { getNotificationSettings } from './commonServices';
+import {
+  getNotificationSettings,
+  getTimeZoneSettingAsPerUser,
+} from './commonServices';
 
 export const createUserService = async (userData: any, token?: any) => {
   try {
@@ -47,19 +50,19 @@ export const createUserService = async (userData: any, token?: any) => {
       updatedAt: currentUtcDate,
     });
 
-    // // create record in the userCategorySubscription
-    // const createCatSubscribe = await addDoc(
-    //   collection(db, 'userCategorySubscription'),
-    //   {
-    //     userId,
-    //     opportunityTypeId: '0',
-    //     createdAt: currentUtcDate,
-    //     updatedAt: currentUtcDate,
-    //   },
-    // );
+    // // create record in the settings
+    await addDoc(collection(db, 'userSettings'), {
+      userId,
+      autoTimeZone: true,
+      selectedTimeZone: '',
+      istwentyFourHourTimeFormat: false,
+      isDayMonthYearDateFormat: true,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+    });
     if (token) {
       const notificationSetting = await getNotificationSettings(userId);
-
+      const timeZoneSettings = await getTimeZoneSettingAsPerUser(userId);
       // const subscribeCat = await getDoc(createCatSubscribe);
       const userCookies: UserDetailsCookies = {
         email: email,
@@ -69,6 +72,7 @@ export const createUserService = async (userData: any, token?: any) => {
         fullName,
         notificationSetting,
         categorySubscribe: [],
+        timeZoneSettings,
       };
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));
