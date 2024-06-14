@@ -138,7 +138,7 @@ const Organization: React.FC<{
                     <div className="w-full flex flex-wrap gap-5">
                       <div className="flex-1 flex gap-4 items-center">
                         <div
-                          className={`w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${open === organization.id ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
+                          className={`w-11 min-w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${open === organization.id ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
                         >
                           {organization.avatarLink ? (
                             <Image

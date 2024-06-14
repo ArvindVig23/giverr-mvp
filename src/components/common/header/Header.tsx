@@ -31,7 +31,7 @@ const Header: React.FC = () => {
               </Link>
               <Link
                 href="/organizations"
-                className="px-1 text-[#1E1E1E80] hover:text-[#1E1E1E]"
+                className={`px-1  hover:text-[#1E1E 1E] ${pathName === '/organizations' ? 'text-[#1E1E 1E]' : 'text-[#1E1E1E80]'}`}
               >
                 Organizations
               </Link>
