@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import Image from 'next/image'; // Import Image from next/image
-import chevronDown from '/public/images/chevron-down.svg';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import moment from 'moment-timezone';
 import { TimeZoneSettings } from '@/interface/settings';
@@ -8,44 +6,98 @@ import { useDispatch } from 'react-redux';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { updateUserTimezoneSetting } from '@/services/frontend/userService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { timeZoneOptions } from '@/utils/staticDropdown/timeZoneOptions';
+import Select from 'react-select';
+import { createValueForDropdown } from '@/services/frontend/commonServices';
 const Settings: React.FC = () => {
-  const currentMonthDateYear = moment().format('MMMM DD, YYYY');
-  const currentDayMonthYear = moment().format('DD MMMM, YYYY');
-  const time12Hour = moment().format('h:mm A');
-  const time24Hour = moment().format('HH:mm');
   const [cookies] = useCookies();
   const initialTimezoneSettings = cookies.userDetails.timeZoneSettings;
+  const createDefaultValueForDropdown = {
+    label: initialTimezoneSettings?.selectedTimeZone,
+    value: initialTimezoneSettings?.selectedTimeZone,
+    offset: initialTimezoneSettings?.selectedTimeZoneInMilisecond,
+  };
+  const [currentMonthDateYear, setCurrentMonthDateYear] = useState('');
+  const [currentDayMonthYear, setCurrentDayMonthYear] = useState('');
+  const [time12Hour, setTime12Hour] = useState('');
+  const [time24Hour, setTime24Hour] = useState('');
+  // to update the time when time changes
+  useEffect(() => {
+    const updateDateTime = () => {
+      setCurrentMonthDateYear(moment().format('MMMM DD, YYYY'));
+      setCurrentDayMonthYear(moment().format('DD MMMM, YYYY'));
+      setTime12Hour(moment().format('h:mm A'));
+      setTime24Hour(moment().format('HH:mm'));
+    };
+    // Initial call to set the date and time immediately
+    updateDateTime();
+    // Update every minute
+    const interval = setInterval(updateDateTime, 60000);
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
-  const [timeZoneSettings, setTimeZoneSettings] = useState<TimeZoneSettings>({
+  const [timeZoneSettings, setTimeZoneSettings] = useState<any>({
     id: initialTimezoneSettings?.id,
     autoTimeZone: initialTimezoneSettings?.autoTimeZone,
     istwentyFourHourTimeFormat:
       initialTimezoneSettings?.istwentyFourHourTimeFormat,
     isDayMonthYearDateFormat: initialTimezoneSettings?.isDayMonthYearDateFormat,
+    timezone: initialTimezoneSettings?.selectedTimeZone
+      ? createDefaultValueForDropdown
+      : null,
   });
   const dispatch = useDispatch();
   const handleOnChange = async (name: keyof TimeZoneSettings) => {
     try {
-      const data = {
+      const formData = {
         ...timeZoneSettings,
         [name]: !timeZoneSettings[name],
       };
+
       dispatch(setLoader(true));
-      const response = await updateUserTimezoneSetting(data);
-      console.log(response, 'response');
-      setTimeZoneSettings(response.data);
+      const response = await updateUserTimezoneSetting(formData);
+      const { data } = response;
+      const setSettingsState = {
+        id: data.id,
+        autoTimeZone: data.autoTimeZone,
+        istwentyFourHourTimeFormat: data.istwentyFourHourTimeFormat,
+        isDayMonthYearDateFormat: data.isDayMonthYearDateFormat,
+        timezone: createValueForDropdown(data.selectedTimeZone, data.offset),
+      };
+      setTimeZoneSettings(setSettingsState);
       dispatch(setLoader(false));
     } catch (error: any) {
       const { message } = error;
       sweetAlertToast('error', message);
       dispatch(setLoader(false));
     }
-    // setTimeZoneSettings({
-    //   ...timeZoneSettings,
-    //   [name]: !timeZoneSettings[name],
-    // });
   };
 
+  const handleTimeZone = async (selected: any) => {
+    try {
+      const formData = {
+        ...timeZoneSettings,
+        timezone: selected,
+      };
+      dispatch(setLoader(true));
+      const response = await updateUserTimezoneSetting(formData);
+      const { data } = response;
+      const setSettingsState = {
+        id: data.id,
+        autoTimeZone: data.autoTimeZone,
+        istwentyFourHourTimeFormat: data.istwentyFourHourTimeFormat,
+        isDayMonthYearDateFormat: data.isDayMonthYearDateFormat,
+        timezone: createValueForDropdown(data.selectedTimeZone, data.offset),
+      };
+      setTimeZoneSettings(setSettingsState);
+      dispatch(setLoader(false));
+    } catch (error: any) {
+      const { message } = error;
+      sweetAlertToast('error', message);
+      dispatch(setLoader(false));
+    }
+  };
   return (
     <div className="w-full">
       <h3 className="text-[32px] font-medium mb-1 mt-0 leading-[36px]">
@@ -80,19 +132,13 @@ const Settings: React.FC = () => {
           <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
             Timezone
           </label>
-          <select
-            disabled={timeZoneSettings?.autoTimeZone}
-            className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          >
-            <option>Los Angeles, PST</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-          </select>
-          <Image
-            src={chevronDown}
-            alt="arrow"
-            className="absolute top-[17px] right-4 pointer-events-none"
+          <Select
+            className="basic-multi-select block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            isDisabled={timeZoneSettings.autoTimeZone}
+            value={timeZoneSettings.timezone}
+            onChange={handleTimeZone}
+            options={timeZoneOptions}
+            classNamePrefix="select"
           />
         </div>
       </div>

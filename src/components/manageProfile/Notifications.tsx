@@ -50,8 +50,7 @@ const Notifications: React.FC = () => {
         opportunityTypeId: '0',
       };
       try {
-        const response = await createSubscribeCat(data);
-        console.log(response, 'response');
+        await createSubscribeCat(data);
         dispatch(setLoader(false));
       } catch (error: any) {
         dispatch(setLoader(false));

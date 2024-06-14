@@ -152,7 +152,10 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
               <div className="flex gap-1 text-base text-[#24181B]">
                 <Image src={time} alt="time" />
                 {opportunityDetail?.eventDate &&
-                  getFormattedLocalTime(opportunityDetail?.eventDate)}
+                  getFormattedLocalTime(
+                    opportunityDetail?.eventDate,
+                    cookies.userDetails.timeZoneSettings,
+                  )}
               </div>
 
               {opportunityDetail?.opportunityData && (

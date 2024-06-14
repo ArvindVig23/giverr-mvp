@@ -18,7 +18,10 @@ import { getFormattedLocalTime } from '../frontend/commonServices';
 import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
-import { getNotificationSettingsById } from './commonServices';
+import {
+  getNotificationSettingsById,
+  getUserDetailsCookie,
+} from './commonServices';
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
@@ -163,7 +166,12 @@ export const sendEmailForApproval = async (
     const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=APPROVED`;
     const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=REJECTED`;
     // convert to local time string
-    const time = getFormattedLocalTime(eventDate!);
+    const userDetail = await getUserDetailsCookie();
+    const convertString = JSON.parse(userDetail.value);
+    console.log(convertString, 'sdfsdfsdf');
+
+    const { timeZoneSettings } = convertString;
+    const time = getFormattedLocalTime(eventDate!, timeZoneSettings);
 
     // gett org details
     let org = '';
@@ -338,7 +346,12 @@ export const sendEmailsForSubscribeCatUser = async (
   emailsString: string,
 ) => {
   try {
-    const time = getFormattedLocalTime(data.eventDate);
+    const userDetail = await getUserDetailsCookie();
+    const convertString = JSON.parse(userDetail.value);
+    console.log(convertString, 'convertString');
+
+    const { timeZoneSettings } = convertString;
+    const time = getFormattedLocalTime(data.eventDate, timeZoneSettings);
     let org = '';
     if (data.organizationId) {
       const organization = await getOrgDetailsById(data.organizationId);

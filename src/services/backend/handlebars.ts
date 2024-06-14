@@ -1,5 +1,4 @@
 import Handlebars from 'handlebars';
-import { getFormattedLocalTime } from '@/services/frontend/commonServices';
 
 export function compileEmailTemplate(
   templateString: string,
@@ -13,7 +12,3 @@ export function compileEmailTemplate(
     return ''; // Return an empty string in case of an error
   }
 }
-
-Handlebars.registerHelper('formatDate', function (eventDate) {
-  return getFormattedLocalTime(eventDate);
-});

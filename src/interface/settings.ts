@@ -3,4 +3,5 @@ export interface TimeZoneSettings {
   autoTimeZone: boolean;
   istwentyFourHourTimeFormat: boolean;
   isDayMonthYearDateFormat: boolean;
+  timezone: any;
 }

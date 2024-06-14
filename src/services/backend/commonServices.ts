@@ -168,6 +168,7 @@ export const getTimeZoneSettingAsPerUser = async (userId: string) => {
       istwentyFourHourTimeFormat: settingData.istwentyFourHourTimeFormat,
       isDayMonthYearDateFormat: settingData.isDayMonthYearDateFormat,
       userId,
+      selectedTimeZoneInMilisecond: settingData.selectedTimeZoneInMilisecond,
     };
 
     return data;

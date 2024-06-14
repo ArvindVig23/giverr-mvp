@@ -16,6 +16,7 @@ export async function PUT(req: NextRequest) {
       istwentyFourHourTimeFormat,
       isDayMonthYearDateFormat,
       id,
+      timezone,
     } = reqBody;
     const { error } = userSettingsSchema.validate(
       {
@@ -48,10 +49,28 @@ export async function PUT(req: NextRequest) {
       );
       return response;
     }
+    let selectedTimeZone = '';
+    let selectedTimeZoneInMilisecond = 0;
+    if (!autoTimeZone) {
+      if (timezone) {
+        selectedTimeZone = timezone.value;
+        selectedTimeZoneInMilisecond = timezone.offset;
+      } else {
+        selectedTimeZone = 'Africa/Abidjan';
+        selectedTimeZoneInMilisecond = 0;
+      }
+    }
+    if (autoTimeZone) {
+      selectedTimeZone = '';
+      selectedTimeZoneInMilisecond = 0;
+    }
+
     await updateDoc(doc(db, 'userSettings', id), {
       autoTimeZone,
       istwentyFourHourTimeFormat,
       isDayMonthYearDateFormat,
+      selectedTimeZone,
+      selectedTimeZoneInMilisecond,
     });
     const userDetails = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);
@@ -62,6 +81,8 @@ export async function PUT(req: NextRequest) {
         autoTimeZone,
         istwentyFourHourTimeFormat,
         isDayMonthYearDateFormat,
+        selectedTimeZone,
+        selectedTimeZoneInMilisecond,
       },
     };
     setUserDetailsCookie(updatedCookies);
@@ -73,6 +94,8 @@ export async function PUT(req: NextRequest) {
         autoTimeZone,
         istwentyFourHourTimeFormat,
         isDayMonthYearDateFormat,
+        selectedTimeZone,
+        selectedTimeZoneInMilisecond,
       },
       'User timezone settings updated successfully.',
     );

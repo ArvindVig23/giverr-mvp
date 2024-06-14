@@ -55,6 +55,7 @@ export const createUserService = async (userData: any, token?: any) => {
       userId,
       autoTimeZone: true,
       selectedTimeZone: '',
+      selectedTimeZoneInMilisecond: 0,
       istwentyFourHourTimeFormat: false,
       isDayMonthYearDateFormat: true,
       createdAt: currentUtcDate,

@@ -177,6 +177,20 @@ const OpportunitiesBanner: React.FC = () => {
 
         <div className="relative w-full">
           <input
+            disabled
+            defaultValue={username}
+            type="password"
+            id="password"
+            className="block rounded-xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer cursor-not-allowed"
+            placeholder=" "
+          />
+          <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+            Password
+          </label>
+        </div>
+
+        <div className="relative w-full">
+          <input
             defaultValue={username}
             disabled
             type="text"
@@ -194,7 +208,7 @@ const OpportunitiesBanner: React.FC = () => {
           )}
 
           <p className="mt-2 mb-0 text-[#24181B80] text-xs">
-            Your Giverr URL: https://giverr.com/anna.smith
+            {`Your Giverr URL: https://giverr.com/${username}`}
           </p>
         </div>
 

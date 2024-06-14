@@ -19,3 +19,9 @@ export interface UserDetailsCookies {
   categorySubscribe?: any;
   timeZoneSettings?: any;
 }
+
+export interface TimezoneOptions {
+  label?: string;
+  value?: String;
+  offset?: number;
+}
