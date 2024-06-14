@@ -238,3 +238,35 @@ body {
 {
   width: 100%;
 }
+.basic-multi-select .select__control {
+  background: #f5f3ef;
+  border: none;
+  margin-top: 5px;
+  border-radius: 8px;
+}
+
+.basic-multi-select .select__multi-value  {
+  background: #E600540D;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.basic-multi-select .select__multi-value__label
+{
+  color: #e60054;
+  padding-left: 10px;
+  font-weight: 500;
+}
+.basic-multi-select .select__multi-value__remove
+{
+  background-color: transparent !important;
+  color: #e60054;
+  opacity: 0.6;
+}
+.basic-multi-select .select__multi-value__remove:hover
+{
+  opacity: 1;
+}
+.basic-multi-select .select__clear-indicator
+{
+  display: none;
+}

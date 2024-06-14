@@ -17,4 +17,11 @@ export interface UserDetailsCookies {
   fullName?: string;
   notificationSetting?: any;
   categorySubscribe?: any;
+  timeZoneSettings?: any;
+}
+
+export interface TimezoneOptions {
+  label?: string;
+  value?: String;
+  offset?: number;
 }

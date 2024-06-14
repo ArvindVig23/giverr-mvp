@@ -1,12 +1,33 @@
 import moment from 'moment-timezone';
+export const getFormattedLocalTime = (
+  utcTimeString: string,
+  timeZoneCookie: any,
+) => {
+  const dateFormat = timeZoneCookie.isDayMonthYearDateFormat
+    ? 'DD MMMM, YYYY'
+    : 'MMMM DD, YYYY';
+  const timeFormat = timeZoneCookie.istwentyFourHourTimeFormat
+    ? 'HH:mm'
+    : 'h:mm A';
+  const selectedTimeZone = timeZoneCookie.selectedTimeZone;
 
-export const getFormattedLocalTime = (utcTimeString: string) => {
-  const userLocalZone = moment.tz.guess();
+  // Convert UTC time string to moment object
   const utcTime = moment.utc(utcTimeString);
-  const userLocalTime = utcTime.clone().tz(userLocalZone);
-  const formattedLocalTime = userLocalTime.format('MMM D, YYYY [at] HH:mm');
-
-  return formattedLocalTime;
+  let time = null;
+  if (selectedTimeZone) {
+    time = moment(utcTime)
+      .tz(selectedTimeZone)
+      .format(`${dateFormat} [at] ${timeFormat}`);
+    return time;
+  } else {
+    const userLocalZone = moment.tz.guess();
+    const utcTime = moment.utc(utcTimeString);
+    const userLocalTime = utcTime.clone().tz(userLocalZone);
+    const formattedLocalTime = userLocalTime.format(
+      `${dateFormat} [at] ${timeFormat}`,
+    );
+    return formattedLocalTime;
+  }
 };
 
 export const encodeUrl = (str: string) => {
@@ -24,4 +45,12 @@ export const debounce = (func: any, delay = 5000) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), delay);
   };
+};
+
+//  create the option
+export const createValueForDropdown = (timeZone: string, value: number) => {
+  if (!timeZone) {
+    return null;
+  }
+  return { label: timeZone, value: timeZone, offset: value };
 };
