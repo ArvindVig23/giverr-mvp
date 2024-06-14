@@ -14,11 +14,11 @@ import {
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
-import { getFormattedLocalTime } from '../frontend/commonServices';
 import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
 import {
+  getFormattedLocalTimeBackend,
   getNotificationSettingsById,
   getUserDetailsCookie,
 } from './commonServices';
@@ -168,10 +168,8 @@ export const sendEmailForApproval = async (
     // convert to local time string
     const userDetail = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetail.value);
-    console.log(convertString, 'sdfsdfsdf');
 
-    const { timeZoneSettings } = convertString;
-    const time = getFormattedLocalTime(eventDate!, timeZoneSettings);
+    const time = getFormattedLocalTimeBackend(eventDate!, convertString);
 
     // gett org details
     let org = '';
@@ -206,13 +204,12 @@ export const sendEmailForApproval = async (
       email: userEmail,
     };
     const template = compileEmailTemplate(approveEvent, emailData);
-    const email = await sendEmail(
+    await sendEmail(
       ADMIN_EMAIL!,
       'Post Approval Required',
       'Post Approval Required',
       template,
     );
-    console.log(email, 'email');
   } catch (error) {
     console.log(error, 'error in sending email for approval');
   }
@@ -348,10 +345,8 @@ export const sendEmailsForSubscribeCatUser = async (
   try {
     const userDetail = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetail.value);
-    console.log(convertString, 'convertString');
 
-    const { timeZoneSettings } = convertString;
-    const time = getFormattedLocalTime(data.eventDate, timeZoneSettings);
+    const time = getFormattedLocalTimeBackend(data.eventDate, convertString);
     let org = '';
     if (data.organizationId) {
       const organization = await getOrgDetailsById(data.organizationId);

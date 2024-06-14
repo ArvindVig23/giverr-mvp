@@ -1,31 +1,39 @@
 import moment from 'moment-timezone';
-export const getFormattedLocalTime = (
-  utcTimeString: string,
-  timeZoneCookie: any,
-) => {
-  const dateFormat = timeZoneCookie.isDayMonthYearDateFormat
-    ? 'DD MMMM, YYYY'
-    : 'MMMM DD, YYYY';
-  const timeFormat = timeZoneCookie.istwentyFourHourTimeFormat
-    ? 'HH:mm'
-    : 'h:mm A';
-  const selectedTimeZone = timeZoneCookie.selectedTimeZone;
+export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
+  if (Object.keys(cookies).length > 0) {
+    console.log(cookies.userDetails, 'cookies.userDetails');
+    const timeZoneSettings = cookies.userDetails.timeZoneSettings;
+    const dateFormat = timeZoneSettings.isDayMonthYearDateFormat
+      ? 'DD MMMM, YYYY'
+      : 'MMMM DD, YYYY';
+    const timeFormat = timeZoneSettings.istwentyFourHourTimeFormat
+      ? 'HH:mm'
+      : 'h:mm A';
+    const selectedTimeZone = timeZoneSettings.selectedTimeZone;
 
-  // Convert UTC time string to moment object
-  const utcTime = moment.utc(utcTimeString);
-  let time = null;
-  if (selectedTimeZone) {
-    time = moment(utcTime)
-      .tz(selectedTimeZone)
-      .format(`${dateFormat} [at] ${timeFormat}`);
-    return time;
+    // Convert UTC time string to moment object
+    const utcTime = moment.utc(utcTimeString);
+    let time = null;
+    if (selectedTimeZone) {
+      time = moment(utcTime)
+        .tz(selectedTimeZone)
+        .format(`${dateFormat} [at] ${timeFormat}`);
+      return time;
+    } else {
+      const userLocalZone = moment.tz.guess();
+      const utcTime = moment.utc(utcTimeString);
+      const userLocalTime = utcTime.clone().tz(userLocalZone);
+      const formattedLocalTime = userLocalTime.format(
+        `${dateFormat} [at] ${timeFormat}`,
+      );
+      return formattedLocalTime;
+    }
   } else {
     const userLocalZone = moment.tz.guess();
     const utcTime = moment.utc(utcTimeString);
     const userLocalTime = utcTime.clone().tz(userLocalZone);
-    const formattedLocalTime = userLocalTime.format(
-      `${dateFormat} [at] ${timeFormat}`,
-    );
+    const formattedLocalTime = userLocalTime.format('MMM D, YYYY [at] HH:mm');
+
     return formattedLocalTime;
   }
 };
