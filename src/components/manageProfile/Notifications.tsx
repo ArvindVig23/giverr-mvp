@@ -249,7 +249,7 @@ const Notifications: React.FC = () => {
         <div
           className={`relative w-full mt-1 ${!notificationValues.allowUpdates ? 'cursor-not-allowed' : ''}`}
         >
-          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+          <label className="text-xs text-[#24181B] absolute top-[10px] left-5 z-10 mb-1 font-medium">
             Categories
           </label>
           <Select
