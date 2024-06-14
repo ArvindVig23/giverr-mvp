@@ -20,7 +20,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
 }: any) => {
   const [cookies] = useCookies();
 
-  const timeZoneCookie = cookies.userDetails.timeZoneSettings;
+  // const timeZoneCookie = cookies?.userDetails?.timeZoneSettings;
   const statusIsPending = opportunity.status === 'PENDING';
   const statusIsRejected = opportunity.status === 'REJECTED';
 
@@ -97,7 +97,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             </h4>
           )}
           <span className="text-base">
-            {getFormattedLocalTime(opportunity.eventDate, timeZoneCookie)}
+            {getFormattedLocalTime(opportunity.eventDate, cookies)}
           </span>
           <div className="mt-1 text-[#1E1E1E80]">{opportunity.location}</div>
 
