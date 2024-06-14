@@ -143,6 +143,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
                 </span>
               ) : (
                 <button
+                  type="button"
                   onClick={() => handleRemoveMember(index)}
                   className="group w-[20px] h-[20px] ml-auto  hover:bg-[#24181B] border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                 >
