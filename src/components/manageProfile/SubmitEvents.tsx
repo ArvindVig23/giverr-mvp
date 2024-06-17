@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import CommonModal from '@/components/common/modal/CommonModal';
-import EventForm from '@/components/common/event/EventForm';
+// import CommonModal from '@/components/common/modal/CommonModal';
+// import EventForm from '@/components/common/event/EventForm';
+import CreateEventModal from '../common/modal/CreateEventModal';
+import CreateEventStep1 from '../common/event/CreateEventStep1';
+// import CreateEventStep2 from '../common/event/CreateEventStep2';
+// import CreateEventStep3 from '../common/event/CreateEventStep3';
+// import CreateEventStep4 from '../common/event/CreateEventStep4';
 // import dog from '/public/images/dog-walking.jpg';
 // import SuccesModal from '../manageProfile/SuccesModal';
 
 const SubmitEvents = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
+  // const [showOldModal, setShowOldModal] = useState<boolean>(false);
   return (
     <>
       <button
@@ -16,14 +22,28 @@ const SubmitEvents = () => {
         Submit event
       </button>
       {showModal && (
-        <CommonModal
-          heading={'Submit Event'}
+        <CreateEventModal
+          heading={'Submit event'}
           showModal={showModal}
           setShowModal={setShowModal}
         >
+          <CreateEventStep1 />
+          {/* <CreateEventStep2/> */}
+          {/* <CreateEventStep3/> */}
+          {/* <CreateEventStep4 /> */}
+        </CreateEventModal>
+      )}
+      {/* {
+        showOldModal && (
+          <CommonModal
+          heading={'Submit Event'}
+          showModal={showOldModal}
+          setShowModal={setShowOldModal}
+        >
           <EventForm setShowModal={setShowModal} />
         </CommonModal>
-      )}
+        )
+      } */}
     </>
   );
 };
