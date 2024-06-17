@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Accounts from './Accounts';
 import Myorganization from './Myorganization';
 import Notifications from './Notifications';
 import Organizations from './Organizations';
 import Settings from './Settings';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 const ManageProfile: React.FC = () => {
-  const [openTab, setOpenTab] = React.useState(1);
-
+  const searchParams = useSearchParams();
+  const eventsTab = searchParams.get('tab');
+  const router = useRouter();
+  useEffect(() => {
+    if (!eventsTab) {
+      router.push('/profile?tab=accounts');
+    }
+    // eslint-disable-next-line
+  }, []);
   return (
     <div className="border-t border-[#E6E3D6]">
       <div className="w-full max-w-[944px] m-auto">
@@ -18,127 +27,94 @@ const ManageProfile: React.FC = () => {
               role="tablist"
             >
               <li className="">
-                <a
+                <Link
                   className={
                     'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (openTab === 1 ? 'text-[#24181B]' : '')
+                    (eventsTab === 'accounts' ? 'text-[#24181B]' : '')
                   }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTab(1);
-                  }}
                   data-toggle="tab"
-                  href="#link1"
+                  href="/profile?tab=accounts"
                   role="tablist"
                 >
                   Accounts
-                </a>
+                </Link>
               </li>
               <li className="">
-                <a
+                <Link
                   className={
                     'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (openTab === 2 ? 'text-[#24181B]' : '')
+                    (eventsTab === 'my-organizations' ? 'text-[#24181B]' : '')
                   }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTab(2);
-                  }}
                   data-toggle="tab"
-                  href="#link2"
+                  href="/profile?tab=my-organizations"
                   role="tablist"
                 >
                   My Organization
-                </a>
+                </Link>
               </li>
               <li className="">
-                <a
+                <Link
                   className={
                     'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (openTab === 3 ? 'text-[#24181B]' : '')
+                    (eventsTab === 'organizations' ? 'text-[#24181B]' : '')
                   }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTab(3);
-                  }}
                   data-toggle="tab"
-                  href="#link3"
+                  href="/profile?tab=organizations"
                   role="tablist"
                 >
                   Organizations
-                </a>
+                </Link>
               </li>
 
               <li className="">
-                <a
+                <Link
                   className={
                     'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (openTab === 4 ? 'text-[#24181B]' : '')
+                    (eventsTab === 'notification' ? 'text-[#24181B]' : '')
                   }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTab(4);
-                  }}
                   data-toggle="tab"
-                  href="#link3"
+                  href="/profile?tab=notification"
                   role="tablist"
                 >
                   Notifications
-                </a>
+                </Link>
               </li>
 
               <li className="">
-                <a
+                <Link
                   className={
                     'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (openTab === 5 ? 'text-[#24181B]' : '')
+                    (eventsTab === 'timezone-settings' ? 'text-[#24181B]' : '')
                   }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTab(5);
-                  }}
                   data-toggle="tab"
-                  href="#link3"
+                  href="/profile?tab=timezone-settings"
                   role="tablist"
                 >
                   Settings
-                </a>
+                </Link>
               </li>
             </ul>
             <div className="relative flex flex-col min-w-0 break-words w-full">
               <div className="px-5 py-5 flex-auto">
                 <div className="tab-content tab-space">
-                  <div
-                    className={openTab === 1 ? 'block' : 'hidden'}
-                    id="link1"
-                  >
-                    <Accounts />
+                  <div id="link1">
+                    {eventsTab === 'accounts' ? <Accounts /> : null}
                   </div>
-                  <div
-                    className={openTab === 2 ? 'block' : 'hidden'}
-                    id="link2"
-                  >
-                    <Myorganization />
+                  <div id="link2">
+                    {eventsTab === 'my-organizations' ? (
+                      <Myorganization />
+                    ) : null}
                   </div>
-                  <div
-                    className={openTab === 3 ? 'block' : 'hidden'}
-                    id="link3"
-                  >
-                    <Organizations />
+                  <div id="link3">
+                    {eventsTab === 'organizations' ? <Organizations /> : null}
                   </div>
 
-                  <div
-                    className={openTab === 4 ? 'block' : 'hidden'}
-                    id="link5"
-                  >
-                    <Notifications />
+                  <div id="link5">
+                    {eventsTab === 'notification' ? <Notifications /> : null}
                   </div>
 
-                  <div
-                    className={openTab === 5 ? 'block' : 'hidden'}
-                    id="link5"
-                  >
-                    <Settings />
+                  <div id="link5">
+                    {eventsTab === 'timezone-settings' ? <Settings /> : null}
                   </div>
                 </div>
               </div>
