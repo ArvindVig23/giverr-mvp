@@ -8,6 +8,7 @@ import { UserDetailsCookies } from '@/interface/user';
 import {
   getNotificationSettings,
   getSubscribeCategorySettings,
+  getTimeZoneSettingAsPerUser,
 } from '@/services/backend/commonServices';
 
 /**
@@ -83,6 +84,8 @@ export async function POST(req: NextRequest) {
 
     // get the category subscribe details on the basis of user ID
     const categorySubscribe = await getSubscribeCategorySettings(documentId);
+    // get user time zone setting
+    const timeZoneSettings = await getTimeZoneSettingAsPerUser(documentId);
     const cookiesNeedsToSet: UserDetailsCookies = {
       email: userData.email,
       username: userData.username,
@@ -91,6 +94,7 @@ export async function POST(req: NextRequest) {
       fullName: userData.fullName,
       notificationSetting,
       categorySubscribe,
+      timeZoneSettings,
     };
     cookies().set({
       name: 'userDetails',

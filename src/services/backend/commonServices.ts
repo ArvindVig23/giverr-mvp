@@ -8,6 +8,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
+import moment from 'moment-timezone';
 
 export const getUserDetailsCookie = () => {
   const cookieStore = cookies();
@@ -146,5 +147,62 @@ export const getAllUsersSubscribeForOppType = async (
     return [];
   } else {
     return querySnapshot.docs.map((doc) => doc.data());
+  }
+};
+
+// get timezone as per user id
+export const getTimeZoneSettingAsPerUser = async (userId: string) => {
+  const settingsRef = collection(db, 'userSettings');
+  const querySnapshot = await getDocs(
+    query(settingsRef, where('userId', '==', userId)),
+  );
+  if (querySnapshot.size === 0) {
+    return null;
+  } else {
+    const settingsDoc = querySnapshot.docs[0];
+    const settingData: any = settingsDoc.data();
+    // get only fields that are important
+    const data = {
+      id: settingsDoc.id,
+      autoTimeZone: settingData.autoTimeZone,
+      selectedTimeZone: settingData.selectedTimeZone,
+      istwentyFourHourTimeFormat: settingData.istwentyFourHourTimeFormat,
+      isDayMonthYearDateFormat: settingData.isDayMonthYearDateFormat,
+      userId,
+      selectedTimeZoneInMilisecond: settingData.selectedTimeZoneInMilisecond,
+    };
+
+    return data;
+  }
+};
+
+export const getFormattedLocalTimeBackend = (
+  utcTimeString: string,
+  timeZoneCookie: any,
+) => {
+  const dateFormat = timeZoneCookie.isDayMonthYearDateFormat
+    ? 'DD MMMM, YYYY'
+    : 'MMMM DD, YYYY';
+  const timeFormat = timeZoneCookie.istwentyFourHourTimeFormat
+    ? 'HH:mm'
+    : 'h:mm A';
+  const selectedTimeZone = timeZoneCookie.selectedTimeZone;
+
+  // Convert UTC time string to moment object
+  const utcTime = moment.utc(utcTimeString);
+  let time = null;
+  if (selectedTimeZone) {
+    time = moment(utcTime)
+      .tz(selectedTimeZone)
+      .format(`${dateFormat} [at] ${timeFormat}`);
+    return time;
+  } else {
+    const userLocalZone = moment.tz.guess();
+    const utcTime = moment.utc(utcTimeString);
+    const userLocalTime = utcTime.clone().tz(userLocalZone);
+    const formattedLocalTime = userLocalTime.format(
+      `${dateFormat} [at] ${timeFormat}`,
+    );
+    return formattedLocalTime;
   }
 };

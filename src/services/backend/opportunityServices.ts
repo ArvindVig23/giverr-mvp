@@ -14,11 +14,14 @@ import {
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from './emailService';
-import { getFormattedLocalTime } from '../frontend/commonServices';
 import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
-import { getNotificationSettingsById } from './commonServices';
+import {
+  getFormattedLocalTimeBackend,
+  getNotificationSettingsById,
+  getUserDetailsCookie,
+} from './commonServices';
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
@@ -163,7 +166,10 @@ export const sendEmailForApproval = async (
     const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=APPROVED`;
     const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=REJECTED`;
     // convert to local time string
-    const time = getFormattedLocalTime(eventDate!);
+    const userDetail = await getUserDetailsCookie();
+    const convertString = JSON.parse(userDetail.value);
+
+    const time = getFormattedLocalTimeBackend(eventDate!, convertString);
 
     // gett org details
     let org = '';
@@ -198,13 +204,12 @@ export const sendEmailForApproval = async (
       email: userEmail,
     };
     const template = compileEmailTemplate(approveEvent, emailData);
-    const email = await sendEmail(
+    await sendEmail(
       ADMIN_EMAIL!,
       'Post Approval Required',
       'Post Approval Required',
       template,
     );
-    console.log(email, 'email');
   } catch (error) {
     console.log(error, 'error in sending email for approval');
   }
@@ -338,7 +343,10 @@ export const sendEmailsForSubscribeCatUser = async (
   emailsString: string,
 ) => {
   try {
-    const time = getFormattedLocalTime(data.eventDate);
+    const userDetail = await getUserDetailsCookie();
+    const convertString = JSON.parse(userDetail.value);
+
+    const time = getFormattedLocalTimeBackend(data.eventDate, convertString);
     let org = '';
     if (data.organizationId) {
       const organization = await getOrgDetailsById(data.organizationId);

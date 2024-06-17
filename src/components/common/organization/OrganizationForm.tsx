@@ -263,7 +263,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >
-          {userOrgDetails.id ? 'Update' : 'Save'} Changes
+          {userOrgDetails.id ? 'Update' : 'Create'} Organization
         </button>
       </div>
     </form>

@@ -89,7 +89,7 @@ const Organizations: React.FC = () => {
               <button
                 onClick={() => leave(orgMember.id, orgMember.organizationId)}
                 type="button"
-                className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                className="text-base h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
               >
                 Leave
               </button>

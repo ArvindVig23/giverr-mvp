@@ -1,12 +1,41 @@
 import moment from 'moment-timezone';
+export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
+  if (Object.keys(cookies).length > 0) {
+    console.log(cookies.userDetails, 'cookies.userDetails');
+    const timeZoneSettings = cookies.userDetails.timeZoneSettings;
+    const dateFormat = timeZoneSettings.isDayMonthYearDateFormat
+      ? 'DD MMMM, YYYY'
+      : 'MMMM DD, YYYY';
+    const timeFormat = timeZoneSettings.istwentyFourHourTimeFormat
+      ? 'HH:mm'
+      : 'h:mm A';
+    const selectedTimeZone = timeZoneSettings.selectedTimeZone;
 
-export const getFormattedLocalTime = (utcTimeString: string) => {
-  const userLocalZone = moment.tz.guess();
-  const utcTime = moment.utc(utcTimeString);
-  const userLocalTime = utcTime.clone().tz(userLocalZone);
-  const formattedLocalTime = userLocalTime.format('MMM D, YYYY [at] HH:mm');
+    // Convert UTC time string to moment object
+    const utcTime = moment.utc(utcTimeString);
+    let time = null;
+    if (selectedTimeZone) {
+      time = moment(utcTime)
+        .tz(selectedTimeZone)
+        .format(`${dateFormat} [at] ${timeFormat}`);
+      return time;
+    } else {
+      const userLocalZone = moment.tz.guess();
+      const utcTime = moment.utc(utcTimeString);
+      const userLocalTime = utcTime.clone().tz(userLocalZone);
+      const formattedLocalTime = userLocalTime.format(
+        `${dateFormat} [at] ${timeFormat}`,
+      );
+      return formattedLocalTime;
+    }
+  } else {
+    const userLocalZone = moment.tz.guess();
+    const utcTime = moment.utc(utcTimeString);
+    const userLocalTime = utcTime.clone().tz(userLocalZone);
+    const formattedLocalTime = userLocalTime.format('MMM D, YYYY [at] HH:mm');
 
-  return formattedLocalTime;
+    return formattedLocalTime;
+  }
 };
 
 export const encodeUrl = (str: string) => {
@@ -24,4 +53,12 @@ export const debounce = (func: any, delay = 5000) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), delay);
   };
+};
+
+//  create the option
+export const createValueForDropdown = (timeZone: string, value: number) => {
+  if (!timeZone) {
+    return null;
+  }
+  return { label: timeZone, value: timeZone, offset: value };
 };

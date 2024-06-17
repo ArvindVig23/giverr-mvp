@@ -71,6 +71,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
   return (
     <div className="flex w-full flex-col gap-5 mt-5" ref={dropdownRef}>
       <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
+      <span>All new members will be invited with no permissions.</span>
       <div className="relative flex gap-5">
         <div className="relative flex-1">
           <input
@@ -142,6 +143,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
                 </span>
               ) : (
                 <button
+                  type="button"
                   onClick={() => handleRemoveMember(index)}
                   className="group w-[20px] h-[20px] ml-auto  hover:bg-[#24181B] border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                 >
