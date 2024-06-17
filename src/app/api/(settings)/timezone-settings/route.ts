@@ -70,10 +70,11 @@ export async function PUT(req: NextRequest) {
       istwentyFourHourTimeFormat,
       isDayMonthYearDateFormat,
       selectedTimeZone,
-      selectedTimeZoneInMilisecond,
+      selectedTimeZoneInMilisecond: selectedTimeZoneInMilisecond || 0,
     });
     const userDetails = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);
+
     const updatedCookies = {
       ...convertString,
       timeZoneSettings: {
@@ -85,6 +86,8 @@ export async function PUT(req: NextRequest) {
         selectedTimeZoneInMilisecond,
       },
     };
+    console.log(updatedCookies, 'updated');
+
     setUserDetailsCookie(updatedCookies);
     const response = responseHandler(
       200,
