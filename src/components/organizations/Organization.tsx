@@ -39,7 +39,7 @@ const Organization: React.FC<{
   const [totalRecords, setTotalRecords] = useState<number>(0);
   // console.log('=== orgs =', orgsList);
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState<string>('');
+  const [openOrgs, setOpenOrgs] = React.useState<string[]>([]);
   useEffect(() => {
     (async () => {
       try {
@@ -53,8 +53,11 @@ const Organization: React.FC<{
         }
         setCurrentPage(page);
         setTotalRecords(totalRecords);
-        console.log('== data ', open);
-        setOpen(open ? open : organizations[0]?.id);
+        setOpenOrgs(
+          openOrgs.includes(organizations[0]?.id)
+            ? openOrgs
+            : [...openOrgs, organizations[0]?.id],
+        );
       } catch (error: any) {
         const { message } = error;
         sweetAlertToast('error', message);
@@ -99,6 +102,16 @@ const Organization: React.FC<{
       return organizationDetails.username;
     }
   };
+  const toggleAccordion = (organizationId: string) => {
+    let tempOpenOrgs = [...openOrgs];
+    if (openOrgs.includes(organizationId)) {
+      tempOpenOrgs = tempOpenOrgs.filter((orgId) => orgId !== organizationId);
+      setOpenOrgs(tempOpenOrgs);
+      return;
+    }
+    tempOpenOrgs.push(organizationId);
+    setOpenOrgs(tempOpenOrgs);
+  };
 
   return (
     <div className="w-full border-t border-[#E6E3D6] p-5 organization-section">
@@ -120,25 +133,23 @@ const Organization: React.FC<{
             <>
               {orgsList.map((organization: any) => (
                 <Accordion
-                  open={open === organization.id}
+                  open={openOrgs.includes(organization.id)}
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                   key={organization.id}
                 >
                   <AccordionHeader
-                    onClick={() =>
-                      setOpen(open === organization.id ? '' : organization.id)
-                    }
+                    onClick={() => toggleAccordion(organization.id)}
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
-                    className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${open === organization.id ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
+                    className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${openOrgs.includes(organization.id) ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
                   >
                     <div className="w-full flex flex-wrap gap-5">
                       <div className="flex-1 flex gap-4 items-center">
                         <div
-                          className={`w-11 min-w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${open === organization.id ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
+                          className={`w-11 min-w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${openOrgs.includes(organization.id) ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
                         >
                           {organization.avatarLink ? (
                             <Image
@@ -187,12 +198,16 @@ const Organization: React.FC<{
                       </div>
 
                       <Image
-                        src={open === organization.id ? arrowUp : arrowDown}
+                        src={
+                          openOrgs.includes(organization.id)
+                            ? arrowUp
+                            : arrowDown
+                        }
                         alt="arrow"
                       />
                     </div>
                   </AccordionHeader>
-                  <AccordionBody className="bg-[#EAE7DC] px-2.5 rounded-b-xl">
+                  <AccordionBody className="bg-[#EAE7DC] px-2.5 rounded-b-xl mb-5">
                     {!organization.opportunities.length ? (
                       <OpportunityCardEmpty />
                     ) : (
