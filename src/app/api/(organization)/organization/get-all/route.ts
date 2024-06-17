@@ -65,26 +65,42 @@ export async function GET(req: NextRequest) {
     const totalRecords = querySnapshot.size;
     if (page === 1) {
       querySnapshot = await getDocs(
-        query(organizationsRef, firestoreLimit(limit)),
+        query(
+          organizationsRef,
+          where('status', '==', 'APPROVED'),
+          firestoreLimit(limit),
+        ),
       );
     } else {
       const previousPageSnapshot = await getDocs(
-        query(organizationsRef, firestoreLimit((page - 1) * limit)),
+        query(
+          organizationsRef,
+          where('status', '==', 'APPROVED'),
+          firestoreLimit((page - 1) * limit),
+        ),
       );
       const lastVisible =
         previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
       querySnapshot = await getDocs(
-        query(organizationsRef, startAfter(lastVisible), firestoreLimit(limit)),
+        query(
+          organizationsRef,
+          where('status', '==', 'APPROVED'),
+          startAfter(lastVisible),
+          firestoreLimit(limit),
+        ),
       );
     }
 
     const organizationIds = querySnapshot.docs.map((doc) => doc.id);
 
     const opportunitiesRef = collection(db, 'opportunities');
-    const opportunitiesQuery = query(
-      opportunitiesRef,
-      where('organizationId', 'in', organizationIds),
-    );
+    let opportunitiesQuery = query(opportunitiesRef);
+    if (organizationIds.length > 0) {
+      opportunitiesQuery = query(
+        opportunitiesRef,
+        where('organizationId', 'in', organizationIds),
+      );
+    }
     const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
 
     const organizations: any = [];
