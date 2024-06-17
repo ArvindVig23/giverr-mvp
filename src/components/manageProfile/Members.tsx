@@ -126,7 +126,6 @@ const Members = () => {
   return (
     <div className="flex w-full flex-col gap-5">
       <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
-      <span>All new members will be invited with no permissions.</span>
       <div className="flex gap-5">
         <div className="relative flex-1">
           <input
@@ -282,7 +281,7 @@ const Members = () => {
           setShowModal={setShowDeleteMemberModal}
         >
           <div>
-            <div className="relative p-5 flex-auto flex flex-col gap-5 max-h-modal overflow-auto">
+            <div className="relative p-5 flex-auto flex flex-col gap-5 overflow-auto">
               <p className="text-base text-[#24181B] m-0">
                 {isRevokeInvite
                   ? 'Are you sure you want to revoke this invite?'
@@ -303,7 +302,7 @@ const Members = () => {
                 type="button"
                 onClick={() => removeMember()}
               >
-                {isRevokeInvite ? 'Revoke Invite' : 'Delete'}
+                {isRevokeInvite ? 'Revoke Invite' : 'Remove'}
               </button>
             </div>
           </div>
