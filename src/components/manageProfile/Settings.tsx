@@ -129,7 +129,7 @@ const Settings: React.FC = () => {
         </div>
 
         <div className="relative w-full mt-1">
-          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
             Timezone
           </label>
           <Select

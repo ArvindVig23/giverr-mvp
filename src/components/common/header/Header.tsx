@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           </div>
 
           <div className="flex w-full max-w-[654px] ">
-            <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
+            <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-2xl h-11 w-full">
               <input
                 placeholder="Search location"
                 className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
@@ -67,7 +67,7 @@ const Header: React.FC = () => {
             ) : (
               <Link
                 href={'/sign-in'}
-                className="text-base  w-auto h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                className="text-base  w-auto h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
               >
                 Join now
               </Link>

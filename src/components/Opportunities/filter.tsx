@@ -208,7 +208,7 @@ export default function ProfileDropdown() {
                 <div className="relative w-full">
                   <input
                     id="name"
-                    className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                     placeholder=" "
                     type="text"
                     name="name"
@@ -225,14 +225,14 @@ export default function ProfileDropdown() {
                 </h4>
 
                 <div className="flex flex-wrap gap-5">
-                  <div className="w-40 p-4 rounded-md border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
+                  <div className="w-40 p-4 rounded-2xl border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
                     <Image src={physical} alt="physical" />
                     <h3 className="m-0 text-base text-[#24181B]">
                       Physical location
                     </h3>
                   </div>
 
-                  <div className="w-40 p-4 rounded-md border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
+                  <div className="w-40 p-4 rounded-2xl border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
                     <Image src={virtual} alt="physical" />
                     <h3 className="m-0 text-base text-[#24181B]">Virtual</h3>
                   </div>
@@ -241,7 +241,7 @@ export default function ProfileDropdown() {
             </div>
             <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
               <button
-                className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038]"
                 type="submit"
               >
                 Show 366 opportunities

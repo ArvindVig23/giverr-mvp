@@ -72,7 +72,7 @@ const Organizations: React.FC = () => {
   };
   return (
     <div className="w-full">
-      <h3 className="text-[32px] font-medium mb-2 mt-0 leading-[36px]">
+      <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
         Organizations
       </h3>
       {memberOfOrgList.length > 0 ? (

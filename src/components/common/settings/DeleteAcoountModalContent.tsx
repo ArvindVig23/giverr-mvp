@@ -54,7 +54,7 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
               {...register('username')}
               type="username"
               id="name"
-              className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+              className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "
             />
             <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
@@ -66,7 +66,7 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
       {/*footer*/}
       <div className="flex flex-col items-center justify-end p-6 pt-5  rounded-b gap-2.5">
         <button
-          className="text-base text-[#24181B]  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium   border border-[#E6E3D6] hover:bg-[#EDEBE3]"
+          className="text-base text-[#24181B]  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium   border border-[#E6E3D6] hover:bg-[#EDEBE3]"
           type="button"
           onClick={() => setShowModal(false)}
         >
@@ -74,7 +74,7 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
         </button>
         <button
           disabled={usernameValue !== cookies.userDetails.username}
-          className={`text-base w-full h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${usernameValue !== cookies.userDetails.username ? 'cursor-not-allowed' : ''}`}
+          className={`text-base w-full h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038] ${usernameValue !== cookies.userDetails.username ? 'cursor-not-allowed' : ''}`}
           type="button"
           onClick={() => deleteAccount()}
         >

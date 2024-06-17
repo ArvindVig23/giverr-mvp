@@ -94,7 +94,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   return (
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
-        <div className="text-base text-[#1E1E1E80] font-normal">
+        <div className="text-base text-[#24181B80] font-normal">
           {totalRecords} Opportunities
         </div>
         <Filter />
@@ -130,7 +130,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
         {opportunityList.length !== totalRecords ? (
           <button
             onClick={() => setCurrentPage(currrentPage! + 1)}
-            className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+            className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           >
             Load More
           </button>

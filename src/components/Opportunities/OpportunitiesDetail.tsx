@@ -2,9 +2,16 @@ import React, { useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 // import dog from '/public/images/dog-walking.jpg';
 import dummy from '/public/images/dummy.jpg';
+import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
 import location from '/public/images/location.svg';
+import leftSHape from '/public/images/bottom-left-shapes.svg';
+import LongArrow from '/public/images/long-arrow-left.svg';
+// import volunteer from '/public/images/volunteer.svg';
+import RightSHape from '/public/images/bottom-right-shapes.svg';
+// import virutalLeft from '/public/images/virtual-left.svg';
+// import virutalRight from '/public/images/virtual-right.svg';
 import Link from 'next/link';
 // import Delete from '../manageProfile/detete';
 import { OpportunityDetail } from '@/interface/opportunity';
@@ -36,7 +43,13 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
   const [cookies] = useCookies();
   return (
     <div className="relative border-t border-[#E6E3D6]">
-      <div className="p-5 w-full relative pb-24">
+      <div className="p-5 w-full relative pb-24 border-b border-[#E6E3D6]">
+        <Link
+          href="#"
+          className="absolute top-5 left-5 w-11 h-11 min-w-11 border border-[#E6E3D6] rounded-xl flex justify-center items-center hover:bg-[#EDEBE3]"
+        >
+          <Image src={LongArrow} alt="arrow"></Image>
+        </Link>
         <div className="w-full max-w-[652px] m-auto">
           <div className="w-full bg-white rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">
@@ -51,7 +64,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 <Delete />
               </div> */}
             </div>
-            <div className="realtive rounded-3xl">
+            <div className="realtive rounded-3xl overflow-hidden">
               {opportunityDetail?.imageLink && (
                 <Image
                   width={652}
@@ -64,7 +77,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
 
             <div className="p-5">
               <div className="flex gap-2.5 flex-wrap mb-5">
-                <h2 className="m-0 text-[#24181B] font-medium text-[32px] leading-[36px] w-full">
+                <h2 className="m-0 text-[#1E1E1E] font-medium text-[32px] leading-[36px] w-full">
                   {opportunityDetail?.name}
                 </h2>
 
@@ -82,7 +95,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 )}
               </div>
 
-              <div className="mt-10 flex flex-col gap-8">
+              <div className="mt-5 flex flex-col gap-8">
                 <div className="">
                   <h6 className="text-base m-0 text-[#1E1E1E] mb-3 font-medium w-full">
                     Description
@@ -149,31 +162,55 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
               Where it&apos;ll be
             </h2>
             <div className="flex flex-col gap-2.5">
-              <div className="flex gap-1 text-base text-[#24181B]">
-                <Image src={time} alt="time" />
+              <div className="flex gap-2 items-center text-base text-[#24181B]">
+                <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                  <Image src={time} alt="time" />
+                </div>
                 {opportunityDetail?.eventDate &&
                   getFormattedLocalTime(opportunityDetail?.eventDate, cookies)}
               </div>
 
               {opportunityDetail?.opportunityData && (
-                <div className="flex gap-1 text-base text-[#24181B]">
-                  <Image
-                    className="brightness-0"
-                    width={20}
-                    height={20}
-                    src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.opportunityData.icon)}`}
-                    alt="dog"
-                  />
+                <div className="flex gap-2 items-center text-base text-[#24181B]">
+                  <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                    <Image
+                      className="brightness-0"
+                      width={20}
+                      height={20}
+                      // src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.opportunityData.icon)}`}
+                      src={category}
+                      alt="dog"
+                    />
+                  </div>
                   {opportunityDetail?.opportunityData?.name}
                 </div>
               )}
 
               {opportunityDetail?.location && (
-                <div className="flex gap-1 text-base text-[#24181B]">
-                  <Image src={location} alt="location" />
+                <div className="flex gap-2 items-center text-base text-[#24181B]">
+                  <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                    <Image src={location} alt="location" />
+                  </div>
                   {opportunityDetail?.location && opportunityDetail?.location}
                 </div>
               )}
+
+              {/* <div className="flex gap-2 items-center text-base text-[#24181B]">
+                <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                  <Image src={volunteer} alt="volunteer" />
+                </div>
+                <div className='flex gap-2'>
+                  <div className='flex'>
+                    <div className='w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FF97B5] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#0B9EDE] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#0B9EDE] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FF532D] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FFC430] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#7FE548] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+                  </div>
+                15/20 volunteers
+                </div>
+              </div> */}
             </div>
 
             <div className="w-full rounded-xl overflow-hidden my-10">
@@ -206,7 +243,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                   <Link
                     target="_blank"
                     href={opportunityDetail?.registrationWebsiteLink}
-                    className="text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                    className="text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038]"
                   >
                     Visit website to join
                   </Link>
@@ -247,7 +284,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
             ) : (
               <div className={`flex flex-col gap-5`}>
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-base text-[#24181B] font-medium">
+                  <h4 className="text-lg text-[#24181B] font-medium">
                     Become a volunteer
                   </h4>
                   <p className="text-base text-[#24181B80]">
@@ -258,7 +295,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 {!cookies?.userDetails ? (
                   <Link
                     className={
-                      'text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]'
+                      'text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038]'
                     }
                     href={'/sign-in'}
                   >
@@ -275,7 +312,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                           : false
                       }
                       onClick={handleJoin}
-                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
+                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
                     >
                       {opportunityDetail?.alreadyJoined
                         ? 'Already Joined'
@@ -303,6 +340,27 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
             </div>
           </div>
         </div>
+        <Image
+          className="absolute left-0 bottom-0"
+          src={leftSHape}
+          alt=""
+        ></Image>
+        <Image
+          className="absolute right-0 bottom-0"
+          src={RightSHape}
+          alt=""
+        ></Image>
+
+        {/* <Image
+          className="absolute left-0 bottom-0"
+          src={virutalLeft}
+          alt=""
+        ></Image>
+        <Image
+          className="absolute right-0 bottom-0"
+          src={virutalRight}
+          alt=""
+        ></Image> */}
       </div>
     </div>
   );

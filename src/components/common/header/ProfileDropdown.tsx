@@ -54,7 +54,7 @@ export default function ProfileDropdown() {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden ">
+        <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#FFC430] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden ">
           {cookies.userDetails.profileUrl ? (
             <Image
               width={40}
@@ -85,7 +85,7 @@ export default function ProfileDropdown() {
                 href="#"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
               >
-                <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
+                <div className="w-5 min-w-5 h-5 rounded-full font-medium bg-[#FFC430] flex justify-center items-center text-xs overflow-hidden">
                   {cookies.userDetails.profileUrl ? (
                     <Image
                       width={40}
@@ -110,7 +110,7 @@ export default function ProfileDropdown() {
                 href="#"
                 className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1"
               >
-                <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs">
+                <div className="w-5 h-5 rounded-full bg-[#62C2E0] font-medium flex justify-center items-center text-xs">
                   H
                 </div>{' '}
                 Harmony

@@ -104,7 +104,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
             opportunityTypeList.map((type: any, index: number) => (
               <SwiperSlide key={index} onClick={() => filterClick(type.slug)}>
                 <div
-                  className={`group  border border-[#D1CFC7] rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && 'border-[#E60054] text-[#E60054]'}`}
+                  className={`group  border border-[#E6E3D6] rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && '!border-[#E60054] text-[#E60054]'}`}
                 >
                   {type.name}
                 </div>
