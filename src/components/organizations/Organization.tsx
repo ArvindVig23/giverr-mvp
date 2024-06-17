@@ -176,7 +176,12 @@ const Organization: React.FC<{
                         </div>
 
                         <Link
-                          href={organization.website}
+                          href={
+                            !organization?.website?.startsWith('http') &&
+                            !organization?.website?.startsWith('//')
+                              ? `https://${organization.website}`
+                              : organization.website
+                          }
                           target="_blank"
                           className="w-[70px] ml-auto text-sm text-[#24181B] py-0.5 px-2 border border-[#D1CFC7] rounded-[10px] hover:bg-[#E6E3D6] group"
                         >
