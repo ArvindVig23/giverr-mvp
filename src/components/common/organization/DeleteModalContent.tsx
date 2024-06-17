@@ -59,7 +59,7 @@ const DeleteModalContent = ({ setShowModal }: any) => {
         </div>
       </div>
       {/*footer*/}
-      <div className="flex flex-col items-center justify-end p-6 pt-5  rounded-b gap-2.5">
+      <div className="flex flex-col items-center justify-end p-5 pt-5  rounded-b gap-2.5">
         <button
           className="text-base text-[#24181B]  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium   border border-[#E6E3D6] hover:bg-[#EDEBE3]"
           type="button"

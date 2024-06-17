@@ -84,7 +84,7 @@ const Myorganization: React.FC = () => {
             <button
               onClick={() => setShowModal(true)}
               type="button"
-              className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#ff000040] hover:bg-[#ff000017]"
+              className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#ff000040] hover:bg-[#ff000017]"
             >
               Edit
             </button>
@@ -109,7 +109,7 @@ const Myorganization: React.FC = () => {
               </p>
             </div>
             <button
-              className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
+              className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
               type="button"
               onClick={() => setShowModal(true)}
             >
