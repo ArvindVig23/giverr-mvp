@@ -66,7 +66,9 @@ export async function GET(req: NextRequest) {
     const page = +(searchParams.get('page') || '1');
     const limit = +(searchParams.get('limit') || '20');
     const organizationsRef = collection(db, 'organizations');
-    let querySnapshot = await getDocs(organizationsRef);
+    let querySnapshot = await getDocs(
+      query(organizationsRef, where('status', '==', 'APPROVED')),
+    );
     const totalRecords = querySnapshot.size;
     if (page === 1) {
       querySnapshot = await getDocs(
