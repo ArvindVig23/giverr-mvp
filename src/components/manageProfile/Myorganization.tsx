@@ -13,6 +13,7 @@ import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import DeleteModalContent from '../common/organization/DeleteModalContent';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import Members from './Members';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
 const Myorganization: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
@@ -22,6 +23,7 @@ const Myorganization: React.FC = () => {
     if (!userOrgDetails.id) {
       (async () => {
         try {
+          dispatch(setLoader(true));
           const getDetails = await getOrgDetail();
           if (getDetails) {
             if (getDetails.status === 'REJECTED') {
@@ -34,7 +36,9 @@ const Myorganization: React.FC = () => {
             }
             dispatch(updateOrgDetails(getDetails));
           }
+          dispatch(setLoader(false));
         } catch (error: any) {
+          dispatch(setLoader(false));
           console.log(error, 'error in getting the org');
         }
       })();
@@ -140,7 +144,9 @@ const Myorganization: React.FC = () => {
       {showModal && (
         <CommonModal
           heading={
-            userOrgDetails.id ? 'Update organization' : 'Create organization'
+            userOrgDetails.id && userOrgDetails.status !== 'PENDING'
+              ? 'Update organization'
+              : 'Create organization'
           }
           showModal={showModal}
           setShowModal={setShowModal}

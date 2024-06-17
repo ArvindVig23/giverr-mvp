@@ -28,6 +28,11 @@ export async function DELETE() {
     );
     const opportunitiesRef = collection(db, 'opportunities');
     const opportunityMembersRef = collection(db, 'opportunityMembers');
+    const userNotificationRef = collection(db, 'userNotificationSettings');
+    const userCategorySubscriptionRef = collection(
+      db,
+      'userCategorySubscription',
+    );
 
     // Begin batch operation
     const batch = writeBatch(db);
@@ -105,6 +110,28 @@ export async function DELETE() {
     );
     const opportunityMembersSnapshot = await getDocs(opportunityMembersQuery);
     opportunityMembersSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    // user notification delete
+    const userNotificationQuery = query(
+      userNotificationRef,
+      where('userId', '==', id),
+    );
+    const userNotificationSnapshot = await getDocs(userNotificationQuery);
+    userNotificationSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    // user subscription delete
+    const userCategorySubscriptionQuery = query(
+      userCategorySubscriptionRef,
+      where('userId', '==', id),
+    );
+    const userCategorySubscriptionSnapshot = await getDocs(
+      userCategorySubscriptionQuery,
+    );
+    userCategorySubscriptionSnapshot.forEach((doc) => {
       batch.delete(doc.ref);
     });
 
