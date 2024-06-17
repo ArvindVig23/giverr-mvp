@@ -28,11 +28,11 @@ export const opportunity = createSlice({
   name: 'OpportunityDetails',
   initialState: initialState,
   reducers: {
-    updateOpportunityDetails: (state, action) => {
+    updateOpportunityList: (state, action) => {
       return action.payload;
     },
   },
 });
 
-export const { updateOpportunityDetails } = opportunity.actions;
+export const { updateOpportunityList } = opportunity.actions;
 export default opportunity.reducer;

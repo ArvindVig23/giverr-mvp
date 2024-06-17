@@ -10,7 +10,7 @@ import CardSkeleton from '../common/loader/CardSkeleton';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import OpportunityCard from '../common/cards/OpportunityCard';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { updateOpportunityDetails } from '@/app/redux/slices/opportunitySlice';
+import { updateOpportunityList } from '@/app/redux/slices/opportunitySlice';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
@@ -25,12 +25,20 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const opportunityList = useSelector((state: any) => state.opportunityReducer);
   const [opportunityIds, setOpportunityIds] = useState('');
   const [totalRecords, setTotalRecords] = useState<number>(0);
+  const searchParams = useSearchParams();
+  const [dateRange, setDateRange] = useState({
+    startDate: searchParams.get('startDate'),
+    endDate: searchParams.get('endDate'),
+  });
   // const [limit, setLimit] = useState<number>(20);
   const [cookies] = useCookies();
-  const searchParams = useSearchParams();
   const createQueryParams = () => {
     const params = searchParams.get('opportunity');
-
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    if (startDate && endDate) {
+      setDateRange({ startDate, endDate });
+    }
     if (!params) {
       return '';
     }
@@ -50,14 +58,19 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     (async () => {
       try {
         setLoading(true);
-        const getList = await getOpportunityList(opportunityIds, currrentPage);
+        const getList = await getOpportunityList(
+          opportunityIds,
+          currrentPage,
+          dateRange.startDate ? dateRange.startDate : undefined,
+          dateRange.endDate ? dateRange.endDate : undefined,
+        );
         const { opportunities, page, totalRecords } = getList;
         if (page > 1) {
           dispatch(
-            updateOpportunityDetails([...opportunityList, ...opportunities]),
+            updateOpportunityList([...opportunityList, ...opportunities]),
           );
         } else {
-          dispatch(updateOpportunityDetails(opportunities));
+          dispatch(updateOpportunityList(opportunities));
         }
         setCurrentPage(page);
         setTotalRecords(totalRecords);
@@ -83,7 +96,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       const response = await addRemoveWishlistService(oppId);
       const { opportunityId, isWishlist } = response.data;
       dispatch(
-        updateOpportunityDetails((prevList: any[]) =>
+        updateOpportunityList((prevList: any[]) =>
           prevList.map((opp) =>
             opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
           ),

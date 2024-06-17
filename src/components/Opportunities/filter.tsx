@@ -8,11 +8,12 @@ import check from '/public/images/check.svg';
 import CommonModal from '../common/modal/CommonModal';
 import Datepicker from 'react-tailwindcss-datepicker';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
-import { useDispatch } from 'react-redux';
-import { updateOpportunityDetails } from '@/app/redux/slices/opportunitySlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateOpportunityList } from '@/app/redux/slices/opportunitySlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { OpportunityDetails } from '@/interface/opportunity';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export default function ProfileDropdown(props: {
   opportunityIds: string;
@@ -24,53 +25,60 @@ export default function ProfileDropdown(props: {
   const { opportunityIds, setCurrentPage, setTotalRecords } = props;
   const dispatch = useDispatch();
   const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [dateRange, setDateRange] = useState({
-    startDate: '',
-    endDate: '',
+    startDate: searchParams.get('startDate') || '',
+    endDate: searchParams.get('endDate') || '',
   });
   const [opportunities, setOpportunities] = useState<OpportunityDetails[]>([]);
   const [page, setPage] = useState<number>(0);
-  const handleValueChange = (dateRange: any) => {
-    console.log('newValue:', dateRange);
-    setDateRange(dateRange);
-  };
-  useEffect(() => {
-    if (dateRange.startDate && dateRange.endDate) {
-      (async () => {
-        try {
-          dispatch(setLoader(true));
-          setLoading(true);
-          const getList = await getOpportunityList(
-            opportunityIds,
-            1,
-            dateRange.startDate,
-            dateRange.endDate,
-          );
-          const { opportunities, page, totalRecords } = getList;
-          setOpportunities(opportunities);
-          setPage(page);
-          setTotalCount(totalRecords);
-          setLoading(false);
-        } catch (error: any) {
-          setLoading(false);
-          const { message } = error;
-          sweetAlertToast('error', message);
-        } finally {
-          dispatch(setLoader(false));
-        }
-      })();
+  const loading = useSelector((state: any) => state.loaderReducer);
+  const handleRangeChange = (range: any) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (range.startDate && range.endDate) {
+      params.set('startDate', range.startDate);
+      params.set('endDate', range.endDate);
+    } else {
+      if (params.has('startDate')) params.set('startDate', '');
+      if (params.has('endDate')) params.set('endDate', '');
     }
+    router.push(pathname + '?' + params.toString());
+    setDateRange(range);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        dispatch(setLoader(true));
+        const getList = await getOpportunityList(
+          opportunityIds,
+          1,
+          dateRange?.startDate?.length ? dateRange.startDate : undefined,
+          dateRange?.endDate?.length ? dateRange.endDate : undefined,
+        );
+        const { opportunities, page, totalRecords } = getList;
+        setOpportunities(opportunities);
+        setPage(page);
+        setTotalCount(totalRecords);
+      } catch (error: any) {
+        console.log('== err ==', error);
+        const { message } = error;
+        sweetAlertToast('error', message);
+      } finally {
+        dispatch(setLoader(false));
+      }
+    })();
     //eslint-disable-next-line
   }, [dateRange.startDate, dateRange.endDate]);
 
   const handleShowRecords = () => {
-    dispatch(updateOpportunityDetails(opportunities));
+    dispatch(updateOpportunityList(opportunities));
     setCurrentPage(page);
     setTotalRecords(totalCount);
     setShowModal(false);
   };
-
   return (
     // <Menu
     //   as="div"
@@ -263,13 +271,10 @@ export default function ProfileDropdown(props: {
               <div className="w-full flex flex-col gap-5">
                 <h4 className="text-[#24181B] text-2xl font-medium">Date</h4>
                 <div className="relative w-full">
-                  {/* <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                    Select Date
-                  </label> */}
                   <Datepicker
                     useRange={false}
                     value={dateRange}
-                    onChange={handleValueChange}
+                    onChange={handleRangeChange}
                     placeholder="Select Date"
                   />
                 </div>
@@ -298,6 +303,7 @@ export default function ProfileDropdown(props: {
             {!loading ? (
               <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
                 <button
+                  disabled={!totalCount}
                   onClick={() => handleShowRecords()}
                   className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
                   type="submit"
