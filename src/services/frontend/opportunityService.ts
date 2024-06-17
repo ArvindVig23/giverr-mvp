@@ -44,10 +44,12 @@ export const getOrganizationList = async (dispatch: any) => {
 export const getOpportunityList = async (
   opportunityIds: string,
   currrentPage?: number,
+  startDate?: string,
+  endDate?: string,
 ) => {
   try {
     const response = await callApi(
-      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}`,
+      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}&startDate=${startDate}&endDate=${endDate}`,
       'get',
     );
     return response.data;
