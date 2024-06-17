@@ -9,6 +9,8 @@ import {
 import responseHandler from '../../../../../lib/responseHandler';
 import { db } from '@/firebase/config';
 import { NextRequest } from 'next/server';
+import { getUserDetailsCookie } from '@/services/backend/commonServices';
+import { getWishlistWithUser } from '@/services/backend/opportunityServices';
 
 /**
  * @swagger
@@ -57,11 +59,16 @@ import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
+    const userDetailCookie = getUserDetailsCookie();
+    const convertString = JSON.parse(userDetailCookie.value);
+    const { id } = convertString;
     const { searchParams } = new URL(req.url);
     const page = +(searchParams.get('page') || '1');
     const limit = +(searchParams.get('limit') || '20');
     const organizationsRef = collection(db, 'organizations');
-    let querySnapshot = await getDocs(organizationsRef);
+    let querySnapshot = await getDocs(
+      query(organizationsRef, where('status', '==', 'APPROVED')),
+    );
     const totalRecords = querySnapshot.size;
     if (page === 1) {
       querySnapshot = await getDocs(
@@ -104,25 +111,29 @@ export async function GET(req: NextRequest) {
     const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
 
     const organizations: any = [];
-    querySnapshot.forEach((doc) => {
-      const organizationData = doc.data();
-      const organizationId = doc.id;
+    await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const organizationData = doc.data();
+        const organizationId = doc.id;
 
-      const organizationOpportunities = opportunitiesSnapshot.docs
-        .filter(
+        const organizationOpportunities = opportunitiesSnapshot.docs.filter(
           (opportunityDoc) =>
             opportunityDoc.data().organizationId === organizationId,
-        )
-        .map((opportunityDoc) => ({
-          id: opportunityDoc.id,
-          ...opportunityDoc.data(),
-        }));
+        );
+        const organizationWithOpportunities = await Promise.all(
+          organizationOpportunities.map(async (opportunityDoc) => ({
+            id: opportunityDoc.id,
+            ...opportunityDoc.data(),
+            isWishlist: await getWishlistWithUser(opportunityDoc.id, id),
+          })),
+        );
 
-      organizationData.id = organizationId;
-      organizationData.opportunities = organizationOpportunities;
+        organizationData.id = organizationId;
+        organizationData.opportunities = organizationWithOpportunities;
 
-      organizations.push(organizationData);
-    });
+        organizations.push(organizationData);
+      }),
+    );
 
     const response = responseHandler(
       200,

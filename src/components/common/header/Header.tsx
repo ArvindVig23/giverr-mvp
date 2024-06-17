@@ -41,7 +41,11 @@ const Header: React.FC = () => {
           <div className="flex w-full max-w-[654px] ">
             <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
               <input
-                placeholder="Search location"
+                placeholder={
+                  pathName === '/organizations'
+                    ? 'Search Organization'
+                    : 'Search location'
+                }
                 className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
               ></input>
               <Image
