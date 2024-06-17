@@ -35,7 +35,7 @@ const Organization: React.FC<{
   setCurrentPage: Function;
 }> = ({ currentPage, setCurrentPage }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [orgsList, setOrgsList] = useState<any>([]);
+  const [orgsList, setOrgsList] = useState<any[]>([]);
   const [totalRecords, setTotalRecords] = useState<number>(0);
   // console.log('=== orgs =', orgsList);
   const dispatch = useDispatch();
@@ -71,18 +71,16 @@ const Organization: React.FC<{
     try {
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
-      const { opportunityId, isWishlist } = response.data;
+      const { isWishlist } = response.data;
       const orgToUpdate = orgsList.find((org: any) => org.id == organizationId);
-      orgToUpdate.opportunities = orgToUpdate.opportunities.filter(
+      const copyOfOrg = { ...orgToUpdate, isWishlist };
+      copyOfOrg.opportunities = orgToUpdate.opportunities.filter(
         (opp: any) => opp.id !== oppId,
       );
 
       const updatedOrgs = orgsList.map((org: any) => {
         if (org.id == organizationId) {
-          org.opportunities = org.opportunities.map((opp: any) =>
-            opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
-          );
-          return org;
+          return copyOfOrg;
         }
         return org;
       });

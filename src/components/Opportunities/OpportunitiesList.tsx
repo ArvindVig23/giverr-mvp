@@ -4,7 +4,7 @@ import Filter from '../Opportunities/filter';
 import { useCookies } from 'react-cookie';
 import { useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { CurrentPage } from '@/interface/opportunity';
+import { CurrentPage, OpportunityDetails } from '@/interface/opportunity';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
 import CardSkeleton from '../common/loader/CardSkeleton';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
@@ -95,13 +95,10 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
       const { opportunityId, isWishlist } = response.data;
-      dispatch(
-        updateOpportunityList((prevList: any[]) =>
-          prevList.map((opp) =>
-            opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
-          ),
-        ),
+      const updatedOppList = opportunityList.map((opp: OpportunityDetails) =>
+        opp.id === opportunityId ? { ...opp, isWishlist: isWishlist } : opp,
       );
+      dispatch(updateOpportunityList(updatedOppList));
       dispatch(setLoader(false));
       sweetAlertToast('success', response.message);
     } catch (error: any) {
