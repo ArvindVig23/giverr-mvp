@@ -39,3 +39,26 @@ export interface OpportunityCardProps {
   opportunity: any;
   addRemoveWishlist?: any;
 }
+
+export interface OpportunityDetails {
+  activities: string;
+  createdAt: string;
+  createdBy: string;
+  description: string;
+  eventDate: string;
+  frequency: string;
+  id: string;
+  imageLink: string;
+  isWishlist: boolean;
+  location: string;
+  lowercaseName: string;
+  name: string;
+  opportunityType: string;
+  organization: string | null;
+  organizationId: string;
+  registrationType: string;
+  registrationWebsiteLink: string;
+  status: string;
+  updatedAt: string;
+  volunteerRequirements: string;
+}
