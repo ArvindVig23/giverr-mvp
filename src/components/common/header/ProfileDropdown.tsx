@@ -6,10 +6,14 @@ import check from '/public/images/check-circle.svg';
 import Image from 'next/image';
 import { getInitialOfEmail, logOut } from '@/services/frontend/userService';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { getOrgDetail } from '@/services/frontend/organization';
+import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
+import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 
 export default function ProfileDropdown() {
   const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
@@ -20,6 +24,35 @@ export default function ProfileDropdown() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+
+  useEffect(() => {
+    if (!userOrgDetails.id) {
+      (async () => {
+        try {
+          dispatch(setLoader(true));
+          const getDetails = await getOrgDetail();
+          if (getDetails) {
+            if (getDetails.status === 'REJECTED') {
+              const user = {
+                ...defaultUserOrgDetail,
+                status: getDetails.status,
+              };
+              dispatch(updateOrgDetails(user));
+              return;
+            }
+            dispatch(updateOrgDetails(getDetails));
+          }
+          dispatch(setLoader(false));
+        } catch (error: any) {
+          dispatch(setLoader(false));
+          console.log(error, 'error in getting the org');
+        }
+      })();
+    } // eslint-disable-next-line
+  }, []);
+  const showOrganization =
+    userOrgDetails.id && userOrgDetails.status === 'APPROVED';
   useEffect(() => {
     if (pathname === '/activity') {
       const eventsTab = searchParams.get('events');
@@ -105,17 +138,31 @@ export default function ProfileDropdown() {
               </Link>
             </Menu.Item>
 
-            <Menu.Item>
-              <Link
-                href="#"
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1"
-              >
-                <div className="w-5 h-5 rounded-full bg-[#62C2E0] font-medium flex justify-center items-center text-xs">
-                  H
-                </div>{' '}
-                Harmony
-              </Link>
-            </Menu.Item>
+            {showOrganization ? (
+              <Menu.Item>
+                <Link
+                  href="#"
+                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1"
+                >
+                  <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
+                    {userOrgDetails.avatarLink ? (
+                      <Image
+                        width={40}
+                        height={40}
+                        src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      getInitialOfEmail(
+                        userOrgDetails.name ? userOrgDetails.name : 'O',
+                      )
+                    )}
+                  </div>{' '}
+                  {userOrgDetails.name}
+                </Link>
+              </Menu.Item>
+            ) : null}
             <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
             <Menu.Item>
               <Link

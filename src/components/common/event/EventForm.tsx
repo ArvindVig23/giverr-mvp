@@ -95,7 +95,7 @@ const EventForm = ({ setShowModal }: any) => {
     try {
       const response = await callApi('/opportunity', 'post', data);
       const { message } = response;
-      sweetAlertToast('success', message, 1000);
+      sweetAlertToast('success', message);
       reset();
       setShowModal(false);
       setFileError('');

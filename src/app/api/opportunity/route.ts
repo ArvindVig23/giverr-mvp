@@ -18,6 +18,7 @@ import {
   getWishlistWithUser,
 } from '@/services/backend/opportunityServices';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
+import moment from 'moment-timezone';
 // import { cookies } from 'next/headers';
 
 /**
@@ -162,11 +163,23 @@ export async function GET(req: NextRequest) {
     const limit = +(searchParams.get('limit') || '20');
     const opportunityId = searchParams.get('opportunity');
     const userIdRecordsShouldFetch = searchParams.get('userId');
-
+    const startDate = searchParams.get('startDate') || 'undefined';
+    const endDate = searchParams.get('endDate') || 'undefined';
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
       orderBy('createdAt', 'desc'),
     );
+    if (startDate != 'undefined' && endDate != 'undefined') {
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where('createdAt', '>=', startDate),
+        where(
+          'createdAt',
+          '<=',
+          moment(endDate, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
+        ),
+      );
+    }
     if (opportunityId) {
       const arrayOfOpportunityFilter = opportunityId?.split(',');
       opportunitiesQuery = query(

@@ -231,11 +231,9 @@ body {
 
 .card-shadow:hover {
   box-shadow: 0px 8px 20px 0px #24181b0d;
-
 }
 
-.react-datepicker-wrapper
-{
+.react-datepicker-wrapper {
   width: 100%;
 }
 .basic-multi-select .select__control {
@@ -245,28 +243,35 @@ body {
   border-radius: 8px;
 }
 
-.basic-multi-select .select__multi-value  {
-  background: #E600540D;
+.basic-multi-select .select__multi-value {
+  background: #e600540d;
   border-radius: 8px;
   overflow: hidden;
 }
-.basic-multi-select .select__multi-value__label
-{
+.basic-multi-select .select__multi-value__label {
   color: #e60054;
   padding-left: 10px;
   font-weight: 500;
 }
-.basic-multi-select .select__multi-value__remove
-{
+.basic-multi-select .select__multi-value__remove {
   background-color: transparent !important;
   color: #e60054;
   opacity: 0.6;
 }
-.basic-multi-select .select__multi-value__remove:hover
-{
+.basic-multi-select .select__multi-value__remove:hover {
   opacity: 1;
 }
-.basic-multi-select .select__clear-indicator
-{
+.basic-multi-select .select__clear-indicator {
   display: none;
+}
+.select__menu {
+  left: 0;
+}
+.select__option--is-focused {
+  color: #e60054 !important;
+  background-color: rgba(230, 0, 84, 0.0509803922) !important;
+}
+.select__option--is-selected {
+  color: #e60054 !important;
+  background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }

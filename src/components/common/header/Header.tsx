@@ -31,7 +31,7 @@ const Header: React.FC = () => {
               </Link>
               <Link
                 href="/organizations"
-                className="px-1 text-[#1E1E1E80] hover:text-[#1E1E1E]"
+                className={`px-1  hover:text-[#1E1E 1E] ${pathName === '/organizations' ? 'text-[#1E1E 1E]' : 'text-[#1E1E1E80]'}`}
               >
                 Organizations
               </Link>
@@ -41,7 +41,11 @@ const Header: React.FC = () => {
           <div className="flex w-full max-w-[654px] ">
             <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-2xl h-11 w-full">
               <input
-                placeholder="Search location"
+                placeholder={
+                  pathName === '/organizations'
+                    ? 'Search Organization'
+                    : 'Search location'
+                }
                 className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
               ></input>
               <Image
