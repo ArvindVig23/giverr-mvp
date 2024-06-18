@@ -6,6 +6,8 @@ import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
 import { websiteLinkRegex } from '@/utils/regex';
 import { CreateEventStep2Form } from '@/interface/opportunity';
+import { updateSearchParams } from '@/services/frontend/commonServices';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
   const {
@@ -32,7 +34,9 @@ const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
   });
 
   const locationType = watch('locationType');
-
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const handleFormSubmit = async (data: CreateEventStep2Form) => {
     console.log(data, 'data');
 
@@ -41,6 +45,7 @@ const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
       virtualLocationLink: data.virtualLocationLink,
       physicalLocations: data.physicalLocations,
     });
+    updateSearchParams(searchParams, pathname, router, '3');
   };
 
   useEffect(() => {

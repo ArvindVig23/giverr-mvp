@@ -15,6 +15,8 @@ import {
 } from '@/services/frontend/opportunityService';
 import { FILE_TYPES } from '@/constants/constants';
 import { min4CharWithoutSpace } from '@/utils/regex';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { updateSearchParams } from '@/services/frontend/commonServices';
 
 const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
   const dispatch = useDispatch();
@@ -35,6 +37,9 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
       publishAs: cookies.userDetails.id,
     },
   });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const eventList = useSelector((state: any) => state.eventListReducer);
   const organizationList = useSelector(
     (state: any) => state.organizationReducer,
@@ -45,7 +50,16 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
       setFileError('Please Select thumbnail');
       return;
     }
-    console.log(data, 'data');
+    setEventDetails({
+      ...eventDetails,
+      name: data.name,
+      description: data.description,
+      activities: data.activities,
+      volunteerRequirements: data.volunteerRequirements,
+      opportunityType: data.opportunityType,
+      createdBy: data.publishAs,
+    });
+    updateSearchParams(searchParams, pathname, router, '2');
   };
 
   useEffect(() => {

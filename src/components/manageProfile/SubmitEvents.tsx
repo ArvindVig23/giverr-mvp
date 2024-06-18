@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep3 from '../common/event/CreateEventStep3';
 import CreateEventStep4 from '../common/event/CreateEventStep4';
+import { updateSearchParams } from '@/services/frontend/commonServices';
 // import dog from '/public/images/dog-walking.jpg';
 // import SuccesModal from '../manageProfile/SuccesModal';
 
@@ -37,12 +38,7 @@ const SubmitEvents = () => {
   // const step = searchParams.get('step');
   const openModal = () => {
     setShowModal(true);
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set('submit-event', 'true');
-    current.set('step', '1');
-    const search = current.toString();
-    const query = search ? `?${search}` : '';
-    router.push(`${pathname}${query}`);
+    updateSearchParams(searchParams, pathname, router, '1');
   };
   return (
     <>

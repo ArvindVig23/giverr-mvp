@@ -62,3 +62,18 @@ export const createValueForDropdown = (timeZone: string, value: number) => {
   }
   return { label: timeZone, value: timeZone, offset: value };
 };
+
+// export update searchparams for create event
+export const updateSearchParams = (
+  searchParams: URLSearchParams,
+  pathname: string,
+  router: any,
+  step: string,
+) => {
+  const current = new URLSearchParams(searchParams.toString());
+  current.set('submit-event', 'true');
+  current.set('step', step);
+  const search = current.toString();
+  const query = search ? `?${search}` : '';
+  router.push(`${pathname}${query}`);
+};

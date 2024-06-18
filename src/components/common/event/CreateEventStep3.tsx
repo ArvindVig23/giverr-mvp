@@ -3,21 +3,17 @@ import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 // import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
 import moment from 'moment-timezone';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 // import DatePicker from 'react-datepicker';
 // import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
 import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  getEventList,
-  getOrganizationList,
-  uploadFile,
-} from '@/services/frontend/opportunityService';
+import { uploadFile } from '@/services/frontend/opportunityService';
 // import { FILE_TYPES } from '@/constants/constants';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 // import { min4CharWithoutSpace, websiteLinkRegex } from '@/utils/regex';
@@ -30,7 +26,7 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
   const [, setFileError] = useState<string>('');
   const [, setThumbnailUrl] = useState<string>('');
   const [cookies] = useCookies();
-  const { handleSubmit, watch, reset, setValue } = useForm({
+  const { handleSubmit, reset } = useForm({
     defaultValues: {
       name: '',
       registrationType: '1',
@@ -47,12 +43,7 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
       publishAs: cookies.userDetails.id,
     },
   });
-  const radioValue = watch('registrationType');
   const router = useRouter();
-  const eventList = useSelector((state: any) => state.eventListReducer);
-  const organizationList = useSelector(
-    (state: any) => state.organizationReducer,
-  );
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
     if (!thumbnailFile) {
@@ -101,22 +92,6 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
       sweetAlertToast('error', message);
     }
   };
-
-  useEffect(() => {
-    if (eventList.length === 0) {
-      getEventList(dispatch);
-    }
-    if (organizationList.length === 0) {
-      getOrganizationList(dispatch);
-    } // eslint-disable-next-line
-  }, []);
-
-  // to set the website link value to empty
-  useEffect(() => {
-    if (radioValue !== '3') {
-      setValue('registrationWebsiteLink', '');
-    } //eslint-disable-next-line
-  }, [radioValue]);
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
