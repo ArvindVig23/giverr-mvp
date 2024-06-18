@@ -16,7 +16,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import arrow from '/public/images/chevron-right-black.svg';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { getOrganizationList } from '@/services/frontend/organization';
 import OrganizationPageSkeleton from '../common/loader/OrganizationPageSkeleton';
@@ -28,6 +28,7 @@ import OpportunityCardEmpty from '../common/cards/OpportunityCardEmpty';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { getInitialOfEmail } from '@/services/frontend/userService';
+import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
 SwiperCore.use([Navigation]);
 
 const Organization: React.FC<{
@@ -35,29 +36,37 @@ const Organization: React.FC<{
   setCurrentPage: Function;
 }> = ({ currentPage, setCurrentPage }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [orgsList, setOrgsList] = useState<any[]>([]);
-  const [totalRecords, setTotalRecords] = useState<number>(0);
-  // console.log('=== orgs =', orgsList);
   const dispatch = useDispatch();
   const [openOrgs, setOpenOrgs] = React.useState<string[]>([]);
+  const organisationsData = useSelector(
+    (state: any) => state.organizationReducer,
+  );
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const { data } = await getOrganizationList(dispatch, currentPage);
+        const { data } = await getOrganizationList(dispatch, currentPage, '');
         const { organizations, page, totalRecords } = data;
         if (page > 1) {
-          setOrgsList([...orgsList, ...organizations]);
+          dispatch(
+            updateOrganizationList({
+              organizations: [
+                ...organisationsData.organizations,
+                ...organizations,
+              ],
+              page,
+              totalRecords,
+            }),
+          );
         } else {
-          setOrgsList(organizations);
+          dispatch(
+            updateOrganizationList({
+              organizations,
+              page,
+              totalRecords,
+            }),
+          );
         }
-        setCurrentPage(page);
-        setTotalRecords(totalRecords);
-        setOpenOrgs(
-          openOrgs.includes(organizations[0]?.id)
-            ? openOrgs
-            : [...openOrgs, organizations[0]?.id],
-        );
       } catch (error: any) {
         const { message } = error;
         sweetAlertToast('error', message);
@@ -72,19 +81,26 @@ const Organization: React.FC<{
       dispatch(setLoader(true));
       const response = await addRemoveWishlistService(oppId);
       const { isWishlist } = response.data;
-      const orgToUpdate = orgsList.find((org: any) => org.id == organizationId);
+      const orgToUpdate = organisationsData.organizations.find(
+        (org: any) => org.id == organizationId,
+      );
       const copyOfOrg = { ...orgToUpdate, isWishlist };
       copyOfOrg.opportunities = orgToUpdate.opportunities.filter(
         (opp: any) => opp.id !== oppId,
       );
 
-      const updatedOrgs = orgsList.map((org: any) => {
+      const updatedOrgs = organisationsData.organizations.map((org: any) => {
         if (org.id == organizationId) {
           return copyOfOrg;
         }
         return org;
       });
-      setOrgsList(updatedOrgs);
+      dispatch(
+        updateOrganizationList({
+          ...organisationsData,
+          organizations: updatedOrgs,
+        }),
+      );
       dispatch(setLoader(false));
       sweetAlertToast('success', response.message);
     } catch (error: any) {
@@ -126,15 +142,17 @@ const Organization: React.FC<{
               </div>
             </div>
           )}
-          {!loading && !orgsList.length && <OrganizationEmpty />}
+          {!loading && !organisationsData?.organizations?.length && (
+            <OrganizationEmpty />
+          )}
           {!loading && (
             <>
-              {orgsList.map((organization: any) => (
+              {organisationsData?.organizations?.map((organization: any) => (
                 <Accordion
                   open={openOrgs.includes(organization.id)}
                   placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
+                  onPointerEnterCapture={() => {}}
+                  onPointerLeaveCapture={() => {}}
                   key={organization.id}
                 >
                   <AccordionHeader
@@ -258,12 +276,14 @@ const Organization: React.FC<{
           )}
         </>
 
-        {orgsList.length ? (
+        {organisationsData?.organizations?.length ? (
           <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">
             <div className="text-[#1E1E1E80] w-full">
-              Showing {orgsList.length} of {totalRecords}
+              Showing {organisationsData?.organizations.length} of
+              {organisationsData?.totalRecords}
             </div>
-            {orgsList.length !== totalRecords ? (
+            {organisationsData?.organizations?.length !==
+            organisationsData?.totalRecords ? (
               <button
                 onClick={() => setCurrentPage(currentPage! + 1)}
                 className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"

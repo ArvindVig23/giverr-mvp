@@ -40,6 +40,7 @@ export const createOrganization = async (
       avatarLink: avatarLink.trim(),
       status: 'PENDING',
       createdBy: id,
+      nameLowerCase: name.trim().toLowerCase(),
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });

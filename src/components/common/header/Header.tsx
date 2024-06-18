@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import lightSearch from '/public/images/search-light.svg';
@@ -9,10 +9,38 @@ import ProfileDropdown from './ProfileDropdown';
 import { useCookies } from 'react-cookie';
 import SubmitEvents from '../../manageProfile/SubmitEvents';
 import { usePathname } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { getOrganizationList } from '@/services/frontend/organization';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { debounce } from '@/services/frontend/commonServices';
 
 const Header: React.FC = () => {
   const [cookies] = useCookies();
   const pathName = usePathname();
+  const [searchOrg, setSearchOrg] = useState('');
+  const dispatch = useDispatch();
+
+  const fetchOrgList = async (keyword: string) => {
+    try {
+      dispatch(setLoader(true));
+      await getOrganizationList(dispatch, 1, keyword);
+    } catch (error: any) {
+      const { message } = error;
+      sweetAlertToast('error', message);
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  //eslint-disable-next-line
+  const debouncedFetchOrganizations = useCallback(
+    debounce(fetchOrgList, 500),
+    [],
+  );
+  useEffect(() => {
+    debouncedFetchOrganizations(searchOrg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchOrg]);
 
   return (
     <header>
@@ -38,30 +66,35 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex w-full max-w-[654px] ">
-            <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
-              <input
-                placeholder={
-                  pathName === '/organizations'
-                    ? 'Search Organization'
-                    : 'Search location'
-                }
-                className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
-              ></input>
-              <Image
-                className="absolute top-2.5 left-3 pointer-events-none"
-                src={lightSearch}
-                alt="search"
-              />
-              {/* <div className="bg-[#D1CFC7] h-6 w-px mr-4"></div>
-              <div className="flex-1 daterange">
-                <Daterange />
-              </div>
-              <button className="bg-[#1E1E1E] min-w-9 w-9 h-9 flex items-center justify-center rounded-[10px] mx-1">
-                <Image className="h-10" src={search} alt="Search" />
-              </button> */}
-            </form>
-          </div>
+          {['/', '/organizations'].includes(pathName) && (
+            <div className="flex w-full max-w-[654px] ">
+              <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
+                {pathName === '/organizations' && (
+                  <input
+                    onChange={(e) =>
+                      pathName === '/organizations'
+                        ? setSearchOrg(e?.target?.value)
+                        : null
+                    }
+                    placeholder={'Search Organization'}
+                    className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
+                  />
+                )}
+                {pathName === '/' && (
+                  <input
+                    placeholder={'Search location'}
+                    className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
+                  />
+                )}
+
+                <Image
+                  className="absolute top-2.5 left-3 pointer-events-none"
+                  src={lightSearch}
+                  alt="search"
+                />
+              </form>
+            </div>
+          )}
           <div className="flex items-center gap-2.5">
             {cookies.userToken ? (
               <>
