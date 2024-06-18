@@ -59,22 +59,35 @@ import { getWishlistWithUser } from '@/services/backend/opportunityServices';
 
 export async function GET(req: NextRequest) {
   try {
+    let userId: string = '';
     const userDetailCookie = getUserDetailsCookie();
-    const convertString = JSON.parse(userDetailCookie.value);
-    const { id } = convertString;
+    userId = userDetailCookie ? JSON.parse(userDetailCookie.value).id : '';
     const { searchParams } = new URL(req.url);
     const page = +(searchParams.get('page') || '1');
     const limit = +(searchParams.get('limit') || '20');
+    const searchText = searchParams.get('searchText')?.trim() || '';
     const organizationsRef = collection(db, 'organizations');
     let querySnapshot = await getDocs(
       query(organizationsRef, where('status', '==', 'APPROVED')),
     );
+    if (searchText?.length > 0) {
+      querySnapshot = await getDocs(
+        query(
+          organizationsRef,
+          where('status', '==', 'APPROVED'),
+          where('nameLowerCase', '>=', searchText),
+          where('nameLowerCase', '<=', searchText + '\uf8ff'),
+        ),
+      );
+    }
     const totalRecords = querySnapshot.size;
     if (page === 1) {
       querySnapshot = await getDocs(
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          where('nameLowerCase', '>=', searchText),
+          where('nameLowerCase', '<=', searchText + '\uf8ff'),
           firestoreLimit(limit),
         ),
       );
@@ -83,6 +96,8 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          where('nameLowerCase', '>=', searchText),
+          where('nameLowerCase', '<=', searchText + '\uf8ff'),
           firestoreLimit((page - 1) * limit),
         ),
       );
@@ -92,6 +107,8 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          where('nameLowerCase', '>=', searchText),
+          where('nameLowerCase', '<=', searchText + '\uf8ff'),
           startAfter(lastVisible),
           firestoreLimit(limit),
         ),
@@ -124,7 +141,9 @@ export async function GET(req: NextRequest) {
           organizationOpportunities.map(async (opportunityDoc) => ({
             id: opportunityDoc.id,
             ...opportunityDoc.data(),
-            isWishlist: await getWishlistWithUser(opportunityDoc.id, id),
+            isWishlist: userId
+              ? await getWishlistWithUser(opportunityDoc.id, userId)
+              : false,
           })),
         );
 
