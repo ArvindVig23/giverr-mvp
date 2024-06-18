@@ -1,121 +1,42 @@
 'use client';
-import callApi from '@/services/frontend/callApiService';
-import { sweetAlertToast } from '@/services/frontend/toastServices';
 // import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
-import moment from 'moment-timezone';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 // import DatePicker from 'react-datepicker';
 // import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 // import close from '/public/images/close.svg';
 import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  getEventList,
-  getOrganizationList,
-  uploadFile,
-} from '@/services/frontend/opportunityService';
-// import { FILE_TYPES } from '@/constants/constants';
-import { setLoader } from '@/app/redux/slices/loaderSlice';
-// import { min4CharWithoutSpace, websiteLinkRegex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { websiteLinkRegex } from '@/utils/regex';
 
 const CreateEventStep2 = ({ setShowModal }: any) => {
-  const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
-  const [, setFileError] = useState<string>('');
-  const [, setThumbnailUrl] = useState<string>('');
-  const [cookies] = useCookies();
-  const { handleSubmit, watch, reset, setValue } = useForm({
+  // const [cookies] = useCookies();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      name: '',
-      registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
-      registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
-      publishAs: cookies.userDetails.id,
+      locationType: '1',
+      virtualLocationLink: '',
     },
   });
-  const radioValue = watch('registrationType');
-  const router = useRouter();
-  const eventList = useSelector((state: any) => state.eventListReducer);
-  const organizationList = useSelector(
-    (state: any) => state.organizationReducer,
-  );
+  const locationType = watch('locationType');
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
-      setFileError('Please Select thumbnail');
-      return;
-    }
-    dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
-    try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message, 1000);
-      reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
-      dispatch(setLoader(false));
-      router.push('/');
-    } catch (error: any) {
-      dispatch(setLoader(false));
-      const { message } = error.data;
-      sweetAlertToast('error', message);
-    }
+    console.log(data, 'data');
   };
-
-  useEffect(() => {
-    if (eventList.length === 0) {
-      getEventList(dispatch);
-    }
-    if (organizationList.length === 0) {
-      getOrganizationList(dispatch);
-    } // eslint-disable-next-line
-  }, []);
 
   // to set the website link value to empty
   useEffect(() => {
-    if (radioValue !== '3') {
-      setValue('registrationWebsiteLink', '');
+    if (locationType === '2') {
+      setValue('virtualLocationLink', '');
     } //eslint-disable-next-line
-  }, [radioValue]);
+  }, [locationType]);
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -129,10 +50,11 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
 
             <label className="relative cursor-pointer">
               <input
+                {...register('locationType')}
                 className="hidden peer"
-                name="registrationType"
+                name="locationType"
                 type="radio"
-                value={2}
+                value={1}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
@@ -211,8 +133,9 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
 
             <label className="relative cursor-pointer">
               <input
+                {...register('locationType')}
                 className="hidden peer"
-                name="registrationType"
+                name="locationType"
                 type="radio"
                 value={2}
               />
@@ -222,17 +145,34 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
             </label>
           </div>
 
-          <div className="flex flex-col gap-5 hidden">
+          <div
+            className={`flex flex-col gap-5 ${locationType === '2' ? '' : 'hidden'}`}
+          >
             <div className="relative w-full">
               <input
+                {...register('virtualLocationLink', {
+                  required:
+                    locationType === '2'
+                      ? 'Virtual location link is required.'
+                      : false,
+                  pattern: {
+                    value: websiteLinkRegex,
+                    message: 'Enter valid location link',
+                  },
+                })}
                 type="text"
-                id="name"
+                id="virtualLocationLink"
                 className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                 placeholder=" "
               />
               <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                 Link
               </label>
+              {errors.virtualLocationLink && (
+                <span className="text-red-500">
+                  {(errors.virtualLocationLink as { message: string }).message}
+                </span>
+              )}
             </div>
           </div>
         </div>

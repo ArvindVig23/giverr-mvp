@@ -3,15 +3,30 @@ import React, { useState } from 'react';
 // import EventForm from '@/components/common/event/EventForm';
 import CreateEventModal from '../common/modal/CreateEventModal';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
-// import CreateEventStep2 from '../common/event/CreateEventStep2';
-// import CreateEventStep3 from '../common/event/CreateEventStep3';
-// import CreateEventStep4 from '../common/event/CreateEventStep4';
+import { CreateOppDetails } from '@/interface/opportunity';
+import { useSearchParams } from 'next/navigation';
+import CreateEventStep2 from '../common/event/CreateEventStep2';
+import CreateEventStep3 from '../common/event/CreateEventStep3';
+import CreateEventStep4 from '../common/event/CreateEventStep4';
 // import dog from '/public/images/dog-walking.jpg';
 // import SuccesModal from '../manageProfile/SuccesModal';
 
 const SubmitEvents = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
-  // const [showOldModal, setShowOldModal] = useState<boolean>(false);
+  const [eventDetails, setEventDetails] = useState<CreateOppDetails>({
+    imageLink: '',
+    createdBy: '',
+    name: '',
+    opportunityType: '',
+    description: '',
+    activities: '',
+    volunteerRequirements: '',
+    thumbnailFile: null,
+    virtualLocationLink: '',
+  });
+  const searchParams = useSearchParams();
+  const step = searchParams.get('step') || '2';
+  // const step = searchParams.get('step');
   return (
     <>
       <button
@@ -27,23 +42,23 @@ const SubmitEvents = () => {
           showModal={showModal}
           setShowModal={setShowModal}
         >
-          <CreateEventStep1 />
-          {/* <CreateEventStep2/> */}
-          {/* <CreateEventStep3/> */}
-          {/* <CreateEventStep4 /> */}
+          {step === '1' ? (
+            <CreateEventStep1
+              eventDetails={eventDetails}
+              setEventDetails={setEventDetails}
+            />
+          ) : step === '2' ? (
+            <CreateEventStep2
+              eventDetails={eventDetails}
+              setEventDetails={setEventDetails}
+            />
+          ) : step === '3' ? (
+            <CreateEventStep3 />
+          ) : step === '4' ? (
+            <CreateEventStep4 />
+          ) : null}
         </CreateEventModal>
       )}
-      {/* {
-        showOldModal && (
-          <CommonModal
-          heading={'Submit Event'}
-          showModal={showOldModal}
-          setShowModal={setShowOldModal}
-        >
-          <EventForm setShowModal={setShowModal} />
-        </CommonModal>
-        )
-      } */}
     </>
   );
 };

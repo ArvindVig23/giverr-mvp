@@ -62,3 +62,15 @@ export interface OpportunityDetails {
   updatedAt: string;
   volunteerRequirements: string;
 }
+
+export interface CreateOppDetails {
+  imageLink: string;
+  createdBy: string;
+  name: string;
+  opportunityType: string;
+  description: string;
+  activities: string;
+  volunteerRequirements: string;
+  thumbnailFile: File | null;
+  virtualLocationLink: '';
+}
