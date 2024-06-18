@@ -1,45 +1,39 @@
 'use client';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import lightSearch from '/public/images/search-light.svg';
 import ProfileDropdown from './ProfileDropdown';
-// import Daterange from './Daterange';
 import { useCookies } from 'react-cookie';
 import SubmitEvents from '../../manageProfile/SubmitEvents';
-import { usePathname } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { getOrganizationList } from '@/services/frontend/organization';
-import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { debounce } from '@/services/frontend/commonServices';
-
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 const Header: React.FC = () => {
   const [cookies] = useCookies();
   const pathName = usePathname();
-  const [searchOrg, setSearchOrg] = useState('');
-  const dispatch = useDispatch();
+  const params = useSearchParams();
+  const [searchOrg, setSearchOrg] = useState(params.get('name') ?? '');
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const fetchOrgList = async (keyword: string) => {
-    try {
-      dispatch(setLoader(true));
-      await getOrganizationList(dispatch, 1, keyword);
-    } catch (error: any) {
-      const { message } = error;
-      sweetAlertToast('error', message);
-    } finally {
-      dispatch(setLoader(false));
+  const setSearchText = async (keyword: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchOrg.length) {
+      params.set('name', keyword);
+    } else {
+      if (params.has('name')) params.delete('name');
     }
+    router.push(pathName + '?' + params.toString());
   };
-  //eslint-disable-next-line
-  const debouncedFetchOrganizations = useCallback(
-    debounce(fetchOrgList, 500),
-    [],
-  );
+
   useEffect(() => {
-    debouncedFetchOrganizations(searchOrg);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let debouceTimeout = setTimeout(() => {
+      setSearchText(searchOrg);
+    }, 500);
+    return () => {
+      clearTimeout(debouceTimeout);
+    };
+    // eslint-disable-next-line
   }, [searchOrg]);
 
   return (
@@ -76,6 +70,7 @@ const Header: React.FC = () => {
                         ? setSearchOrg(e?.target?.value)
                         : null
                     }
+                    defaultValue={searchOrg}
                     placeholder={'Search Organization'}
                     className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
                   />

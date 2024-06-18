@@ -29,6 +29,7 @@ import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
+import { useSearchParams } from 'next/navigation';
 SwiperCore.use([Navigation]);
 
 const Organization: React.FC<{
@@ -41,11 +42,17 @@ const Organization: React.FC<{
   const organisationsData = useSelector(
     (state: any) => state.organizationReducer,
   );
+  const searchParams = useSearchParams();
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const { data } = await getOrganizationList(dispatch, currentPage, '');
+        const searchText = searchParams.get('name');
+        const { data } = await getOrganizationList(
+          dispatch,
+          currentPage,
+          searchText ?? '',
+        );
         const { organizations, page, totalRecords } = data;
         if (page > 1) {
           dispatch(
@@ -75,7 +82,7 @@ const Organization: React.FC<{
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, [currentPage, searchParams]);
   const addRemoveWishlist = async (oppId: string, organizationId: string) => {
     try {
       dispatch(setLoader(true));
