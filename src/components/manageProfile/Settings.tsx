@@ -128,12 +128,16 @@ const Settings: React.FC = () => {
           </label>
         </div>
 
-        <div className="relative w-full mt-1">
-          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
+        <div
+          className={`relative w-full mt-1 ${timeZoneSettings.autoTimeZone ? 'cursor-not-allowed' : ''}`}
+        >
+          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
             Timezone
           </label>
           <Select
-            className="basic-multi-select block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            className={
+              'basic-multi-select block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer'
+            }
             isDisabled={timeZoneSettings.autoTimeZone}
             value={timeZoneSettings.timezone}
             onChange={handleTimeZone}
