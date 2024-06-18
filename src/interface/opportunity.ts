@@ -73,4 +73,21 @@ export interface CreateOppDetails {
   volunteerRequirements: string;
   thumbnailFile: File | null;
   virtualLocationLink: '';
+  physicalLocations: Location[];
+  registrationType: string;
+  registrationWebsiteLink: string;
+  spots: number;
+}
+
+export interface Location {
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  id?: string;
+}
+export interface CreateEventStep2Form {
+  physicalLocations: Location[];
+  locationType: string;
+  virtualLocationLink: string;
 }

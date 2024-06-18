@@ -1,42 +1,90 @@
 'use client';
-// import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
 import React, { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-// import DatePicker from 'react-datepicker';
-// import { FileUploader } from 'react-drag-drop-files';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
-// import close from '/public/images/close.svg';
 import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
 import { websiteLinkRegex } from '@/utils/regex';
+import { CreateEventStep2Form } from '@/interface/opportunity';
 
-const CreateEventStep2 = ({ setShowModal }: any) => {
-  // const [cookies] = useCookies();
+const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    control,
+    getValues,
+    setError,
+    trigger,
     formState: { errors },
-  } = useForm({
+  } = useForm<CreateEventStep2Form>({
     defaultValues: {
       locationType: '1',
-      virtualLocationLink: '',
+      virtualLocationLink: eventDetails.virtualLocationLink || '',
+      physicalLocations: eventDetails.physicalLocations,
     },
   });
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'physicalLocations',
+  });
+
   const locationType = watch('locationType');
-  //   handle submit for create event
-  const handleFormSubmit = async (data: any) => {
+
+  const handleFormSubmit = async (data: CreateEventStep2Form) => {
     console.log(data, 'data');
+
+    setEventDetails({
+      ...eventDetails,
+      virtualLocationLink: data.virtualLocationLink,
+      physicalLocations: data.physicalLocations,
+    });
   };
 
-  // to set the website link value to empty
   useEffect(() => {
-    if (locationType === '2') {
+    if (locationType === '1') {
       setValue('virtualLocationLink', '');
-    } //eslint-disable-next-line
+    }
+    if (locationType === '2') {
+      setValue('physicalLocations', [
+        { address: '', city: '', province: '', postalCode: '' },
+      ]);
+    }
+    //eslint-disable-next-line
   }, [locationType]);
+
+  const addLocation = () => {
+    const lastLocation = getValues('physicalLocations').slice(-1)[0];
+    let hasError = false;
+
+    if (!lastLocation.address) {
+      setError(`physicalLocations.${fields.length - 1}.address`, {
+        type: 'manual',
+        message: 'Address is required',
+      });
+      hasError = true;
+    }
+    if (!lastLocation.city) {
+      setError(`physicalLocations.${fields.length - 1}.city`, {
+        type: 'manual',
+        message: 'City is required',
+      });
+      hasError = true;
+    }
+    if (!lastLocation.postalCode) {
+      setError(`physicalLocations.${fields.length - 1}.postalCode`, {
+        type: 'manual',
+        message: 'Postal Code is required',
+      });
+      hasError = true;
+    }
+
+    if (!hasError) {
+      append({ address: '', city: '', province: '', postalCode: '' });
+    }
+  };
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -61,71 +109,114 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
               </div>
             </label>
           </div>
-
-          <div className="flex flex-col gap-5">
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                Address
-              </label>
-            </div>
-
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                City
-              </label>
-            </div>
-
-            <div className="relative w-full mt-1">
-              <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
-                Province (optional)
-              </label>
-              <select className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
-                <option>Province</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-              </select>
-              <Image
-                src={chevronDown}
-                alt="arrow"
-                className="absolute top-[17px] right-4 pointer-events-none"
-              />
-            </div>
-
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                Postal Code
-              </label>
-            </div>
-
-            <hr className="border-[#E6E3D6]"></hr>
-
+          {locationType === '1' &&
+            fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="physical-location-group flex flex-col gap-5"
+              >
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.address`, {
+                      required:
+                        locationType === '1' ? 'Address is required' : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.address`),
+                    })}
+                    type="text"
+                    id={`address-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Address
+                  </label>
+                  {errors.physicalLocations?.[index]?.address && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.address?.message}
+                    </span>
+                  )}
+                </div>
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.city`, {
+                      required:
+                        locationType === '1' ? 'City is required' : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.city`),
+                    })}
+                    type="text"
+                    id={`city-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    City
+                  </label>
+                  {errors.physicalLocations?.[index]?.city && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.city?.message}
+                    </span>
+                  )}
+                </div>
+                <div className="relative w-full mt-1">
+                  <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                    Province (optional)
+                  </label>
+                  <select
+                    {...register(`physicalLocations.${index}.province`)}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  >
+                    <option>Province</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                  </select>
+                  <Image
+                    src={chevronDown}
+                    alt="arrow"
+                    className="absolute top-[17px] right-4 pointer-events-none"
+                  />
+                </div>
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.postalCode`, {
+                      required:
+                        locationType === '1'
+                          ? 'Postal Code is required'
+                          : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.postalCode`),
+                    })}
+                    type="number"
+                    id={`postalCode-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Postal Code
+                  </label>
+                  {errors.physicalLocations?.[index]?.postalCode && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.postalCode?.message}
+                    </span>
+                  )}
+                </div>
+                {index !== fields.length - 1 && (
+                  <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
+                )}
+              </div>
+            ))}
+          {locationType === '1' && (
             <button
-              className="cursro-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
+              onClick={addLocation}
+              disabled={fields.length >= 10}
+              className="cursor-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
               type="button"
-              onClick={() => setShowModal(false)}
             >
               Add location
             </button>
-          </div>
+          )}
         </div>
         <div className="border border-[#E6E3D6] border-t-0 rounded-b-xl p-5 flex flex-col gap-5">
           <div className="flex justify-between items-center">
@@ -162,10 +253,10 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
                 })}
                 type="text"
                 id="virtualLocationLink"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                 placeholder=" "
               />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+              <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                 Link
               </label>
               {errors.virtualLocationLink && (
@@ -188,4 +279,5 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
     </form>
   );
 };
+
 export default CreateEventStep2;

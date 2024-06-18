@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import CreateEventModal from '../common/modal/CreateEventModal';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
 import { CreateOppDetails } from '@/interface/opportunity';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep3 from '../common/event/CreateEventStep3';
 import CreateEventStep4 from '../common/event/CreateEventStep4';
@@ -23,16 +23,33 @@ const SubmitEvents = () => {
     volunteerRequirements: '',
     thumbnailFile: null,
     virtualLocationLink: '',
+    physicalLocations: [
+      { address: '', city: '', province: '', postalCode: '' },
+    ],
+    registrationType: '1',
+    registrationWebsiteLink: '',
+    spots: 0,
   });
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const step = searchParams.get('step') || '2';
+  const pathname = usePathname();
+  const step = searchParams.get('step') || '1';
   // const step = searchParams.get('step');
+  const openModal = () => {
+    setShowModal(true);
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set('submit-event', 'true');
+    current.set('step', '1');
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    router.push(`${pathname}${query}`);
+  };
   return (
     <>
       <button
         className="text-base  w-[140px] h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
         type="button"
-        onClick={() => setShowModal(true)}
+        onClick={openModal}
       >
         Submit event
       </button>
@@ -55,7 +72,10 @@ const SubmitEvents = () => {
           ) : step === '3' ? (
             <CreateEventStep3 />
           ) : step === '4' ? (
-            <CreateEventStep4 />
+            <CreateEventStep4
+              eventDetails={eventDetails}
+              setEventDetails={setEventDetails}
+            />
           ) : null}
         </CreateEventModal>
       )}

@@ -3,30 +3,22 @@ import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 // import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
 import moment from 'moment-timezone';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 // import DatePicker from 'react-datepicker';
 // import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 // import chevronDown from '/public/images/chevron-down.svg';
 // import close from '/public/images/close.svg';
 // import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  getEventList,
-  getOrganizationList,
-  uploadFile,
-} from '@/services/frontend/opportunityService';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
 
-const CreateEventStep4 = ({ setShowModal }: any) => {
+const CreateEventStep4 = ({ eventDetails }: any) => {
   const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
-  const [, setFileError] = useState<string>('');
-  const [, setThumbnailUrl] = useState<string>('');
   const [cookies] = useCookies();
   const {
     register,
@@ -37,39 +29,29 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
       registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
       registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
-      publishAs: cookies.userDetails.id,
+      spots: 0,
     },
   });
   const radioValue = watch('registrationType');
   const router = useRouter();
-  const eventList = useSelector((state: any) => state.eventListReducer);
-  const organizationList = useSelector(
-    (state: any) => state.organizationReducer,
-  );
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
-      setFileError('Please Select thumbnail');
-      return;
-    }
+    const formData = {
+      ...eventDetails,
+      registrationType: data.registrationType,
+      registrationWebsiteLink: data.registrationWebsiteLink,
+      spots: data.spots,
+    };
+    console.log(formData, 'formData');
+
     dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
+    // if (thumbnailFile) {
+    //   const filePathName = `opportunities/${thumbnailFile.name}`;
+    //   const pathOfFile = await uploadFile(thumbnailFile, filePathName);
+    //   data.imageLink = `${pathOfFile}?alt=media`;
+    // }
     data.createdBy = cookies.userDetails.id;
     const eventDate = data.eventDate;
     const eventTime = data.eventTime;
@@ -92,12 +74,8 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
     try {
       const response = await callApi('/opportunity', 'post', data);
       const { message } = response;
-      sweetAlertToast('success', message, 1000);
+      sweetAlertToast('success', message);
       reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
       dispatch(setLoader(false));
       router.push('/');
     } catch (error: any) {
@@ -107,20 +85,15 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
     }
   };
 
-  useEffect(() => {
-    if (eventList.length === 0) {
-      getEventList(dispatch);
-    }
-    if (organizationList.length === 0) {
-      getOrganizationList(dispatch);
-    } // eslint-disable-next-line
-  }, []);
-
   // to set the website link value to empty
   useEffect(() => {
     if (radioValue !== '3') {
       setValue('registrationWebsiteLink', '');
-    } //eslint-disable-next-line
+    }
+    if (radioValue !== '1') {
+      setValue('spots', 0);
+    }
+    //eslint-disable-next-line
   }, [radioValue]);
 
   return (
@@ -130,7 +103,9 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
 
         <div className="w-full flex flex-col gap-5">
           <div className="w-full border border-[#E6E3D6] rounded-xl overflow-hidden">
-            <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer">
+            <label
+              className={`relative w-full  border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer ${radioValue === '1' ? '' : 'border-b'}`}
+            >
               <div>
                 <span className="text-[#24181B]">
                   Registration through Giverr platform
@@ -150,6 +125,39 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
+            {radioValue === '1' ? (
+              <div className="px-5 pb-5 border-b border-[#1E1E1E0D] ">
+                <div className="relative w-full ">
+                  <input
+                    min={0}
+                    disabled={radioValue !== '1'}
+                    {...register('spots', {
+                      required:
+                        radioValue === '1' ? 'Spots are required.' : false,
+                      pattern: {
+                        value: websiteLinkRegex,
+                        message: 'Enter valid website link',
+                      },
+                    })}
+                    type="number"
+                    id="spots"
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Spots
+                  </label>
+                  {errors.registrationWebsiteLink && (
+                    <span className="text-red-500">
+                      {
+                        (errors.registrationWebsiteLink as { message: string })
+                          .message
+                      }
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : null}
 
             <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex p-4 d-flex items-center gap-5 cursor-pointer">
               <div>
@@ -188,36 +196,40 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
               </div>
             </label>
 
-            <div className="px-5 mb-5">
-              <div className="relative w-full ">
-                <input
-                  disabled={radioValue !== '3'}
-                  {...register('registrationWebsiteLink', {
-                    required:
-                      radioValue === '3' ? 'Website link is required.' : false,
-                    pattern: {
-                      value: websiteLinkRegex,
-                      message: 'Enter valid website link',
-                    },
-                  })}
-                  type="text"
-                  id="registrationWebsiteLink"
-                  className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                  placeholder=" "
-                />
-                <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                  Website link
-                </label>
-                {errors.registrationWebsiteLink && (
-                  <span className="text-red-500">
-                    {
-                      (errors.registrationWebsiteLink as { message: string })
-                        .message
-                    }
-                  </span>
-                )}
+            {radioValue === '3' ? (
+              <div className="px-5 mb-5">
+                <div className="relative w-full ">
+                  <input
+                    disabled={radioValue !== '3'}
+                    {...register('registrationWebsiteLink', {
+                      required:
+                        radioValue === '3'
+                          ? 'Website link is required.'
+                          : false,
+                      pattern: {
+                        value: websiteLinkRegex,
+                        message: 'Enter valid website link',
+                      },
+                    })}
+                    type="text"
+                    id="registrationWebsiteLink"
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Website link
+                  </label>
+                  {errors.registrationWebsiteLink && (
+                    <span className="text-red-500">
+                      {
+                        (errors.registrationWebsiteLink as { message: string })
+                          .message
+                      }
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>

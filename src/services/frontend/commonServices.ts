@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
   if (Object.keys(cookies).length > 0) {
+    console.log(cookies.userDetails, 'cookies.userDetails');
     const timeZoneSettings = cookies.userDetails.timeZoneSettings;
     const dateFormat = timeZoneSettings.isDayMonthYearDateFormat
       ? 'DD MMMM, YYYY'
@@ -60,15 +61,4 @@ export const createValueForDropdown = (timeZone: string, value: number) => {
     return null;
   }
   return { label: timeZone, value: timeZone, offset: value };
-};
-
-export const updateSearchParams = (
-  searchParams: any,
-  name: string,
-  value: string,
-) => {
-  const params = new URLSearchParams(searchParams.toString());
-  params.set(name, value);
-
-  return params.toString();
 };
