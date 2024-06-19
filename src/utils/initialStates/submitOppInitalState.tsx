@@ -15,4 +15,9 @@ export const submitEventState: CreateOppDetails = {
   registrationWebsiteLink: '',
   spots: 0,
   selectedDate: '',
+  type: '',
+  minHour: '',
+  maxHour: '',
+  startTime: '',
+  endTime: '',
 };

@@ -17,6 +17,7 @@ import { min4CharWithoutSpace } from '@/utils/regex';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { SearchParam } from '@/interface/opportunity';
 
 const CreateEventStep1 = () => {
   const dispatch = useDispatch();
@@ -61,7 +62,17 @@ const CreateEventStep1 = () => {
       createdBy: data.publishAs,
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
-    updateSearchParams(searchParams, pathname, router, '2');
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '2',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
 
   useEffect(() => {

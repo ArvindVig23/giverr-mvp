@@ -4,7 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
 import Image from 'next/image';
 import { websiteLinkRegex } from '@/utils/regex';
-import { CreateEventStep2Form } from '@/interface/opportunity';
+import { CreateEventStep2Form, SearchParam } from '@/interface/opportunity';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,7 +47,21 @@ const CreateEventStep2 = () => {
       physicalLocations: data.physicalLocations,
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
-    updateSearchParams(searchParams, pathname, router, '3');
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '3',
+      },
+      {
+        key: 'commitment',
+        value: 'ONETIME',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
 
   useEffect(() => {

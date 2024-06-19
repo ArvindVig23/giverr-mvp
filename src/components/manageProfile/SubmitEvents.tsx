@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // import EventForm from '@/components/common/event/EventForm';
 import CreateEventModal from '../common/modal/CreateEventModal';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
-import { CreateOppDetails } from '@/interface/opportunity';
+import { SearchParam } from '@/interface/opportunity';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep3 from '../common/event/CreateEventStep3';
@@ -14,23 +14,6 @@ import { updateSearchParams } from '@/services/frontend/commonServices';
 
 const SubmitEvents = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [eventDetails, setEventDetails] = useState<CreateOppDetails>({
-    imageLink: '',
-    createdBy: '',
-    name: '',
-    opportunityType: '',
-    description: '',
-    activities: '',
-    volunteerRequirements: '',
-    thumbnailFile: null,
-    virtualLocationLink: '',
-    physicalLocations: [
-      { address: '', city: '', province: '', postalCode: '' },
-    ],
-    registrationType: '1',
-    registrationWebsiteLink: '',
-    spots: 0,
-  });
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -38,7 +21,17 @@ const SubmitEvents = () => {
   // const step = searchParams.get('step');
   const openModal = () => {
     setShowModal(true);
-    updateSearchParams(searchParams, pathname, router, '1');
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '1',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
   return (
     <>
@@ -56,22 +49,13 @@ const SubmitEvents = () => {
           setShowModal={setShowModal}
         >
           {step === '1' ? (
-            <CreateEventStep1
-              eventDetails={eventDetails}
-              setEventDetails={setEventDetails}
-            />
+            <CreateEventStep1 />
           ) : step === '2' ? (
-            <CreateEventStep2
-              eventDetails={eventDetails}
-              setEventDetails={setEventDetails}
-            />
+            <CreateEventStep2 />
           ) : step === '3' ? (
             <CreateEventStep3 />
           ) : step === '4' ? (
-            <CreateEventStep4
-              eventDetails={eventDetails}
-              setEventDetails={setEventDetails}
-            />
+            <CreateEventStep4 />
           ) : null}
         </CreateEventModal>
       )}

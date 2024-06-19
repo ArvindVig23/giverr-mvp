@@ -78,6 +78,11 @@ export interface CreateOppDetails {
   registrationWebsiteLink: string;
   spots: number;
   selectedDate: string | null;
+  type: string;
+  minHour: string;
+  maxHour: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface Location {
@@ -91,4 +96,9 @@ export interface CreateEventStep2Form {
   physicalLocations: Location[];
   locationType: string;
   virtualLocationLink: string;
+}
+
+export interface SearchParam {
+  key: string;
+  value: string;
 }

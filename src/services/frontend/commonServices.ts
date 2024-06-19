@@ -1,3 +1,4 @@
+import { SearchParam } from '@/interface/opportunity';
 import moment from 'moment-timezone';
 export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
   if (Object.keys(cookies).length > 0) {
@@ -67,11 +68,15 @@ export const updateSearchParams = (
   searchParams: URLSearchParams,
   pathname: string,
   router: any,
-  step: string,
+  params: SearchParam[],
 ) => {
   const current = new URLSearchParams(searchParams.toString());
   current.set('submit-event', 'true');
-  current.set('step', step);
+
+  params.forEach((param) => {
+    current.set(param.key, param.value);
+  });
+
   const search = current.toString();
   const query = search ? `?${search}` : '';
   router.push(`${pathname}${query}`);
