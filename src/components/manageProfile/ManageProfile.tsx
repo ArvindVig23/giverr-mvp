@@ -15,11 +15,28 @@ const ManageProfile: React.FC = () => {
   const router = useRouter();
   const [cookies] = useCookies();
   useEffect(() => {
+    const restrictedRoutesForOrg = ['my-organizations', 'organizations'];
+    const restrictedRoutesForUser = ['members'];
     if (!eventsTab) {
       router.push('/profile?tab=accounts');
+      return;
+    }
+    if (
+      cookies.userDetails.loginAsOrg &&
+      restrictedRoutesForOrg.includes(eventsTab)
+    ) {
+      router.push('?tab=accounts');
+      return;
+    }
+    if (
+      !cookies.userDetails.loginAsOrg &&
+      restrictedRoutesForUser.includes(eventsTab)
+    ) {
+      router.push('?tab=accounts');
+      return;
     }
     // eslint-disable-next-line
-  }, []);
+  }, [searchParams, cookies?.userDetails?.loginAsOrg]);
   return (
     <div className="border-t border-[#E6E3D6]">
       <div className="w-full max-w-[944px] m-auto">
