@@ -77,6 +77,7 @@ export interface CreateOppDetails {
   registrationType: string;
   registrationWebsiteLink: string;
   spots: number;
+  selectedDate: string | null;
 }
 
 export interface Location {

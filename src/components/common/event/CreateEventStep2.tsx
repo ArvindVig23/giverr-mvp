@@ -3,13 +3,15 @@ import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
 import Image from 'next/image';
-import 'react-datepicker/dist/react-datepicker.css';
 import { websiteLinkRegex } from '@/utils/regex';
 import { CreateEventStep2Form } from '@/interface/opportunity';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 
-const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
+const CreateEventStep2 = () => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const {
     register,
     handleSubmit,
@@ -32,19 +34,19 @@ const CreateEventStep2 = ({ eventDetails, setEventDetails }: any) => {
     control,
     name: 'physicalLocations',
   });
-
+  const dispatch = useDispatch();
   const locationType = watch('locationType');
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const handleFormSubmit = async (data: CreateEventStep2Form) => {
     console.log(data, 'data');
-
-    setEventDetails({
+    const updatedSubmitEventState = {
       ...eventDetails,
       virtualLocationLink: data.virtualLocationLink,
       physicalLocations: data.physicalLocations,
-    });
+    };
+    dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     updateSearchParams(searchParams, pathname, router, '3');
   };
 

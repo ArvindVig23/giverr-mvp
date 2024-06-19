@@ -1,98 +1,34 @@
 'use client';
-import callApi from '@/services/frontend/callApiService';
-import { sweetAlertToast } from '@/services/frontend/toastServices';
 // import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
 import moment from 'moment-timezone';
-import React, { useState } from 'react';
-import { useCookies } from 'react-cookie';
+import React from 'react';
 // import DatePicker from 'react-datepicker';
 // import { FileUploader } from 'react-drag-drop-files';
-import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { Controller, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
 import Image from 'next/image';
-import 'react-datepicker/dist/react-datepicker.css';
-import { uploadFile } from '@/services/frontend/opportunityService';
-// import { FILE_TYPES } from '@/constants/constants';
-import { setLoader } from '@/app/redux/slices/loaderSlice';
 // import { min4CharWithoutSpace, websiteLinkRegex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-const CreateEventStep3 = ({ setShowModal }: any) => {
+const CreateEventStep3 = () => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [openTab, setOpenTab] = React.useState(1);
-  const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
-  const [, setFileError] = useState<string>('');
-  const [, setThumbnailUrl] = useState<string>('');
-  const [cookies] = useCookies();
-  const { handleSubmit, reset } = useForm({
-    defaultValues: {
-      name: '',
-      registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
-      registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
-      publishAs: cookies.userDetails.id,
-    },
-  });
-  const router = useRouter();
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
-      setFileError('Please Select thumbnail');
-      return;
-    }
-    dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
-    try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message, 1000);
-      reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
-      dispatch(setLoader(false));
-      router.push('/');
-    } catch (error: any) {
-      dispatch(setLoader(false));
-      const { message } = error.data;
-      sweetAlertToast('error', message);
-    }
+    console.log(data, 'data step 3');
   };
-
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<any>({
+    defaultValues: {
+      selectedDate: eventDetails.selectedDate,
+    },
+  });
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -162,15 +98,31 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
                 <div className={openTab === 1 ? 'block' : 'hidden'} id="link1">
                   <div className="flex flex-col gap-5">
                     <div className="relative w-full">
-                      <input
-                        type="text"
-                        id="name"
-                        className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                        placeholder=" "
+                      <Controller
+                        control={control}
+                        rules={{ required: 'Event Date is required' }}
+                        name="selectedDate"
+                        render={({ field }) => (
+                          <DatePicker
+                            className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                            selected={field.value}
+                            onChange={(date) =>
+                              field.onChange(moment.utc(date).toISOString())
+                            }
+                            timeCaption="Time"
+                            dateFormat="yyyy-MM-dd"
+                            minDate={new Date()}
+                          />
+                        )}
                       />
                       <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                         Select date
                       </label>
+                      {errors.selectedDate && (
+                        <span className="text-red-500">
+                          {(errors.selectedDate as { message: string }).message}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex gap-5  items-center">

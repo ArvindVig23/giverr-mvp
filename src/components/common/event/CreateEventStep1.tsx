@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 import close from '/public/images/close.svg';
 import Image from 'next/image';
-import 'react-datepicker/dist/react-datepicker.css';
 import {
   createFileUrl,
   getEventList,
@@ -17,9 +16,11 @@ import { FILE_TYPES } from '@/constants/constants';
 import { min4CharWithoutSpace } from '@/utils/regex';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { updateSearchParams } from '@/services/frontend/commonServices';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 
-const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
+const CreateEventStep1 = () => {
   const dispatch = useDispatch();
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [fileError, setFileError] = useState<string>('');
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [cookies] = useCookies();
@@ -50,7 +51,7 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
       setFileError('Please Select thumbnail');
       return;
     }
-    setEventDetails({
+    const updatedSubmitEventState = {
       ...eventDetails,
       name: data.name,
       description: data.description,
@@ -58,7 +59,8 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
       volunteerRequirements: data.volunteerRequirements,
       opportunityType: data.opportunityType,
       createdBy: data.publishAs,
-    });
+    };
+    dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     updateSearchParams(searchParams, pathname, router, '2');
   };
 
@@ -77,7 +79,11 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
       setFileError('');
       const url = createFileUrl(file);
       setThumbnailUrl(url);
-      setEventDetails({ ...eventDetails, thumbnailFile: file });
+      const updatedEventState = {
+        ...eventDetails,
+        thumbnailFile: file,
+      };
+      dispatch(updateSubmitOppDetails(updatedEventState));
     }
   };
 
@@ -85,7 +91,11 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
   const removeImg = () => {
     setFileError('Please choose thumbnail file.');
     setThumbnailUrl('');
-    setEventDetails({ ...eventDetails, thumbnailFile: null });
+    const updatedEventState = {
+      ...eventDetails,
+      thumbnailFile: null,
+    };
+    dispatch(updateSubmitOppDetails(updatedEventState));
   };
 
   // validate file
@@ -95,7 +105,11 @@ const CreateEventStep1 = ({ eventDetails, setEventDetails }: any) => {
         'Unsupported format. Use PNG, JPG (under 5MB), 1068x646 pixels.',
       );
       setThumbnailUrl('');
-      setEventDetails({ ...eventDetails, thumbnailFile: null });
+      const updatedEventState = {
+        ...eventDetails,
+        thumbnailFile: null,
+      };
+      dispatch(updateSubmitOppDetails(updatedEventState));
       return;
     } else {
       setFileError('');

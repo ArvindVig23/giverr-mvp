@@ -8,7 +8,7 @@ import { useCookies } from 'react-cookie';
 // import DatePicker from 'react-datepicker';
 // import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import chevronDown from '/public/images/chevron-down.svg';
 // import close from '/public/images/close.svg';
 // import Image from 'next/image';
@@ -17,7 +17,10 @@ import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
 
-const CreateEventStep4 = ({ eventDetails }: any) => {
+const CreateEventStep4 = () => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
+  console.log(eventDetails, 'eventDetails');
+
   const dispatch = useDispatch();
   const [cookies] = useCookies();
   const {
