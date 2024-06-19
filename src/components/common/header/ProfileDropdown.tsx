@@ -92,7 +92,7 @@ export default function ProfileDropdown() {
   return (
     <>
       {dropdownOpen && (
-        <div className="fixed inset-0 bg-black opacity-60 z-20"></div>
+        <div className="fixed inset-0 bg-black opacity-50 z-20"></div>
       )}
       <Menu as="div" className="relative inline-block text-left">
         <div>
@@ -117,11 +117,11 @@ export default function ProfileDropdown() {
         <Transition
           as={Fragment}
           enter="md:transition md:ease-out md:duration-100 transition-all ease-in-out duration-500 delay-[200ms]"
-          enterFrom="md:transform md:opacity-0 md:scale-95 opacity-0 translate-y-6"
+          enterFrom="md:transform md:opacity-0 md:scale-95 md:translate-y-2 opacity-0 translate-y-full"
           enterTo="md:transform md:opacity-100 md:scale-100 opacity-100 translate-y-0"
           leave="md:transition md:ease-in md:duration-75 transition-all ease-in-out duration-300"
-          leaveFrom="md:transform md:opacity-100 md:scale-100 opacity-100"
-          leaveTo="md:transform md:opacity-0 md:scale-95 opacity-0"
+          leaveFrom="md:transform md:opacity-100 md:scale-100 opacity-100 translate-y-0"
+          leaveTo="md:transform md:opacity-0 md:scale-95 opacity-0  translate-y-full"
           afterLeave={() => setDropdownOpen(false)}
         >
           <Menu.Items className="!fixed !bottom-0 !z-30  profile-dropdown md:absolute right-0 z-10 mt-2 !w-full md:!w-56 origin-top-right !rounded-none !rounded-t-2xl  md:!rounded-xl !border-0 md:!border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">

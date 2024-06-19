@@ -8,6 +8,7 @@ import time from '/public/images/one-time.svg';
 import location from '/public/images/location.svg';
 import leftSHape from '/public/images/bottom-left-shapes.svg';
 import LongArrow from '/public/images/long-arrow-left.svg';
+import arrow from '/public/images/chevron-right.svg';
 // import volunteer from '/public/images/volunteer.svg';
 import RightSHape from '/public/images/bottom-right-shapes.svg';
 // import virutalLeft from '/public/images/virtual-left.svg';
@@ -43,17 +44,26 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
   const [cookies] = useCookies();
   return (
     <div className="relative border-t border-[#E6E3D6]">
-      <div className="p-5 w-full relative pb-24 border-b border-[#E6E3D6]">
+      <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
         <Link
           href="#"
-          className="absolute top-5 left-5 w-11 h-11 min-w-11 border border-[#E6E3D6] rounded-xl flex justify-center items-center hover:bg-[#EDEBE3]"
+          className="absolute top-5 z-10 left-5 w-[30px] h-[30px] md:w-11 md:h-11 md:min-w-11 border border-[#24181B] md:border-[#E6E3D6] rounded-xl flex justify-center items-center hover:!bg-[#24181B] bg-[#24181B] md:bg-transparent md:hover:!bg-[#EDEBE3]"
         >
-          <Image src={LongArrow} alt="arrow"></Image>
+          <Image
+            className="md:block hidden"
+            src={LongArrow}
+            alt="arrow"
+          ></Image>
+          <Image
+            className="md:hidden block rotate-180	"
+            src={arrow}
+            alt="arrow"
+          ></Image>
         </Link>
-        <div className="w-full max-w-[652px] m-auto">
-          <div className="w-full bg-white rounded-3xl relative overflow-hidden">
+        <div className="w-full md:max-w-[652px] m-auto">
+          <div className="w-full md:bg-white md:rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">
-              <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+              <div className="text-sm font-medium hidden md:inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
                 <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
                 Pre-Entry
               </div>
@@ -64,20 +74,25 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 <Delete />
               </div> */}
             </div>
-            <div className="realtive rounded-3xl overflow-hidden">
+            <div className="realtive md:rounded-3xl overflow-hidden">
               {opportunityDetail?.imageLink && (
                 <Image
                   width={652}
                   height={408}
                   src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.imageLink)}`}
                   alt="detail"
+                  className="w-full"
                 />
               )}
             </div>
 
             <div className="p-5">
-              <div className="flex gap-2.5 flex-wrap mb-5">
-                <h2 className="m-0 text-[#1E1E1E] font-medium text-[32px] leading-[36px] w-full">
+              <div className="flex gap-2.5 flex-wrap mb-10 md:mb-5">
+                <div className="text-sm font-medium  md:hidden inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
+                  <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
+                  Pre-Entry
+                </div>
+                <h2 className="m-0 text-[#1E1E1E] font-medium text-2xl md:text-[32px] leading-[36px] w-full">
                   {opportunityDetail?.name}
                 </h2>
 
@@ -157,13 +172,14 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
             </div>
           </div>
 
-          <div className="w-full bg-white rounded-3xl relative overflow-hidden mt-10 p-5 ">
-            <h2 className="m-0 text-[#24181B] font-medium text-[32px] leading-[36px] w-full mb-5">
+          <div className="w-full md:bg-white rounded-3xl relative overflow-hidden md:mt-10 p-5 ">
+            <hr className="mb-10 md:hidden block border-[#D1CFC7]"></hr>
+            <h2 className="m-0 text-[#24181B] font-medium text-2xl md:text-[32px] leading-[36px] w-full mb-5">
               Where it&apos;ll be
             </h2>
             <div className="flex flex-col gap-2.5">
               <div className="flex gap-2 items-center text-base text-[#24181B]">
-                <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={time} alt="time" />
                 </div>
                 {opportunityDetail?.eventDate &&
@@ -172,7 +188,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
 
               {opportunityDetail?.opportunityData && (
                 <div className="flex gap-2 items-center text-base text-[#24181B]">
-                  <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                  <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                     <Image
                       className="brightness-0"
                       width={20}
@@ -188,7 +204,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
 
               {opportunityDetail?.location && (
                 <div className="flex gap-2 items-center text-base text-[#24181B]">
-                  <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                  <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                     <Image src={location} alt="location" />
                   </div>
                   {opportunityDetail?.location && opportunityDetail?.location}
@@ -196,7 +212,7 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
               )}
 
               {/* <div className="flex gap-2 items-center text-base text-[#24181B]">
-                <div className="w-9 h-9 min-w-9 border border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={volunteer} alt="volunteer" />
                 </div>
                 <div className='flex gap-2'>
@@ -282,7 +298,9 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 </div>
               </div>
             ) : (
-              <div className={`flex flex-col gap-5`}>
+              <div
+                className={`flex flex-col p-6 rounded-2xl md:rounded-none bg-white md:bg-transparent md:p-0 gap-5`}
+              >
                 <div className="flex flex-col gap-1">
                   <h4 className="text-lg text-[#24181B] font-medium">
                     Become a volunteer
@@ -341,12 +359,12 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
           </div>
         </div>
         <Image
-          className="absolute left-0 bottom-0"
+          className="absolute left-0 bottom-0 h-[141px] w-auto lg:h-auto"
           src={leftSHape}
           alt=""
         ></Image>
         <Image
-          className="absolute right-0 bottom-0"
+          className="absolute right-0 bottom-0 h-[149px]  w-auto lg:h-auto"
           src={RightSHape}
           alt=""
         ></Image>

@@ -9,7 +9,7 @@ import link from '/public/images/external-link.svg';
 
 const Footer: React.FC = () => {
   return (
-    <div className="bg-[#E60054] text-center flex  items-center flex-col gap-10 pt-[100px] pb-12 px-10 relative before:content-[''] before:h-6 before:rounded-b-[24px] before:w-full before:absolute before:top-0 before:bg-[#F5F3EF]">
+    <div className="bg-[#E60054] text-center flex  items-center flex-col gap-10 pt-[100px] pb-12 px-10 relative before:content-[''] before:h-6 before:rounded-b-[16px] md:before:rounded-b-[24px] before:w-full before:absolute before:top-0 before:bg-[#F5F3EF]">
       <div className="flex flex-col gap-2.5">
         <h4 className="text-[#FFF3D680]">Company</h4>
         <Link href="/about" className="text-[#FFF3D6]  hover:underline">
