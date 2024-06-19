@@ -5,14 +5,14 @@ import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import eye from '/public/images/eye.svg';
 import eyeSlash from '/public/images/eye-slash.svg';
-import mobleftshape from '/public/images/left-mob-shape.svg';
-import mobrightshape from '/public/images/right-mob-shape.svg';
-import mobCloseRight from '/public/images/mobile-close-right.svg';
-import mobCloseLeft from '/public/images/mobile-close-left.svg';
-import leftshape from '/public/images/left-shapes.svg';
-import leftCloseShape from '/public/images/show-pass-left.svg';
-import rightshape from '/public/images/right-shapes.svg';
-import rightCloseShape from '/public/images/show-pass-right.svg';
+import mobleftshape from '/public/images/mobile-close-left1.svg';
+import mobrightshape from '/public/images/right-mob-shape1.svg';
+import mobCloseRight from '/public/images/mobile-close-right1.svg';
+import mobCloseLeft from '/public/images/left-mob-shape1.svg';
+import leftshape from '/public/images/login-left-shape-1.svg';
+import leftCloseShape from '/public/images/login-left-shape-2.svg';
+import rightshape from '/public/images/login-right-shape-1.svg';
+import rightCloseShape from '/public/images/login-right-shape-2.svg';
 import back from '/public/images/arrow-left.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -169,7 +169,7 @@ const SignInStep2: React.FC = () => {
       <div className="absolute left-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? leftshape : leftCloseShape}
+          src={showPassword ? leftCloseShape : leftshape}
           alt="shapes"
         />
         <Image
@@ -182,12 +182,12 @@ const SignInStep2: React.FC = () => {
       <div className="absolute right-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword ? rightshape : rightCloseShape}
+          src={showPassword ? rightCloseShape : rightshape}
           alt="shapes"
         />
         <Image
           className="block md:hidden"
-          src={showPassword ? mobrightshape : mobCloseRight}
+          src={showPassword ? mobCloseRight : mobrightshape}
           alt="shapes"
         />
       </div>

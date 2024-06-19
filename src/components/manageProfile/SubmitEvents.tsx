@@ -15,7 +15,7 @@ const SubmitEvents = () => {
   return (
     <>
       <button
-        className="text-base  w-[140px] h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+        className="text-base  w-[140px] h-11 px-4 py-3 hidden md:flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
         type="button"
         onClick={() => setShowModal(true)}
       >

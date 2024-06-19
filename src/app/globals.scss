@@ -275,3 +275,38 @@ body {
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }
+@media screen and (max-width: 1420px)
+{
+  .search-bar
+  {
+    max-width: 450px;
+  }
+}
+
+@media screen and (max-width: 1200px)
+{
+  .search-bar
+  {
+    position: relative;
+    max-width: 310px;
+  }
+}
+@media screen and (max-width: 1023px)
+{
+  .search-bar {
+      max-width: 230px;
+  }
+}
+@media screen and (min-width: 767px)
+{
+  .profile-dropdown
+  {
+    bottom: inherit !important;
+  }
+}
+@media screen and (max-width: 767px)
+{
+  .search-bar {
+      max-width: 100%;
+  }
+}
