@@ -286,8 +286,7 @@ const Organization: React.FC<{
         {organisationsData?.organizations?.length ? (
           <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">
             <div className="text-[#1E1E1E80] w-full">
-              Showing {organisationsData?.organizations.length} of
-              {organisationsData?.totalRecords}
+              {`Showing ${organisationsData?.organizations.length} of ${organisationsData?.totalRecords}`}
             </div>
             {organisationsData?.organizations?.length !==
             organisationsData?.totalRecords ? (

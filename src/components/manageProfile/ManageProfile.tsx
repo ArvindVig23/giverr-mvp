@@ -6,11 +6,14 @@ import Organizations from './Organizations';
 import Settings from './Settings';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useCookies } from 'react-cookie';
+import ManageOrgMemebers from './ManageOrgMemebers';
 
 const ManageProfile: React.FC = () => {
   const searchParams = useSearchParams();
   const eventsTab = searchParams.get('tab');
   const router = useRouter();
+  const [cookies] = useCookies();
   useEffect(() => {
     if (!eventsTab) {
       router.push('/profile?tab=accounts');
@@ -39,32 +42,52 @@ const ManageProfile: React.FC = () => {
                   Accounts
                 </Link>
               </li>
-              <li className="">
-                <Link
-                  className={
-                    'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (eventsTab === 'my-organizations' ? 'text-[#24181B]' : '')
-                  }
-                  data-toggle="tab"
-                  href="/profile?tab=my-organizations"
-                  role="tablist"
-                >
-                  My Organization
-                </Link>
-              </li>
-              <li className="">
-                <Link
-                  className={
-                    'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
-                    (eventsTab === 'organizations' ? 'text-[#24181B]' : '')
-                  }
-                  data-toggle="tab"
-                  href="/profile?tab=organizations"
-                  role="tablist"
-                >
-                  Organizations
-                </Link>
-              </li>
+              {!cookies.userDetails.loginAsOrg ? (
+                <li className="">
+                  <Link
+                    className={
+                      'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
+                      (eventsTab === 'my-organizations' ? 'text-[#24181B]' : '')
+                    }
+                    data-toggle="tab"
+                    href="/profile?tab=my-organizations"
+                    role="tablist"
+                  >
+                    My Organization
+                  </Link>
+                </li>
+              ) : null}
+              {!cookies.userDetails.loginAsOrg ? (
+                <li className="">
+                  <Link
+                    className={
+                      'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
+                      (eventsTab === 'organizations' ? 'text-[#24181B]' : '')
+                    }
+                    data-toggle="tab"
+                    href="/profile?tab=organizations"
+                    role="tablist"
+                  >
+                    Organizations
+                  </Link>
+                </li>
+              ) : null}
+
+              {cookies.userDetails.loginAsOrg ? (
+                <li className="">
+                  <Link
+                    className={
+                      'p-[5px] w-full text-base inline-flex text-[#24181B80] hover:text-[#24181B] ' +
+                      (eventsTab === 'members' ? 'text-[#24181B]' : '')
+                    }
+                    data-toggle="tab"
+                    href="/profile?tab=members"
+                    role="tablist"
+                  >
+                    Members
+                  </Link>
+                </li>
+              ) : null}
 
               <li className="">
                 <Link
@@ -115,6 +138,9 @@ const ManageProfile: React.FC = () => {
 
                   <div id="link5">
                     {eventsTab === 'timezone-settings' ? <Settings /> : null}
+                  </div>
+                  <div id="link6">
+                    {eventsTab === 'members' ? <ManageOrgMemebers /> : null}
                   </div>
                 </div>
               </div>

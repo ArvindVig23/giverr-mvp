@@ -76,3 +76,14 @@ export const updateOrgInviteStatus = async (status: string, token: string) => {
     throw error.data;
   }
 };
+
+export const switchToOrganisation = async (loginAsOrg: boolean) => {
+  try {
+    const response: any = await callApi(
+      `/switch-organization?loginAsOrg=${loginAsOrg}`,
+    );
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

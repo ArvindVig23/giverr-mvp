@@ -95,6 +95,7 @@ export async function POST(req: NextRequest) {
       notificationSetting,
       categorySubscribe,
       timeZoneSettings,
+      loginAsOrg: false,
     };
     cookies().set({
       name: 'userDetails',
