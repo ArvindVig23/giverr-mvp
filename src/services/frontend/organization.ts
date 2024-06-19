@@ -14,10 +14,11 @@ export const createOrg = async (data: OrgDetails) => {
 export const getOrganizationList = async (
   dispatch: any,
   currentPage: number,
+  searchText: string,
 ) => {
   try {
     const orgsList = await callApi(
-      `/organization/get-all?page=${currentPage}`,
+      `/organization/get-all?page=${currentPage}&searchText=${searchText}`,
       'get',
     );
     dispatch(updateOrganizationList(orgsList.data));
