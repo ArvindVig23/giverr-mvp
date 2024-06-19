@@ -74,6 +74,7 @@ export const createUserService = async (userData: any, token?: any) => {
         notificationSetting,
         categorySubscribe: [],
         timeZoneSettings,
+        loginAsOrg: false,
       };
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));
