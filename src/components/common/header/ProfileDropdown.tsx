@@ -14,9 +14,13 @@ import { useCookies } from 'react-cookie';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { getOrgDetail } from '@/services/frontend/organization';
+import {
+  getOrgDetail,
+  switchToOrganisation,
+} from '@/services/frontend/organization';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
 
 export default function ProfileDropdown() {
   const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
@@ -30,7 +34,6 @@ export default function ProfileDropdown() {
   const searchParams = useSearchParams();
 
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
-
   useEffect(() => {
     if (!userOrgDetails.id) {
       (async () => {
@@ -48,14 +51,15 @@ export default function ProfileDropdown() {
             }
             dispatch(updateOrgDetails(getDetails));
           }
-          dispatch(setLoader(false));
         } catch (error: any) {
           dispatch(setLoader(false));
           console.log(error, 'error in getting the org');
+        } finally {
+          dispatch(setLoader(false));
         }
       })();
     } // eslint-disable-next-line
-  }, []);
+  }, [cookies]);
   const showOrganization =
     userOrgDetails.id && userOrgDetails.status === 'APPROVED';
   useEffect(() => {
@@ -89,6 +93,27 @@ export default function ProfileDropdown() {
     fullNameOrEmail().length > 16
       ? fullNameOrEmail().slice(0, 16) + '...'
       : fullNameOrEmail();
+
+  const handleLoginAsOrg = async (loginAsOrg: boolean) => {
+    try {
+      dispatch(setLoader(true));
+      const response = await switchToOrganisation(loginAsOrg);
+      const { message } = response;
+      sweetAlertToast('success', message, 1000);
+    } catch (error) {
+      console.log(error, 'error in switching as Organization');
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  const nameOrUserName = () => {
+    if (userOrgDetails.name) {
+      return userOrgDetails.name;
+    } else if (userOrgDetails.username) {
+      return userOrgDetails.username;
+    }
+    return 'o';
+  };
   return (
     <>
       {dropdownOpen && (
@@ -98,19 +123,34 @@ export default function ProfileDropdown() {
         <div>
           <Menu.Button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#FFC430] md:min-w-10 md:w-10 md:h-10 min-w-9 w-9 h-9 items-center text-base font-medium overflow-hidden "
+            className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden "
           >
-            {cookies.userDetails.profileUrl ? (
-              <Image
-                width={40}
-                height={40}
-                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
-                alt="profile"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              getInitialOfEmail(fullNameOrEmail())
-            )}
+            {cookies.userDetails.loginAsOrg ? (
+              userOrgDetails?.avatarLink ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitialOfEmail(nameOrUserName())
+              )
+            ) : null}
+            {!cookies.userDetails.loginAsOrg ? (
+              cookies.userDetails.profileUrl ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitialOfEmail(fullNameOrEmail())
+              )
+            ) : null}
           </Menu.Button>
         </div>
 
@@ -127,11 +167,15 @@ export default function ProfileDropdown() {
           <Menu.Items className="!fixed !bottom-0 !z-30  profile-dropdown md:absolute right-0 z-10 mt-2 !w-full md:!w-56 origin-top-right !rounded-none !rounded-t-2xl  md:!rounded-xl !border-0 md:!border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
             <div className="p-1.5 flex flex-col gap-0.5">
               <Menu.Item>
-                <Link
-                  href="#"
-                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                <div
+                  onClick={() =>
+                    cookies.userDetails.loginAsOrg
+                      ? handleLoginAsOrg(false)
+                      : null
+                  }
+                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
                 >
-                  <div className="w-5 min-w-5 h-5 rounded-full font-medium bg-[#FFC430] flex justify-center items-center text-xs overflow-hidden">
+                  <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
                     {cookies.userDetails.profileUrl ? (
                       <Image
                         width={40}
@@ -145,17 +189,23 @@ export default function ProfileDropdown() {
                     )}
                   </div>{' '}
                   {displayName}
-                  <div className="ml-auto">
-                    <Image src={check} alt="check" />
-                  </div>
-                </Link>
+                  {!cookies.userDetails.loginAsOrg && (
+                    <div className="ml-auto">
+                      <Image src={check} alt="check" />
+                    </div>
+                  )}
+                </div>
               </Menu.Item>
 
               {showOrganization ? (
                 <Menu.Item>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1"
+                  <div
+                    onClick={() =>
+                      !cookies.userDetails.loginAsOrg
+                        ? handleLoginAsOrg(true)
+                        : null
+                    }
+                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
                   >
                     <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
                       {userOrgDetails.avatarLink ? (
@@ -173,7 +223,12 @@ export default function ProfileDropdown() {
                       )}
                     </div>{' '}
                     {userOrgDetails.name}
-                  </Link>
+                    {cookies.userDetails.loginAsOrg && (
+                      <div className="ml-auto">
+                        <Image src={check} alt="check" />
+                      </div>
+                    )}
+                  </div>
                 </Menu.Item>
               ) : null}
               <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
@@ -203,7 +258,7 @@ export default function ProfileDropdown() {
                   href="/profile"
                   className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
                 >
-                  <Image className="md:hidden" src={setting} alt="" />
+                   <Image className="md:hidden" src={setting} alt="" />
                   Account settings
                 </Link>
               </Menu.Item>

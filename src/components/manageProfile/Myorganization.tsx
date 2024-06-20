@@ -20,29 +20,29 @@ const Myorganization: React.FC = () => {
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!userOrgDetails.id) {
-      (async () => {
-        try {
-          dispatch(setLoader(true));
-          const getDetails = await getOrgDetail();
-          if (getDetails) {
-            if (getDetails.status === 'REJECTED') {
-              const user = {
-                ...defaultUserOrgDetail,
-                status: getDetails.status,
-              };
-              dispatch(updateOrgDetails(user));
-              return;
-            }
-            dispatch(updateOrgDetails(getDetails));
+    (async () => {
+      try {
+        dispatch(setLoader(true));
+        const getDetails = await getOrgDetail();
+        if (getDetails) {
+          if (getDetails.status === 'REJECTED') {
+            const user = {
+              ...defaultUserOrgDetail,
+              status: getDetails.status,
+            };
+            dispatch(updateOrgDetails(user));
+            dispatch(setLoader(false));
+            return;
           }
-          dispatch(setLoader(false));
-        } catch (error: any) {
-          dispatch(setLoader(false));
-          console.log(error, 'error in getting the org');
+          dispatch(updateOrgDetails(getDetails));
         }
-      })();
-    } // eslint-disable-next-line
+        dispatch(setLoader(false));
+      } catch (error: any) {
+        dispatch(setLoader(false));
+        console.log(error, 'error in getting the org');
+      }
+    })();
+    // eslint-disable-next-line
   }, []);
   const showOrganization =
     userOrgDetails.id && userOrgDetails.status === 'APPROVED';
