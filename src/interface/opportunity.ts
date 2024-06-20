@@ -76,7 +76,7 @@ export interface CreateOppDetails {
   physicalLocations: Location[];
   registrationType: string;
   registrationWebsiteLink: string;
-  spots: number;
+  spots: string;
   selectedDate: string | null;
   type: string;
   minHour: string;
@@ -88,6 +88,7 @@ export interface CreateOppDetails {
   locationType: string;
   organizationId: string;
   frequency: string;
+  commitment: string;
 }
 
 export interface Location {

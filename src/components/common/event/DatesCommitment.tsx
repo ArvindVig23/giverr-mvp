@@ -56,18 +56,20 @@ const DatesCommitment = () => {
       dateRange:
         eventDetails.selectedDate && eventDetails.endDate
           ? {
-              startDate: new Date(eventDetails.selectedDate),
-              endDate: new Date(eventDetails.endDate),
+              startDate: moment(eventDetails.selectedDate).format('YYYY-MM-DD'),
+              endDate: moment(eventDetails.endDate).format('YYYY-MM-DD'),
             }
           : {
-              startDate: new Date(),
+              startDate: moment().format(),
               endDate: new Date(),
             },
       frequency: eventDetails.frequency,
       minHour: eventDetails.minHour,
       maxHour: eventDetails.maxHour,
-      startTime: eventDetails.startTime,
-      endTime: eventDetails.endTime,
+      startTime: eventDetails.startTime
+        ? new Date(eventDetails.startTime)
+        : null,
+      endTime: eventDetails.endTime ? new Date(eventDetails.endTime) : null,
     },
   });
   return (

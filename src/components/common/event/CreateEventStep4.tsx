@@ -8,11 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import 'react-datepicker/dist/react-datepicker.css';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
 import { uploadFile } from '@/services/frontend/opportunityService';
 import { CreateOppDetails } from '@/interface/opportunity';
 
-const CreateEventStep4 = () => {
+const CreateEventStep4 = ({
+  setThankYouModal,
+}: {
+  setThankYouModal: Function;
+}) => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   console.log(eventDetails, 'eventDetails');
 
@@ -28,65 +31,60 @@ const CreateEventStep4 = () => {
     defaultValues: {
       registrationType: 'GIVER_PLATFORM',
       registrationWebsiteLink: '',
-      spots: 0,
+      spots: '',
     },
   });
   const radioValue = watch('registrationType');
-  const router = useRouter();
   const removeExtraPhysicalLocation = (arr: any) => {
     return arr.filter((obj: any) => {
-      const hasEmptyValues = Object.values(obj).some(
-        (val: any) => val.length === 0,
-      );
-      return !hasEmptyValues;
+      const allValuesZero = Object.values(obj).every((val) => val === 0);
+      return !allValuesZero;
     });
   };
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    const formData: CreateOppDetails = {
-      name: eventDetails.name,
-      description: eventDetails.description,
-      activities: eventDetails.activities,
-      volunteerRequirements: eventDetails.volunteerRequirements,
-      opportunityType: eventDetails.opportunityType,
-      createdBy: eventDetails.createdBy,
-      organizationId:
-        eventDetails.createdBy === cookies.userDetails.id
-          ? ''
-          : eventDetails.createdBy,
-      locationType: eventDetails.locationType,
-      virtualLocationLink: eventDetails.virtualLocationLink || '',
-      physicalLocations: removeExtraPhysicalLocation(
-        eventDetails.physicalLocations,
-      ),
-      selectedDate: eventDetails.selectedDate,
-      minHour: eventDetails.minHour,
-      maxHour: eventDetails.maxHour,
-      startTime: eventDetails.startTime,
-      endTime: eventDetails.endTime,
-      endDate: eventDetails.endDate,
-      frequency: eventDetails.frequency,
-      type: eventDetails.type,
-      registrationType: data.registrationType,
-      registrationWebsiteLink: data.registrationWebsiteLink,
-      spots: data.spots,
-    };
-    if (eventDetails.thumbnailFile) {
-      const filePathName = `opportunities/${eventDetails.thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(
-        eventDetails.thumbnailFile,
-        filePathName,
-      );
-      formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
-    }
-
     dispatch(setLoader(true));
     try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message);
+      const formData: CreateOppDetails = {
+        name: eventDetails.name,
+        description: eventDetails.description,
+        activities: eventDetails.activities,
+        volunteerRequirements: eventDetails.volunteerRequirements,
+        opportunityType: eventDetails.opportunityType,
+        createdBy: eventDetails.createdBy,
+        organizationId:
+          eventDetails.createdBy === cookies.userDetails.id
+            ? ''
+            : eventDetails.createdBy,
+        locationType: eventDetails.locationType,
+        virtualLocationLink: eventDetails.virtualLocationLink || '',
+        physicalLocations: removeExtraPhysicalLocation(
+          eventDetails.physicalLocations,
+        ),
+        selectedDate: eventDetails.selectedDate,
+        minHour: eventDetails.minHour,
+        maxHour: eventDetails.maxHour,
+        startTime: eventDetails.startTime,
+        endTime: eventDetails.endTime,
+        endDate: eventDetails.endDate,
+        frequency: eventDetails.frequency,
+        type: eventDetails.type,
+        registrationType: data.registrationType,
+        registrationWebsiteLink: data.registrationWebsiteLink,
+        spots: data.spots,
+        commitment: eventDetails.commitment,
+      };
+      if (eventDetails.thumbnailFile) {
+        const filePathName = `opportunities/${eventDetails.thumbnailFile.name}`;
+        const pathOfFile = await uploadFile(
+          eventDetails.thumbnailFile,
+          filePathName,
+        );
+        formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
+      }
+      await callApi('/opportunity', 'post', formData);
+      setThankYouModal(true);
       dispatch(setLoader(false));
-      router.push('/');
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
@@ -100,7 +98,7 @@ const CreateEventStep4 = () => {
       setValue('registrationWebsiteLink', '');
     }
     if (radioValue !== 'GIVER_PLATFORM') {
-      setValue('spots', 0);
+      setValue('spots', '');
     }
     //eslint-disable-next-line
   }, [radioValue]);
@@ -145,10 +143,6 @@ const CreateEventStep4 = () => {
                         radioValue === 'GIVER_PLATFORM'
                           ? 'Spots are required.'
                           : false,
-                      pattern: {
-                        value: websiteLinkRegex,
-                        message: 'Enter valid website link',
-                      },
                     })}
                     type="number"
                     id="spots"
@@ -158,12 +152,9 @@ const CreateEventStep4 = () => {
                   <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                     Spots
                   </label>
-                  {errors.registrationWebsiteLink && (
+                  {errors.spots && (
                     <span className="text-red-500">
-                      {
-                        (errors.registrationWebsiteLink as { message: string })
-                          .message
-                      }
+                      {(errors.spots as { message: string }).message}
                     </span>
                   )}
                 </div>
@@ -200,7 +191,7 @@ const CreateEventStep4 = () => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={3}
+                value={'WEBSITE_LINK'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>

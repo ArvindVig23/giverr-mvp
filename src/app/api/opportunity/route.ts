@@ -95,24 +95,34 @@ import moment from 'moment-timezone';
 export async function POST(req: NextRequest) {
   try {
     const reqBody: any = await req.json();
+
     const {
       name,
-      createdBy,
       description,
-      eventDate,
-      frequency,
+      activities,
+      volunteerRequirements,
       opportunityType,
+      createdBy,
       organizationId,
+      locationType,
+      virtualLocationLink,
+      selectedDate,
+      frequency,
       imageLink,
     } = reqBody;
     const { error } = eventValidationSchema.validate({
       name,
       description,
-      eventDate,
-      frequency,
+      activities,
+      volunteerRequirements,
       opportunityType,
+      createdBy,
       organizationId,
+      locationType,
+      virtualLocationLink,
+      selectedDate,
       imageLink,
+      frequency,
     });
     if (error) {
       const errorMessage: string = error.details
@@ -136,7 +146,7 @@ export async function POST(req: NextRequest) {
         403,
         false,
         null,
-        'Opportunity already exists.',
+        'Opportunity already exists with this name.',
       );
       return response;
     }

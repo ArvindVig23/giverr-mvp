@@ -56,8 +56,10 @@ const OneTimeCommitment = () => {
       selectedDate: eventDetails.selectedDate,
       minHour: eventDetails.minHour,
       maxHour: eventDetails.maxHour,
-      startTime: eventDetails.startTime,
-      endTime: eventDetails.endTime,
+      startTime: eventDetails.startTime
+        ? new Date(eventDetails.startTime)
+        : null,
+      endTime: eventDetails.endTime ? new Date(eventDetails.endTime) : null,
     },
   });
   return (

@@ -13,7 +13,7 @@ export const submitEventState: CreateOppDetails = {
   physicalLocations: [{ address: '', city: '', province: '', postalCode: '' }],
   registrationType: 'GIVER_PLATFORM',
   registrationWebsiteLink: '',
-  spots: 0,
+  spots: '',
   selectedDate: '',
   type: '',
   minHour: '',
@@ -25,4 +25,5 @@ export const submitEventState: CreateOppDetails = {
   locationType: 'PHYSICAL',
   organizationId: '',
   frequency: '',
+  commitment: '',
 };
