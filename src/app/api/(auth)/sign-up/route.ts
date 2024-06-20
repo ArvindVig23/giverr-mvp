@@ -136,6 +136,7 @@ export async function POST(req: NextRequest) {
           notificationSetting,
           categorySubscribe,
           timeZoneSettings,
+          loginAsOrg: false,
         };
         cookies().set('userDetails', JSON.stringify(userCookies));
         cookies().set('userToken', token);

@@ -14,10 +14,11 @@ export const createOrg = async (data: OrgDetails) => {
 export const getOrganizationList = async (
   dispatch: any,
   currentPage: number,
+  searchText: string,
 ) => {
   try {
     const orgsList = await callApi(
-      `/organization/get-all?page=${currentPage}`,
+      `/organization/get-all?page=${currentPage}&searchText=${searchText}`,
       'get',
     );
     dispatch(updateOrganizationList(orgsList.data));
@@ -69,6 +70,17 @@ export const updateOrgInviteStatus = async (status: string, token: string) => {
   try {
     const response: any = await callApi(
       `/org-invite-update?status=${status}&token=${token}`,
+    );
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};
+
+export const switchToOrganisation = async (loginAsOrg: boolean) => {
+  try {
+    const response: any = await callApi(
+      `/switch-organization?loginAsOrg=${loginAsOrg}`,
     );
     return response;
   } catch (error: any) {

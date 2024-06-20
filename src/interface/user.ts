@@ -18,6 +18,7 @@ export interface UserDetailsCookies {
   notificationSetting?: any;
   categorySubscribe?: any;
   timeZoneSettings?: any;
+  loginAsOrg: boolean;
 }
 
 export interface TimezoneOptions {

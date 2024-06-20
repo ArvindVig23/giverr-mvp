@@ -11,9 +11,13 @@ import { useCookies } from 'react-cookie';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { getOrgDetail } from '@/services/frontend/organization';
+import {
+  getOrgDetail,
+  switchToOrganisation,
+} from '@/services/frontend/organization';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
 
 export default function ProfileDropdown() {
   const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
@@ -25,7 +29,6 @@ export default function ProfileDropdown() {
   const searchParams = useSearchParams();
 
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
-
   useEffect(() => {
     if (!userOrgDetails.id) {
       (async () => {
@@ -43,14 +46,15 @@ export default function ProfileDropdown() {
             }
             dispatch(updateOrgDetails(getDetails));
           }
-          dispatch(setLoader(false));
         } catch (error: any) {
           dispatch(setLoader(false));
           console.log(error, 'error in getting the org');
+        } finally {
+          dispatch(setLoader(false));
         }
       })();
     } // eslint-disable-next-line
-  }, []);
+  }, [cookies]);
   const showOrganization =
     userOrgDetails.id && userOrgDetails.status === 'APPROVED';
   useEffect(() => {
@@ -84,21 +88,63 @@ export default function ProfileDropdown() {
     fullNameOrEmail().length > 16
       ? fullNameOrEmail().slice(0, 16) + '...'
       : fullNameOrEmail();
+
+  const handleLoginAsOrg = async (loginAsOrg: boolean) => {
+    try {
+      dispatch(setLoader(true));
+      const response = await switchToOrganisation(loginAsOrg);
+      const { message } = response;
+      sweetAlertToast('success', message, 1000);
+    } catch (error) {
+      console.log(error, 'error in switching as Organization');
+    } finally {
+      dispatch(setLoader(false));
+    }
+  };
+  const nameOrUserName = () => {
+    if (userOrgDetails.name) {
+      return userOrgDetails.name;
+    } else if (userOrgDetails.username) {
+      return userOrgDetails.username;
+    }
+    return 'o';
+  };
+
+  const displayOrgName =
+    nameOrUserName().length > 16
+      ? nameOrUserName().slice(0, 16) + '...'
+      : nameOrUserName();
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden ">
-          {cookies.userDetails.profileUrl ? (
-            <Image
-              width={40}
-              height={40}
-              src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            getInitialOfEmail(fullNameOrEmail())
-          )}
+          {cookies.userDetails.loginAsOrg ? (
+            userOrgDetails?.avatarLink ? (
+              <Image
+                width={40}
+                height={40}
+                unoptimized={true}
+                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              getInitialOfEmail(nameOrUserName())
+            )
+          ) : null}
+          {!cookies.userDetails.loginAsOrg ? (
+            cookies.userDetails.profileUrl ? (
+              <Image
+                width={40}
+                height={40}
+                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+                alt="profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              getInitialOfEmail(fullNameOrEmail())
+            )
+          ) : null}
         </Menu.Button>
       </div>
 
@@ -114,9 +160,13 @@ export default function ProfileDropdown() {
         <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
           <div className="p-1.5 flex flex-col gap-0.5">
             <Menu.Item>
-              <Link
-                href="#"
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+              <div
+                onClick={() =>
+                  cookies.userDetails.loginAsOrg
+                    ? handleLoginAsOrg(false)
+                    : null
+                }
+                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
               >
                 <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
                   {cookies.userDetails.profileUrl ? (
@@ -132,17 +182,23 @@ export default function ProfileDropdown() {
                   )}
                 </div>{' '}
                 {displayName}
-                <div className="ml-auto">
-                  <Image src={check} alt="check" />
-                </div>
-              </Link>
+                {!cookies.userDetails.loginAsOrg && (
+                  <div className="ml-auto">
+                    <Image src={check} alt="check" />
+                  </div>
+                )}
+              </div>
             </Menu.Item>
 
             {showOrganization ? (
               <Menu.Item>
-                <Link
-                  href="#"
-                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1"
+                <div
+                  onClick={() =>
+                    !cookies.userDetails.loginAsOrg
+                      ? handleLoginAsOrg(true)
+                      : null
+                  }
+                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
                 >
                   <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
                     {userOrgDetails.avatarLink ? (
@@ -159,8 +215,13 @@ export default function ProfileDropdown() {
                       )
                     )}
                   </div>{' '}
-                  {userOrgDetails.name}
-                </Link>
+                  {displayOrgName}
+                  {cookies.userDetails.loginAsOrg && (
+                    <div className="ml-auto">
+                      <Image src={check} alt="check" />
+                    </div>
+                  )}
+                </div>
               </Menu.Item>
             ) : null}
             <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
