@@ -30,8 +30,7 @@ const OpportunitiesBanner: React.FC = () => {
   } = useForm();
   const dispatch = useDispatch();
   const updateDetails = async (data: any) => {
-    if (!profileUrl && !profileFile) {
-      setFileError('Profile picture is required.');
+    if (fileError) {
       return;
     }
     dispatch(setLoader(true));
@@ -99,6 +98,7 @@ const OpportunitiesBanner: React.FC = () => {
               <Image
                 width={20}
                 height={20}
+                unoptimized={true}
                 src={
                   profileFileUrl
                     ? profileFileUrl

@@ -123,6 +123,7 @@ export default function ProfileDropdown() {
               <Image
                 width={40}
                 height={40}
+                unoptimized={true}
                 src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
                 alt="profile"
                 className="w-full h-full object-cover"
