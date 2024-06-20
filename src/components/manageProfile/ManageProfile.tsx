@@ -8,7 +8,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCookies } from 'react-cookie';
 import ManageOrgMemebers from './ManageOrgMemebers';
-import { hocManageProfile } from '../hoc/HOCManageProfile';
+import { compose } from '@reduxjs/toolkit';
+import { hocUserGuard } from '../hoc/HOCUserGuard';
+import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
 
 const ManageProfile: React.FC = () => {
   const searchParams = useSearchParams();
@@ -153,4 +155,4 @@ const ManageProfile: React.FC = () => {
   );
 };
 
-export default hocManageProfile(ManageProfile);
+export default compose(hocUserGuard, hocOrganizationGuard)(ManageProfile);
