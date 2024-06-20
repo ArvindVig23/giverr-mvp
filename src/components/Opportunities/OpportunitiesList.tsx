@@ -26,19 +26,10 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const [opportunityIds, setOpportunityIds] = useState('');
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const searchParams = useSearchParams();
-  const [dateRange, setDateRange] = useState({
-    startDate: searchParams.get('startDate'),
-    endDate: searchParams.get('endDate'),
-  });
   // const [limit, setLimit] = useState<number>(20);
   const [cookies] = useCookies();
   const createQueryParams = () => {
     const params = searchParams.get('opportunity');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    if (startDate && endDate) {
-      setDateRange({ startDate, endDate });
-    }
     if (!params) {
       return '';
     }
@@ -55,14 +46,16 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
     setOpportunityIds(opportunityIds);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     (async () => {
       try {
         setLoading(true);
         const getList = await getOpportunityList(
           opportunityIds,
           currrentPage,
-          dateRange.startDate ? dateRange.startDate : undefined,
-          dateRange.endDate ? dateRange.endDate : undefined,
+          startDate ?? undefined,
+          endDate ?? undefined,
         );
         const { opportunities, page, totalRecords } = getList;
         if (page > 1) {
