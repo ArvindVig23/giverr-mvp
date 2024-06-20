@@ -35,7 +35,14 @@ export const hocOrganizationGuard = (OriginalComponent: any) => {
       } else if (isProtectedPath && loginAsOrg) {
         router.push(searchParams ? `${pathName}?tab=accounts` : pathName);
       }
-    }, [isPublicPath, isProtectedPath, loginAsOrg, router, pathName]);
+    }, [
+      isPublicPath,
+      isProtectedPath,
+      loginAsOrg,
+      router,
+      pathName,
+      searchParams,
+    ]);
 
     return <OriginalComponent {...props} />;
   }
