@@ -3,16 +3,49 @@ import React from 'react';
 import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   commitmentOptions,
   eventFrequency,
 } from '@/utils/staticDropdown/dropdownOptions';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { SearchParam } from '@/interface/opportunity';
+import { updateSearchParams } from '@/services/frontend/commonServices';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const OnGoingCommitment = () => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
+  const dispatch = useDispatch();
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const handleFormSubmit = async (data: any) => {
-    console.log(data, 'data');
+    const updatedSubmitEventState = {
+      ...eventDetails,
+      type: 'ONGOING',
+      frequency: data.frequency,
+      minHour: data.minHour,
+      maxHour: data.maxHour,
+      commitment: data.commitment,
+      selectedDate: '',
+      endTime: '',
+      startTime: '',
+      endtime: '',
+    };
+    dispatch(updateSubmitOppDetails(updatedSubmitEventState));
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '4',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
   const {
     register,
@@ -23,6 +56,7 @@ const OnGoingCommitment = () => {
       frequency: eventDetails.frequency,
       minHour: eventDetails.minHour,
       maxHour: eventDetails.maxHour,
+      commitment: eventDetails.commitment,
     },
   });
   return (

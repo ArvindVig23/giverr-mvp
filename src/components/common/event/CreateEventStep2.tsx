@@ -24,7 +24,7 @@ const CreateEventStep2 = () => {
     formState: { errors },
   } = useForm<CreateEventStep2Form>({
     defaultValues: {
-      locationType: '1',
+      locationType: eventDetails.locationType,
       virtualLocationLink: eventDetails.virtualLocationLink || '',
       physicalLocations: eventDetails.physicalLocations,
     },
@@ -40,11 +40,11 @@ const CreateEventStep2 = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const handleFormSubmit = async (data: CreateEventStep2Form) => {
-    console.log(data, 'data');
     const updatedSubmitEventState = {
       ...eventDetails,
       virtualLocationLink: data.virtualLocationLink,
       physicalLocations: data.physicalLocations,
+      locationType: data.locationType,
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     const params: SearchParam[] = [
@@ -58,17 +58,17 @@ const CreateEventStep2 = () => {
       },
       {
         key: 'commitment',
-        value: 'ONETIME',
+        value: eventDetails.type ? eventDetails.type : 'ONETIME',
       },
     ];
     updateSearchParams(searchParams, pathname, router, params);
   };
 
   useEffect(() => {
-    if (locationType === '1') {
+    if (locationType === 'PHYSICAL') {
       setValue('virtualLocationLink', '');
     }
-    if (locationType === '2') {
+    if (locationType === 'VIRTUAL') {
       setValue('physicalLocations', [
         { address: '', city: '', province: '', postalCode: '' },
       ]);
@@ -123,14 +123,14 @@ const CreateEventStep2 = () => {
                 className="hidden peer"
                 name="locationType"
                 type="radio"
-                value={1}
+                value={'PHYSICAL'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
           </div>
-          {locationType === '1' &&
+          {locationType === 'PHYSICAL' &&
             fields.map((field, index) => (
               <div
                 key={field.id}
@@ -140,7 +140,9 @@ const CreateEventStep2 = () => {
                   <input
                     {...register(`physicalLocations.${index}.address`, {
                       required:
-                        locationType === '1' ? 'Address is required' : false,
+                        locationType === 'PHYSICAL'
+                          ? 'Address is required'
+                          : false,
                       onChange: () =>
                         trigger(`physicalLocations.${index}.address`),
                     })}
@@ -162,7 +164,9 @@ const CreateEventStep2 = () => {
                   <input
                     {...register(`physicalLocations.${index}.city`, {
                       required:
-                        locationType === '1' ? 'City is required' : false,
+                        locationType === 'PHYSICAL'
+                          ? 'City is required'
+                          : false,
                       onChange: () =>
                         trigger(`physicalLocations.${index}.city`),
                     })}
@@ -203,7 +207,7 @@ const CreateEventStep2 = () => {
                   <input
                     {...register(`physicalLocations.${index}.postalCode`, {
                       required:
-                        locationType === '1'
+                        locationType === 'PHYSICAL'
                           ? 'Postal Code is required'
                           : false,
                       onChange: () =>
@@ -228,7 +232,7 @@ const CreateEventStep2 = () => {
                 )}
               </div>
             ))}
-          {locationType === '1' && (
+          {locationType === 'PHYSICAL' && (
             <button
               onClick={addLocation}
               disabled={fields.length >= 10}
@@ -249,7 +253,7 @@ const CreateEventStep2 = () => {
                 className="hidden peer"
                 name="locationType"
                 type="radio"
-                value={2}
+                value={'VIRTUAL'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
@@ -258,13 +262,13 @@ const CreateEventStep2 = () => {
           </div>
 
           <div
-            className={`flex flex-col gap-5 ${locationType === '2' ? '' : 'hidden'}`}
+            className={`flex flex-col gap-5 ${locationType === 'VIRTUAL' ? '' : 'hidden'}`}
           >
             <div className="relative w-full">
               <input
                 {...register('virtualLocationLink', {
                   required:
-                    locationType === '2'
+                    locationType === 'VIRTUAL'
                       ? 'Virtual location link is required.'
                       : false,
                   pattern: {

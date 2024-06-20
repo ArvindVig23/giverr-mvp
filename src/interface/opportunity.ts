@@ -64,14 +64,14 @@ export interface OpportunityDetails {
 }
 
 export interface CreateOppDetails {
-  imageLink: string;
+  imageLink?: string;
   createdBy: string;
   name: string;
   opportunityType: string;
   description: string;
   activities: string;
   volunteerRequirements: string;
-  thumbnailFile: File | null;
+  thumbnailFile?: File | null;
   virtualLocationLink: '';
   physicalLocations: Location[];
   registrationType: string;
@@ -83,6 +83,11 @@ export interface CreateOppDetails {
   maxHour: string;
   startTime: string;
   endTime: string;
+  endDate: string;
+  maxAccessStep?: number;
+  locationType: string;
+  organizationId: string;
+  frequency: string;
 }
 
 export interface Location {

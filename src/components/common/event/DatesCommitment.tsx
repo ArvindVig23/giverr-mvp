@@ -25,7 +25,8 @@ const DatesCommitment = () => {
       ...eventDetails,
       type: 'DATES',
       frequency: data.frequency,
-      selectedDate: data.selectedDate,
+      selectedDate: data.dateRange.startDate,
+      endDate: data.dateRange.endDate,
       minHour: data.minHour,
       maxHour: data.maxHour,
       startTime: data.startTime,
@@ -45,9 +46,6 @@ const DatesCommitment = () => {
     ];
     updateSearchParams(searchParams, pathname, router, params);
   };
-  console.log(eventDetails.selectedDate.includes('to'), 'sdfsdfsdfsfsd');
-  console.log(eventDetails.selectedDate.includes('to'), 'sdfsdsdfsdfsdfsfsd');
-
   const {
     register,
     handleSubmit,
@@ -55,12 +53,16 @@ const DatesCommitment = () => {
     formState: { errors },
   } = useForm<any>({
     defaultValues: {
-      selectedDate: eventDetails.selectedDate.includes('to')
-        ? {
-            startdate: eventDetails.selectedDate.join()[0],
-            endDate: eventDetails.selectedDate.join()[1],
-          }
-        : null,
+      dateRange:
+        eventDetails.selectedDate && eventDetails.endDate
+          ? {
+              startDate: new Date(eventDetails.selectedDate),
+              endDate: new Date(eventDetails.endDate),
+            }
+          : {
+              startDate: new Date(),
+              endDate: new Date(),
+            },
       frequency: eventDetails.frequency,
       minHour: eventDetails.minHour,
       maxHour: eventDetails.maxHour,
@@ -75,7 +77,7 @@ const DatesCommitment = () => {
     >
       <div className="relative w-full">
         <Controller
-          name="selectedDate"
+          name="dateRange"
           control={control}
           rules={{ required: 'Event Date is required' }}
           render={({ field }) => (
@@ -83,9 +85,10 @@ const DatesCommitment = () => {
               useRange={false}
               value={field.value}
               onChange={(range: any) =>
-                field.onChange(
-                  `${moment.utc(range.startDate).toISOString()} to ${moment.utc(range.endDate).toISOString()}`,
-                )
+                field.onChange({
+                  startDate: moment.utc(range.startDate).toISOString(),
+                  endDate: moment.utc(range.endDate).toISOString(),
+                })
               }
               placeholder="Select Date"
             />

@@ -23,8 +23,12 @@ const CreateEventStep1 = () => {
   const dispatch = useDispatch();
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [fileError, setFileError] = useState<string>('');
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>(
+    eventDetails.thumbnailUrl || '',
+  );
   const [cookies] = useCookies();
+  console.log(thumbnailUrl, 'thumbnailUrl');
+
   const {
     register,
     handleSubmit,
@@ -60,6 +64,8 @@ const CreateEventStep1 = () => {
       volunteerRequirements: data.volunteerRequirements,
       opportunityType: data.opportunityType,
       createdBy: data.publishAs,
+      maxAccessStep: 2,
+      thumbnailUrl: thumbnailUrl,
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     const params: SearchParam[] = [

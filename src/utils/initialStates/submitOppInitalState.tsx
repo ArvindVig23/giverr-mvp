@@ -11,7 +11,7 @@ export const submitEventState: CreateOppDetails = {
   thumbnailFile: null,
   virtualLocationLink: '',
   physicalLocations: [{ address: '', city: '', province: '', postalCode: '' }],
-  registrationType: '1',
+  registrationType: 'GIVER_PLATFORM',
   registrationWebsiteLink: '',
   spots: 0,
   selectedDate: '',
@@ -20,4 +20,9 @@ export const submitEventState: CreateOppDetails = {
   maxHour: '',
   startTime: '',
   endTime: '',
+  endDate: '',
+  maxAccessStep: 1,
+  locationType: 'PHYSICAL',
+  organizationId: '',
+  frequency: '',
 };

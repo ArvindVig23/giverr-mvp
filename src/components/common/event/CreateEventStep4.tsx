@@ -1,21 +1,16 @@
 'use client';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-// import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
-import moment from 'moment-timezone';
 import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-// import DatePicker from 'react-datepicker';
-// import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-// import chevronDown from '/public/images/chevron-down.svg';
-// import close from '/public/images/close.svg';
-// import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
+import { uploadFile } from '@/services/frontend/opportunityService';
+import { CreateOppDetails } from '@/interface/opportunity';
 
 const CreateEventStep4 = () => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
@@ -27,58 +22,69 @@ const CreateEventStep4 = () => {
     register,
     handleSubmit,
     watch,
-    reset,
     setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      registrationType: '1',
+      registrationType: 'GIVER_PLATFORM',
       registrationWebsiteLink: '',
       spots: 0,
     },
   });
   const radioValue = watch('registrationType');
   const router = useRouter();
+  const removeExtraPhysicalLocation = (arr: any) => {
+    return arr.filter((obj: any) => {
+      const hasEmptyValues = Object.values(obj).some(
+        (val: any) => val.length === 0,
+      );
+      return !hasEmptyValues;
+    });
+  };
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    const formData = {
-      ...eventDetails,
+    const formData: CreateOppDetails = {
+      name: eventDetails.name,
+      description: eventDetails.description,
+      activities: eventDetails.activities,
+      volunteerRequirements: eventDetails.volunteerRequirements,
+      opportunityType: eventDetails.opportunityType,
+      createdBy: eventDetails.createdBy,
+      organizationId:
+        eventDetails.createdBy === cookies.userDetails.id
+          ? ''
+          : eventDetails.createdBy,
+      locationType: eventDetails.locationType,
+      virtualLocationLink: eventDetails.virtualLocationLink || '',
+      physicalLocations: removeExtraPhysicalLocation(
+        eventDetails.physicalLocations,
+      ),
+      selectedDate: eventDetails.selectedDate,
+      minHour: eventDetails.minHour,
+      maxHour: eventDetails.maxHour,
+      startTime: eventDetails.startTime,
+      endTime: eventDetails.endTime,
+      endDate: eventDetails.endDate,
+      frequency: eventDetails.frequency,
+      type: eventDetails.type,
       registrationType: data.registrationType,
       registrationWebsiteLink: data.registrationWebsiteLink,
       spots: data.spots,
     };
-    console.log(formData, 'formData');
+    if (eventDetails.thumbnailFile) {
+      const filePathName = `opportunities/${eventDetails.thumbnailFile.name}`;
+      const pathOfFile = await uploadFile(
+        eventDetails.thumbnailFile,
+        filePathName,
+      );
+      formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
+    }
 
     dispatch(setLoader(true));
-    // if (thumbnailFile) {
-    //   const filePathName = `opportunities/${thumbnailFile.name}`;
-    //   const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-    //   data.imageLink = `${pathOfFile}?alt=media`;
-    // }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
     try {
       const response = await callApi('/opportunity', 'post', data);
       const { message } = response;
       sweetAlertToast('success', message);
-      reset();
       dispatch(setLoader(false));
       router.push('/');
     } catch (error: any) {
@@ -90,10 +96,10 @@ const CreateEventStep4 = () => {
 
   // to set the website link value to empty
   useEffect(() => {
-    if (radioValue !== '3') {
+    if (radioValue !== 'WEBSITE_LINK') {
       setValue('registrationWebsiteLink', '');
     }
-    if (radioValue !== '1') {
+    if (radioValue !== 'GIVER_PLATFORM') {
       setValue('spots', 0);
     }
     //eslint-disable-next-line
@@ -107,7 +113,7 @@ const CreateEventStep4 = () => {
         <div className="w-full flex flex-col gap-5">
           <div className="w-full border border-[#E6E3D6] rounded-xl overflow-hidden">
             <label
-              className={`relative w-full  border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer ${radioValue === '1' ? '' : 'border-b'}`}
+              className={`relative w-full  border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer ${radioValue === 'GIVER_PLATFORM' ? '' : 'border-b'}`}
             >
               <div>
                 <span className="text-[#24181B]">
@@ -122,21 +128,23 @@ const CreateEventStep4 = () => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={1}
+                value={'GIVER_PLATFORM'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
-            {radioValue === '1' ? (
+            {radioValue === 'GIVER_PLATFORM' ? (
               <div className="px-5 pb-5 border-b border-[#1E1E1E0D] ">
                 <div className="relative w-full ">
                   <input
                     min={0}
-                    disabled={radioValue !== '1'}
+                    disabled={radioValue !== 'GIVER_PLATFORM'}
                     {...register('spots', {
                       required:
-                        radioValue === '1' ? 'Spots are required.' : false,
+                        radioValue === 'GIVER_PLATFORM'
+                          ? 'Spots are required.'
+                          : false,
                       pattern: {
                         value: websiteLinkRegex,
                         message: 'Enter valid website link',
@@ -172,7 +180,7 @@ const CreateEventStep4 = () => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={2}
+                value={'SHOW_UP'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
@@ -199,14 +207,14 @@ const CreateEventStep4 = () => {
               </div>
             </label>
 
-            {radioValue === '3' ? (
+            {radioValue === 'WEBSITE_LINK' ? (
               <div className="px-5 mb-5">
                 <div className="relative w-full ">
                   <input
-                    disabled={radioValue !== '3'}
+                    disabled={radioValue !== 'WEBSITE_LINK'}
                     {...register('registrationWebsiteLink', {
                       required:
-                        radioValue === '3'
+                        radioValue === 'WEBSITE_LINK'
                           ? 'Website link is required.'
                           : false,
                       pattern: {

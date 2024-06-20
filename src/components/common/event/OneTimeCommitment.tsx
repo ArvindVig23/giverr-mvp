@@ -28,6 +28,9 @@ const OneTimeCommitment = () => {
       maxHour: data.maxHour,
       startTime: data.startTime,
       endTime: data.endTime,
+      endDate: '',
+      frequency: '',
+      commitment: '',
     };
 
     dispatch(updateSubmitOppDetails(updatedStateEvent));
