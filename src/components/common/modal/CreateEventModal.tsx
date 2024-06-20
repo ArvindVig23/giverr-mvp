@@ -66,6 +66,7 @@ const CreateEventModal = ({
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.delete('submit-event');
     current.delete('step');
+    current.delete('commitment');
     const search = current.toString();
     const query = search ? `?${search}` : '';
     router.push(`${window.location.pathname}${query}`);

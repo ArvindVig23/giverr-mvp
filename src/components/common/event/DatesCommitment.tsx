@@ -1,28 +1,30 @@
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
+import React from 'react';
+import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
-import moment from 'moment-timezone';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { updateSearchParams } from '@/services/frontend/commonServices';
+import { Controller, useForm } from 'react-hook-form';
+import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
+import moment from 'moment-timezone';
+import DatePicker from 'react-datepicker';
+import MaterialDatepicker from 'react-tailwindcss-datepicker';
 import { SearchParam } from '@/interface/opportunity';
+import { updateSearchParams } from '@/services/frontend/commonServices';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-const OneTimeCommitment = () => {
+const DatesCommitment = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const dispatch = useDispatch();
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
+  const dispatch = useDispatch();
   const handleFormSubmit = async (data: any) => {
     console.log(data, 'data');
-
     const updatedStateEvent = {
       ...eventDetails,
-      type: 'ONETIME',
+      type: 'DATES',
+      frequency: data.frequency,
       selectedDate: data.selectedDate,
       minHour: data.minHour,
       maxHour: data.maxHour,
@@ -43,6 +45,9 @@ const OneTimeCommitment = () => {
     ];
     updateSearchParams(searchParams, pathname, router, params);
   };
+  console.log(eventDetails.selectedDate.includes('to'), 'sdfsdfsdfsfsd');
+  console.log(eventDetails.selectedDate.includes('to'), 'sdfsdsdfsdfsdfsfsd');
+
   const {
     register,
     handleSubmit,
@@ -50,7 +55,13 @@ const OneTimeCommitment = () => {
     formState: { errors },
   } = useForm<any>({
     defaultValues: {
-      selectedDate: eventDetails.selectedDate,
+      selectedDate: eventDetails.selectedDate.includes('to')
+        ? {
+            startdate: eventDetails.selectedDate.join()[0],
+            endDate: eventDetails.selectedDate.join()[1],
+          }
+        : null,
+      frequency: eventDetails.frequency,
       minHour: eventDetails.minHour,
       maxHour: eventDetails.maxHour,
       startTime: eventDetails.startTime,
@@ -64,19 +75,19 @@ const OneTimeCommitment = () => {
     >
       <div className="relative w-full">
         <Controller
+          name="selectedDate"
           control={control}
           rules={{ required: 'Event Date is required' }}
-          name="selectedDate"
           render={({ field }) => (
-            <DatePicker
-              className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-              selected={field.value}
-              onChange={(date) =>
-                field.onChange(moment.utc(date).toISOString())
+            <MaterialDatepicker
+              useRange={false}
+              value={field.value}
+              onChange={(range: any) =>
+                field.onChange(
+                  `${moment.utc(range.startDate).toISOString()} to ${moment.utc(range.endDate).toISOString()}`,
+                )
               }
-              timeCaption="Time"
-              dateFormat="yyyy-MM-dd"
-              minDate={new Date()}
+              placeholder="Select Date"
             />
           )}
         />
@@ -86,6 +97,38 @@ const OneTimeCommitment = () => {
         {errors.selectedDate && (
           <span className="text-red-500">
             {(errors.selectedDate as { message: string }).message}
+          </span>
+        )}
+      </div>
+
+      <div className="relative w-full mt-1">
+        <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+          Select frequency
+        </label>
+        <select
+          id="frequency"
+          {...register('frequency', {
+            required: 'Frequency is required.',
+          })}
+          className="block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+        >
+          <option value="" selected disabled hidden>
+            Select
+          </option>
+          {eventFrequency.map((option: any, index: number) => (
+            <option key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <Image
+          src={chevronDown}
+          alt="arrow"
+          className="absolute top-[18px] right-4 pointer-events-none"
+        />
+        {errors.frequency && (
+          <span className="text-red-500">
+            {(errors.frequency as { message: string }).message}
           </span>
         )}
       </div>
@@ -147,7 +190,7 @@ const OneTimeCommitment = () => {
             render={({ field }) => (
               <DatePicker
                 className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                selected={field.value ? new Date(field.value) : null}
+                selected={field.value}
                 onChange={(date) =>
                   field.onChange(moment.utc(date).toISOString())
                 }
@@ -181,7 +224,7 @@ const OneTimeCommitment = () => {
             render={({ field }) => (
               <DatePicker
                 className="block rounded-xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                selected={field.value ? new Date(field.value) : null}
+                selected={field.value}
                 onChange={(date) =>
                   field.onChange(moment.utc(date).toISOString())
                 }
@@ -213,4 +256,4 @@ const OneTimeCommitment = () => {
   );
 };
 
-export default OneTimeCommitment;
+export default DatesCommitment;
