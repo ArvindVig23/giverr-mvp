@@ -108,3 +108,7 @@ export interface SearchParam {
   key: string;
   value: string;
 }
+
+export interface OppIdProps {
+  oppId: string;
+}

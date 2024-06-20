@@ -6,21 +6,23 @@ import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
 import location from '/public/images/location.svg';
 import Link from 'next/link';
-// import Delete from '../manageProfile/detete';
-import { OpportunityDetail } from '@/interface/opportunity';
 import {
   encodeUrl,
   getFormattedLocalTime,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { useCookies } from 'react-cookie';
-import { volunteerOpportunity } from '@/services/frontend/opportunityService';
+import {
+  deleteOppApi,
+  volunteerOpportunity,
+} from '@/services/frontend/opportunityService';
 import { useDispatch } from 'react-redux';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
+import CommonDeleteModal from '../common/modal/CommonDeleteModal';
+import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { useRouter } from 'next/navigation';
 
-const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
-  opportunityDetail,
-}) => {
+const OpportunitiesDetail = ({ opportunityDetail, oppId }: any) => {
   const dispatch = useDispatch();
   const [successfullContent, setSuccessfullContent] = useState<boolean>(false);
   const handleJoin = async () => {
@@ -34,6 +36,23 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
     }
   };
   const [cookies] = useCookies();
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const router = useRouter();
+  const deleteOpportunity = async () => {
+    try {
+      dispatch(setLoader(true));
+      const response = await deleteOppApi(oppId);
+      const { message } = response;
+      sweetAlertToast('success', message, 1000);
+      dispatch(setLoader(false));
+      setShowDeleteModal(false);
+      router.push('/');
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error.data;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="p-5 w-full relative pb-24">
@@ -44,12 +63,20 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
                 <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
                 Pre-Entry
               </div>
-              {/* <div className="relative cursor-pointer">
-                <button className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0">
-                  Edit
-                </button>
-                <Delete />
-              </div> */}
+              {cookies.userDetails?.id === opportunityDetail?.createdBy ? (
+                <div className="relative cursor-pointer">
+                  <button className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0">
+                    Edit
+                  </button>
+                  <button
+                    className="text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-e-xl	"
+                    type="button"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : null}
             </div>
             <div className="realtive rounded-3xl">
               {opportunityDetail?.imageLink && (
@@ -304,6 +331,38 @@ const OpportunitiesDetail: React.FC<OpportunityDetail> = ({
           </div>
         </div>
       </div>
+      {showDeleteModal && (
+        <CommonDeleteModal
+          heading={'Delete event opportunity'}
+          showModal={showDeleteModal}
+          setShowModal={setShowDeleteModal}
+        >
+          <div>
+            <div className="relative p-5 flex-auto flex flex-col gap-5 overflow-auto">
+              <p className="text-base text-[#24181B] m-0">
+                Are you sure you want to delete opportunity?
+              </p>
+            </div>
+            {/*footer*/}
+            <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b gap-2.5">
+              <button
+                className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]`}
+                type="button"
+                onClick={() => deleteOpportunity()}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </CommonDeleteModal>
+      )}
     </div>
   );
 };
