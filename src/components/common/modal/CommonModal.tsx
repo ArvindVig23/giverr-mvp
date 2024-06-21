@@ -3,7 +3,13 @@ import React, { useEffect, useState } from 'react';
 import close from '/public/images/close.svg';
 import Image from 'next/image';
 
-const CommonModal = ({ heading, showModal, setShowModal, children }: any) => {
+const CommonModal = ({
+  heading,
+  showModal,
+  setShowModal,
+  children,
+  closeModalOptional,
+}: any) => {
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
   useEffect(() => {
     if (showModal) {
@@ -39,8 +45,12 @@ const CommonModal = ({ heading, showModal, setShowModal, children }: any) => {
 
   useEffect(() => {
     if (isEscPressed && showModal) {
-      setShowModal(false);
-      setIsEscPressed(false);
+      if (closeModalOptional) {
+        closeModalOptional();
+      } else {
+        setShowModal(false);
+        setIsEscPressed(false);
+      }
     } // eslint-disable-next-line
   }, [isEscPressed, showModal]);
   return (
@@ -55,7 +65,11 @@ const CommonModal = ({ heading, showModal, setShowModal, children }: any) => {
                 <h3 className="text-base font-semibold">{heading}</h3>
                 <button
                   className="w-[30px] h-[30px] ml-auto bg-[#24181B] hover:bg-[#454545] border-0 text-white rounded-[10px] flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                  onClick={() => setShowModal(false)}
+                  onClick={() =>
+                    closeModalOptional
+                      ? closeModalOptional()
+                      : setShowModal(false)
+                  }
                 >
                   <Image src={close} alt="close" />
                 </button>

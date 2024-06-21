@@ -1,3 +1,4 @@
+import { SearchParam } from '@/interface/opportunity';
 import moment from 'moment-timezone';
 export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
   if (Object.keys(cookies).length > 0) {
@@ -60,4 +61,23 @@ export const createValueForDropdown = (timeZone: string, value: number) => {
     return null;
   }
   return { label: timeZone, value: timeZone, offset: value };
+};
+
+// export update searchparams for create event
+export const updateSearchParams = (
+  searchParams: URLSearchParams,
+  pathname: string,
+  router: any,
+  params: SearchParam[],
+) => {
+  const current = new URLSearchParams(searchParams.toString());
+  current.set('submit-event', 'true');
+
+  params.forEach((param) => {
+    current.set(param.key, param.value);
+  });
+
+  const search = current.toString();
+  const query = search ? `?${search}` : '';
+  router.push(`${pathname}${query}`);
 };

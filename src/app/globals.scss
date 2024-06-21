@@ -264,14 +264,17 @@ body {
 .basic-multi-select .select__clear-indicator {
   display: none;
 }
-.select__menu {
+.select__menu
+{
   left: 0;
 }
-.select__option--is-focused {
+.select__option--is-focused 
+{
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }
-.select__option--is-selected {
+.select__option--is-selected
+{
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }

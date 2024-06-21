@@ -10,6 +10,7 @@ import {
   getDocs,
   query,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
@@ -23,6 +24,7 @@ import {
   getUserDetailsCookie,
 } from './commonServices';
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
+import { Location } from '@/interface/opportunity';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -31,38 +33,94 @@ export const createOpportunity = async (opportunity: any) => {
   try {
     const {
       name,
-      registrationType,
-      frequency,
       description,
       activities,
       volunteerRequirements,
-      registrationWebsiteLink,
-      organizationId,
       opportunityType,
-      eventDate,
       createdBy,
+      organizationId,
+      locationType,
+      virtualLocationLink,
+      physicalLocations,
+      selectedDate,
+      minHour,
+      maxHour,
+      startTime,
+      endTime,
+      endDate,
+      frequency,
+      type,
+      registrationType,
+      registrationWebsiteLink,
+      spots,
       imageLink,
-      location,
+      commitment,
     } = opportunity;
-    const createOpportunity = await addDoc(collection(db, 'opportunities'), {
+    const batch = writeBatch(db);
+
+    // Add opportunity document
+    const opportunityRef = doc(collection(db, 'opportunities'));
+    batch.set(opportunityRef, {
       name: name.trim(),
       registrationType,
-      frequency,
+      spots,
       description,
       activities,
       volunteerRequirements,
       registrationWebsiteLink,
       organizationId,
       opportunityType,
-      eventDate,
+      virtualLocationLink,
       createdBy,
       imageLink,
-      location,
       status: 'PENDING',
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });
+
+    // Add opportunity commitment document
+    const opportunityCommitmentRef = doc(
+      collection(db, 'opportuntyCommitment'),
+    );
+    batch.set(opportunityCommitmentRef, {
+      opportunityId: opportunityRef.id,
+      type,
+      selectedDate,
+      endDate,
+      minHour,
+      maxHour,
+      startTime,
+      endTime,
+      frequency,
+      commitment,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
+    });
+    // Add physical locations (if applicable)
+    if (locationType === 'PHYSICAL' && physicalLocations.length > 0) {
+      const locationPromises = physicalLocations.map(
+        async (location: Location) => {
+          const opportunityLocationRef = doc(
+            collection(db, 'opportunityLocations'),
+          );
+          batch.set(opportunityLocationRef, {
+            opportunityId: opportunityRef.id,
+            address: location.address,
+            city: location.city,
+            province: location.province,
+            postalCode: location.postalCode,
+            createdAt: currentUtcDate,
+            updatedAt: currentUtcDate,
+          });
+        },
+      );
+
+      await Promise.all(locationPromises);
+    }
+
+    // Commit the batch
+    await batch.commit();
 
     await sendEmailForApproval(
       name,
@@ -70,9 +128,9 @@ export const createOpportunity = async (opportunity: any) => {
       frequency,
       activities,
       volunteerRequirements,
-      eventDate,
-      location,
-      createOpportunity.id,
+      selectedDate,
+      virtualLocationLink,
+      opportunityRef.id,
       organizationId,
       opportunityType,
       createdBy,

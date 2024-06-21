@@ -48,11 +48,6 @@ export const eventValidationSchema = Joi.object({
     .optional()
     .messages({ 'string.base': 'Description must be a string' }),
 
-  eventDate: Joi.string().isoDate().required().messages({
-    'string.base': 'EventDate  must be a string',
-    'string.required': 'Event Date  is required',
-  }),
-
   frequency: Joi.string().allow(null, '').required().messages({
     'string.base': 'Frequency must be a string',
     'string.required': 'Frequency is required',
@@ -70,6 +65,24 @@ export const eventValidationSchema = Joi.object({
   imageLink: Joi.string().allow(null, '').required().messages({
     'string.base': 'Image url must be a string',
     'string.required': 'Image url is required',
+  }),
+  activities: Joi.string().allow(null, '').messages({
+    'string.base': 'Activities must be a string',
+  }),
+  volunteerRequirements: Joi.string().allow(null, '').messages({
+    'string.base': 'Volunteer Requirement must be a string',
+  }),
+  createdBy: Joi.string().allow(null, '').messages({
+    'string.base': 'Created By must be a string',
+  }),
+  locationType: Joi.string().allow(null, '').messages({
+    'string.base': 'Location must be a string',
+  }),
+  virtualLocationLink: Joi.string().allow(null, '').messages({
+    'string.base': 'Virtual Location must be a string',
+  }),
+  selectedDate: Joi.string().allow(null, '').messages({
+    'string.base': 'Selected Date must be a string',
   }),
 }).options({ abortEarly: false });
 

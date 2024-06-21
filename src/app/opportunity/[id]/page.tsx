@@ -38,7 +38,10 @@ const OpportunityDetailPage: React.FC = ({ params }: any) => {
       {loading ? (
         <DetailPageSkeleton />
       ) : (
-        <OpportunitiesDetail opportunityDetail={opportunityDetail} />
+        <OpportunitiesDetail
+          opportunityDetail={opportunityDetail}
+          oppId={params.id}
+        />
       )}
 
       {loading ? (
