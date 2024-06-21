@@ -90,7 +90,7 @@ const Header: React.FC = () => {
               </form>
             </div>
           )}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 desktop-submit">
             {cookies.userToken ? (
               <>
                 <SubmitEvents />

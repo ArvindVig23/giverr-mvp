@@ -46,10 +46,10 @@ const CommonDeleteModal = ({
     } // eslint-disable-next-line
   }, [isEscPressed, showModal]);
   return (
-    <div>
+    <>
       {showModal && (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none px-4 md:p-0">
             <div className="relative w-full my-6 mx-auto max-w-[484px]">
               {/*content*/}
               <div className="border-0 rounded-3xl shadow-lg relative flex flex-col w-full bg-[#F5F3EF] outline-none focus:outline-none">
@@ -71,7 +71,7 @@ const CommonDeleteModal = ({
           <div className="opacity-80 fixed inset-0 z-40 bg-black"></div>
         </>
       )}
-    </div>
+    </>
   );
 };
 

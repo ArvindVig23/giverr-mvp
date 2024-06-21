@@ -10,6 +10,7 @@ import CreateEventStep3 from '../common/event/CreateEventStep3';
 import CreateEventStep4 from '../common/event/CreateEventStep4';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import CommonModal from '../common/modal/CommonModal';
+import plus from '/public/images/plus1.svg';
 import Image from 'next/image';
 // import dog from '/public/images/dog-walking.jpg';
 // import SuccesModal from '../manageProfile/SuccesModal';
@@ -61,6 +62,14 @@ const SubmitEvents = () => {
       >
         Submit event
       </button>
+
+      <button
+        className="block md:hidden mobile-btn"
+        type="button"
+        onClick={openModal}
+      >
+        <Image src={plus} alt="add" />
+      </button>
       {showModal && (
         <CreateEventModal
           heading={'Submit event'}
@@ -86,7 +95,7 @@ const SubmitEvents = () => {
           closeModalOptional={closeThankYouModal}
         >
           <div className="flex flex-col gap-5">
-            <div className="p-5 flex flex-col gap-5">
+            <div className="p-5 flex flex-col gap-5 submit-events">
               {' '}
               <h4 className="text-[#24181B] text-2xl font-medium">
                 You are all set!
