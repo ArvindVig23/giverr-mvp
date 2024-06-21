@@ -81,7 +81,7 @@ export const createOpportunity = async (opportunity: any) => {
 
     // Add opportunity commitment document
     const opportunityCommitmentRef = doc(
-      collection(db, 'opportuntyCommitment'),
+      collection(db, 'opportunityCommitment'),
     );
     batch.set(opportunityCommitmentRef, {
       opportunityId: opportunityRef.id,
@@ -184,6 +184,7 @@ export const getUserDetailsById = async (id: any) => {
   const docRef = doc(userRef, id);
   const docSnap = await getDoc(docRef);
   const orgData: any = docSnap.data();
+  orgData.id = docSnap.id;
   if (!orgData) {
     return null;
   } else {

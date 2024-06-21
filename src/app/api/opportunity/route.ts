@@ -15,6 +15,7 @@ import { db } from '@/firebase/config';
 import { eventValidationSchema } from '@/utils/joiSchema';
 import {
   createOpportunity,
+  getUserDetailsById,
   getWishlistWithUser,
 } from '@/services/backend/opportunityServices';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
@@ -173,6 +174,7 @@ export async function GET(req: NextRequest) {
     const limit = +(searchParams.get('limit') || '20');
     const opportunityId = searchParams.get('opportunity');
     const userIdRecordsShouldFetch = searchParams.get('userId');
+    const orgIdRecordsShouldFetch = searchParams.get('orgId');
     const startDate = searchParams.get('startDate') || 'undefined';
     const endDate = searchParams.get('endDate') || 'undefined';
     let opportunitiesQuery = query(
@@ -198,7 +200,7 @@ export async function GET(req: NextRequest) {
       );
     }
     // this check is added coz if we are fetching records with userId then it should fetch the records with status pending as well
-    if (!userIdRecordsShouldFetch) {
+    if (!userIdRecordsShouldFetch && !orgIdRecordsShouldFetch) {
       opportunitiesQuery = query(
         opportunitiesQuery,
         where('status', '==', 'APPROVED'),
@@ -219,6 +221,21 @@ export async function GET(req: NextRequest) {
       opportunitiesQuery = query(
         opportunitiesQuery,
         where('createdBy', '==', userIdRecordsShouldFetch),
+      );
+    }
+    if (orgIdRecordsShouldFetch) {
+      if (!userDetailCookie) {
+        const response = responseHandler(
+          401,
+          false,
+          null,
+          'Please login before getting event',
+        );
+        return response;
+      }
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where('organizationId', '==', orgIdRecordsShouldFetch),
       );
     }
     const totalSnapshot = await getDocs(opportunitiesQuery);
@@ -259,7 +276,7 @@ export async function GET(req: NextRequest) {
 
           const organizationSnapshot = await getDoc(organizationDocRef);
 
-          if (organizationSnapshot) {
+          if (organizationSnapshot.exists()) {
             const orgData = organizationSnapshot.data();
             opportunityData.organization = orgData;
           } else {
@@ -268,6 +285,56 @@ export async function GET(req: NextRequest) {
         } else {
           opportunityData.organization = null;
         }
+
+        let oppLocation: any = [];
+        // fetching opportunity location if virtual link is not present
+        if (!opportunityData.virtualLocationLink?.length) {
+          const oppLocationQuery = query(
+            collection(db, 'opportunityLocations'),
+            where('opportunityId', '==', docs.id),
+          );
+          const oppLocationSnapShot = await getDocs(oppLocationQuery);
+          if (!oppLocationSnapShot.empty) {
+            oppLocationSnapShot.docs.forEach((doc: any) => {
+              const location = doc.data();
+              location.id = doc.id;
+              oppLocation.push(location);
+            });
+          }
+        }
+
+        // fetching opportunity commitment
+        let oppCommitments: any = [];
+        const oppCommitmentQuery = query(
+          collection(db, 'opportunityCommitment'),
+          where('opportunityId', '==', docs.id),
+        );
+        const oppCommitmentSnapShot = await getDocs(oppCommitmentQuery);
+        if (!oppCommitmentSnapShot.empty) {
+          oppCommitmentSnapShot.docs.forEach((doc: any) => {
+            const commitment = doc.data();
+            commitment.id = doc.id;
+            oppCommitments.push(commitment);
+          });
+        }
+
+        // fetching volunteer for opportunity only if registration type is GIVER_PLATFORM
+        let oppVolunteers = [];
+        if (opportunityData.registrationType === 'GIVER_PLATFORM') {
+          const oppVolunteersQuery = query(
+            collection(db, 'opportunityMembers'),
+            where('opportunityId', '==', docs.id),
+          );
+          const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+          oppVolunteers = await Promise.all(
+            oppVolunteersSnapShot.docs.map(async (volDoc) => {
+              const volunteer = volDoc.data();
+              const userDetails = await getUserDetailsById(volunteer.userId);
+              return userDetails;
+            }),
+          );
+        }
+
         // get the wishlist details
         opportunityData.isWishlist = false;
         if (userDetailCookie) {
@@ -276,11 +343,13 @@ export async function GET(req: NextRequest) {
           const checkIsWishlist = await getWishlistWithUser(docs.id, id);
           opportunityData.isWishlist = checkIsWishlist;
         }
+        opportunityData.commitment = oppCommitments;
+        opportunityData.location = oppLocation;
+        opportunityData.volunteers = oppVolunteers;
         return opportunityData;
       },
     );
     const opportunities = await Promise.all(opportunitiesPromises);
-
     const response = responseHandler(
       200,
       true,
