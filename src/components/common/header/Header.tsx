@@ -37,14 +37,14 @@ const Header: React.FC = () => {
   }, [searchOrg]);
 
   return (
-    <header>
+    <header className="hidden md:block">
       <nav className=" px-4 md:px-5 py-5">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen">
-          <div className="flex flex-wrap gap-8">
+          <div className="flex flex-wrap gap-2 lg:gap-8">
             <Link href="/" className="items-center inline-block">
               <Image className="h-8 w-auto" src={logo} alt="Logo" />
             </Link>
-            <div className="flex flex-wrap gap-2.5 items-center text-base">
+            <div className="flex flex-wrap gap-1 lg:gap-2.5 items-center text-sm lg:text-base">
               <Link
                 href="/"
                 className={`px-1  hover:text-[#1E1E 1E] ${pathName === '/' ? 'text-[#1E1E 1E]' : 'text-[#1E1E1E80]'}`}
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
           </div>
 
           {['/', '/organizations'].includes(pathName) && (
-            <div className="flex w-full max-w-[654px] ">
+            <div className="flex w-full max-w-[654px] absolute left-0 right-0 m-auto search-bar ">
               <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
                 {pathName === '/organizations' && (
                   <input
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
             ) : (
               <Link
                 href={'/sign-in'}
-                className="text-base  w-auto h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                className="text-base  w-auto h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
               >
                 Join now
               </Link>

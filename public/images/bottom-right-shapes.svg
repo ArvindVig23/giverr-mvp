@@ -1,0 +1,33 @@
+<svg width="256" height="296" viewBox="0 0 256 296" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="211.5" y="36" width="3" height="257" fill="#3C2B47"/>
+<path d="M228 293C229.657 293 231 294.343 231 296V296L195 296V296C195 294.343 196.343 293 198 293L228 293Z" fill="#3C2B47"/>
+<path d="M200.14 34.5L190.973 1.5H235.027L225.86 34.5H200.14Z" fill="#F5F3EF" stroke="#3C2B47" stroke-width="3"/>
+<path d="M209.271 34.5L203.771 1.5H222.229L216.729 34.5H209.271Z" fill="#F5F3EF" stroke="#3C2B47" stroke-width="3"/>
+<rect x="230" y="33" width="3" height="34" rx="1.5" transform="rotate(90 230 33)" fill="#3C2B47"/>
+<rect x="239" width="3" height="52" rx="1.5" transform="rotate(90 239 0)" fill="#3C2B47"/>
+<path d="M181 125.5C181 112.907 181 106.611 183.304 101.739C185.678 96.7193 189.719 92.6783 194.739 90.3043C199.611 88 205.907 88 218.5 88V88C231.093 88 237.389 88 242.261 90.3043C247.281 92.6783 251.322 96.7193 253.696 101.739C256 106.611 256 112.907 256 125.5V297H181V125.5Z" fill="#F55640"/>
+<path d="M218 119C218 119 216.167 118 212.5 118C208.833 118 207 119 207 119" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<path d="M239 119C239 119 237.167 118 233.5 118C229.833 118 228 119 228 119" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<path d="M202 127C202 127 209 139 223 139C237 139 244 127 244 127" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<path d="M0 170.4C0 156.959 0 150.238 2.61584 145.104C4.9168 140.588 8.58834 136.917 13.1042 134.616C18.2381 132 24.9587 132 38.4 132H82.6C96.0413 132 102.762 132 107.896 134.616C112.412 136.917 116.083 140.588 118.384 145.104C121 150.238 121 156.959 121 170.4L121 296H0L0 170.4Z" fill="#5B39E3"/>
+<path d="M40 190C40 190 42.8333 193 48.5 193C54.1667 193 57 190 57 190" stroke="#F5F3EF" stroke-width="4" stroke-linecap="round"/>
+<path d="M38 162V171" stroke="#F5F3EF" stroke-width="4" stroke-linecap="round"/>
+<path d="M61 162V171" stroke="#F5F3EF" stroke-width="4" stroke-linecap="round"/>
+<path d="M92 192.4C92 178.959 92 172.238 94.6158 167.104C96.9168 162.588 100.588 158.917 105.104 156.616C110.238 154 116.959 154 130.4 154H158.6C172.041 154 178.762 154 183.896 156.616C188.412 158.917 192.083 162.588 194.384 167.104C197 172.238 197 178.959 197 192.4V296H92L92 192.4Z" fill="#FFB700"/>
+<path d="M121 203C121 203 123.833 206 129.5 206C135.167 206 138 203 138 203" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<path d="M116 189C116 189 123 187.5 123 184.5C123 181.5 116 180 116 180" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<path d="M144 180C144 180 137 181.5 137 184.5C137 187.5 144 189 144 189" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<rect x="32.4453" y="260" width="2" height="38" fill="#27A83B"/>
+<path d="M34.4531 291C34.4531 283.268 40.7211 277 48.4531 277V277V277C48.4531 284.731 42.1851 291 34.4531 291V291V291Z" fill="#27A83B"/>
+<rect x="27.6719" y="230.75" width="4" height="40" rx="2" transform="rotate(-11 27.6719 230.75)" fill="white"/>
+<rect x="15.75" y="240.472" width="4" height="40" rx="2" transform="rotate(-56 15.75 240.472)" fill="white"/>
+<rect x="15.75" y="240.472" width="4" height="40" rx="2" transform="rotate(-56 15.75 240.472)" fill="white"/>
+<rect x="14.1953" y="255.779" width="4" height="40" rx="2" transform="rotate(-101 14.1953 255.779)" fill="white"/>
+<rect x="23.9219" y="267.699" width="4" height="40" rx="2" transform="rotate(-146 23.9219 267.699)" fill="white"/>
+<rect x="23.9219" y="267.699" width="4" height="40" rx="2" transform="rotate(-146 23.9219 267.699)" fill="white"/>
+<rect x="20.6406" y="234.511" width="4" height="40" rx="2" transform="rotate(-33.8863 20.6406 234.511)" fill="white"/>
+<rect x="13.4375" y="248.105" width="4" height="40" rx="2" transform="rotate(-78.8863 13.4375 248.105)" fill="white"/>
+<rect x="17.9609" y="262.812" width="4" height="40" rx="2" transform="rotate(-123.886 17.9609 262.812)" fill="white"/>
+<rect x="31.5625" y="270.009" width="4" height="40" rx="2" transform="rotate(-168.886 31.5625 270.009)" fill="white"/>
+<circle cx="33.4453" cy="250" r="9" fill="#FFB700"/>
+</svg>

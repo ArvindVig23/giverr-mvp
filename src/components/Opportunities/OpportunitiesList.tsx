@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Filter from '../Opportunities/filter';
+import Filter from './Filter';
 import { useCookies } from 'react-cookie';
 import { useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,11 +12,18 @@ import OpportunityCard from '../common/cards/OpportunityCard';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { updateOpportunityList } from '@/app/redux/slices/opportunitySlice';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
+import MobileFilterSlider from '../mobileComponents/MobileFilterSlider';
+import Image from 'next/image';
+import filtericon from '/public/images/filter.svg';
+import CommonModal from '../common/modal/CommonModal';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
   setCurrentPage,
 }) => {
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
+  const [showMobFilterModal, setShowMobFilterModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const opportunityTypeList = useSelector(
@@ -103,14 +110,30 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   return (
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
-        <div className="text-base text-[#1E1E1E80] font-normal">
+        <div className="text-base text-[#24181B80] font-normal">
           {totalRecords} Opportunities
         </div>
-        <Filter
-          opportunityIds={opportunityIds}
-          setCurrentPage={setCurrentPage}
-          setTotalRecords={setTotalRecords}
-        />
+        <button
+          onClick={() => {
+            setShowFilterModal(!showFilterModal);
+            setIsButtonClicked(true); // Set button click state to true
+          }}
+          className={`hidden md:inline-flex  justify-center gap-x-1.5 items-center text-base font-medium px-2.5 py-1 rounded-[10px] hover:bg-[#EDEBE3] group ${isButtonClicked ? 'bg-[#EDEBE3]' : ''}`}
+        >
+          <Image src={filtericon} alt="filtericon" />
+          Filters
+        </button>
+        <button
+          onClick={() => {
+            document.body.classList.add('overflow-hidden');
+            setShowMobFilterModal(!showMobFilterModal);
+            setIsButtonClicked(true); // Set button click state to true
+          }}
+          className={`inline-flex  md:hidden justify-center gap-x-1.5 items-center text-base font-medium px-2.5 py-1 rounded-[10px] hover:bg-[#EDEBE3] group ${isButtonClicked ? 'bg-[#EDEBE3]' : ''}`}
+        >
+          <Image src={filtericon} alt="filtericon" />
+          Filters
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
@@ -143,11 +166,47 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
         {opportunityList.length !== totalRecords ? (
           <button
             onClick={() => setCurrentPage(currrentPage! + 1)}
-            className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+            className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           >
             Load More
           </button>
         ) : null}
+      </div>
+      {showFilterModal && (
+        <CommonModal
+          heading={'Filters'}
+          subHeading={'Send Invite to'}
+          showModal={showFilterModal}
+          setShowModal={setShowFilterModal}
+        >
+          <Filter
+            opportunityIds={opportunityIds}
+            setCurrentPage={setCurrentPage}
+            setTotalRecords={setTotalRecords}
+            setShowModal={setShowFilterModal}
+          />
+        </CommonModal>
+      )}
+      {showMobFilterModal && (
+        <div
+          onClick={() => {
+            document.body.classList.remove('overflow-hidden');
+            setShowMobFilterModal(false);
+          }}
+          className="background-overlay h-full bg-black opacity-50 fixed top-0 bottom-0 left-0 right-0 z-10"
+        ></div>
+      )}
+      <div
+        className={`border-0 rounded-t-[20px] flex flex-col w-full bg-[#F5F3EF] fixed bottom-0 z-10 transition-all ease-in-out duration-500 delay-[200ms] overflow-hidden translate-y-full  ${showMobFilterModal ? '!translate-y-0 ' : ''}`}
+      >
+        {showMobFilterModal && (
+          <MobileFilterSlider
+            opportunityIds={opportunityIds}
+            setCurrentPage={setCurrentPage}
+            setTotalRecords={setTotalRecords}
+            setShowModal={setShowMobFilterModal}
+          />
+        )}
       </div>
     </div>
   );

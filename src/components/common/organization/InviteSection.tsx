@@ -70,8 +70,10 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
   };
   return (
     <div className="flex w-full flex-col gap-5 mt-5" ref={dropdownRef}>
-      <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
-      <span>All new members will be invited with no permissions.</span>
+      <div>
+        <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
+        <span>All new members will be invited with no permissions.</span>
+      </div>
       <div className="relative flex gap-5">
         <div className="relative flex-1">
           <input
@@ -79,7 +81,7 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
             id="searchMember"
             {...register('searchMember')}
             type="text"
-            className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
+            className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10 placeholder-[#24181B80]"
             placeholder="Invite by name or username"
             onFocus={() => setIsDropdownOpen(true)}
           />
@@ -131,33 +133,38 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
           )}
         </div>
       </div>
-      {memberList.map((member: any, index: number) => (
-        <div className="w-full" key={index}>
-          <div className="flex p-3 items-center gap-3 border border-[#E6E3D6] rounded-xl">
-            <MemberOption member={member} />
+      <div className="w-full">
+        <div className="flex items-center  p-1 border border-[#E6E3D6] rounded-xl flex-col">
+          {memberList.map((member: any, index: number) => (
+            <div
+              className="flex w-full  p-3 hover:bg-[#EDEBE3] rounded-xl"
+              key={index}
+            >
+              <MemberOption member={member} />
 
-            <div className="ml-auto flex gap-2 items-center">
-              {cookies.userDetails.id === member.id ? (
-                <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                  Owner
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMember(index)}
-                  className="group w-[20px] h-[20px] ml-auto  hover:bg-[#24181B] border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                >
-                  <Image
-                    className="brightness-0 group-hover:brightness-0 group-hover:invert"
-                    src={cross}
-                    alt="close"
-                  />
-                </button>
-              )}
+              <div className="ml-auto flex gap-2 items-center">
+                {cookies.userDetails.id === member.id ? (
+                  <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                    Owner
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(index)}
+                    className="group w-[20px] h-[20px] ml-auto  hover:bg-[#24181B] border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                  >
+                    <Image
+                      className="brightness-0 group-hover:brightness-0 group-hover:invert"
+                      src={cross}
+                      alt="close"
+                    />
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };

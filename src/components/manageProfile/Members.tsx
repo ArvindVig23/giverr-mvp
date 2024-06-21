@@ -133,7 +133,7 @@ const Members = () => {
             id="searchMember"
             {...register('searchMember')}
             type="text"
-            className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-xl focus:outline-none px-10"
+            className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-2xl focus:outline-none px-10"
             placeholder="Search Members"
           />
           <Image
@@ -145,7 +145,7 @@ const Members = () => {
 
         <button
           onClick={() => setInviteMembersModal(true)}
-          className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+          className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
         >
           Invite member
         </button>
@@ -281,7 +281,7 @@ const Members = () => {
           setShowModal={setShowDeleteMemberModal}
         >
           <div>
-            <div className="relative p-5 flex-auto flex flex-col gap-5 overflow-auto">
+            <div className="relative p-5 pt-0 flex-auto flex flex-col gap-5 overflow-auto">
               <p className="text-base text-[#24181B] m-0">
                 {isRevokeInvite
                   ? 'Are you sure you want to revoke this invite?'
@@ -289,16 +289,16 @@ const Members = () => {
               </p>
             </div>
             {/*footer*/}
-            <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b gap-2.5">
+            <div className="flex items-center justify-end p-5  rounded-b gap-2.5">
               <button
-                className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#24181B]  border border-[#E6E3D6] hover:bg-[#EDEBE3]"
                 type="button"
                 onClick={() => setShowDeleteMemberModal(false)}
               >
                 Cancel
               </button>
               <button
-                className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]`}
+                className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]`}
                 type="button"
                 onClick={() => removeMember()}
               >

@@ -5,10 +5,10 @@ import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import apple from '/public/images/apple.svg';
 import google from '/public/images/Google.svg';
-import mobleftshape from '/public/images/left-mob-shape.svg';
-import mobrightshape from '/public/images/right-mob-shape.svg';
-import leftshape from '/public/images/left-shapes.svg';
-import rightshape from '/public/images/right-shapes.svg';
+import mobleftshape from '/public/images/left-mob-shape1.svg';
+import mobrightshape from '/public/images/right-mob-shape1.svg';
+import leftshape from '/public/images/login-left-shape-1.svg';
+import rightshape from '/public/images/login-right-shape-1.svg';
 import { handleGoogleSignUp } from '@/utils/signUpEvent';
 import { useForm } from 'react-hook-form';
 import { emailregex } from '@/utils/regex';
@@ -115,7 +115,7 @@ const CommonStep1: React.FC = () => {
             Continue
           </button>
 
-          <p className="mt-2 text-center w-full text-[#1E1E1E80]">
+          <p className="md:mt-2 text-center w-full text-[#1E1E1E80]">
             If you don&apos;t have an account, we&apos;ll create one.
           </p>
         </form>
