@@ -121,7 +121,7 @@ const Filter = (props: {
 
         <div className="w-full flex flex-col gap-5">
           <h4 className="text-[#24181B] text-2xl font-medium">Date</h4>
-          <div className="relative w-full">
+          <div className="relative w-full datePicker">
             <Datepicker
               useRange={false}
               value={dateRange}
