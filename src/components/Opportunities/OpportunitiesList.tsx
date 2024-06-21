@@ -143,7 +143,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
         {opportunityList && opportunityList.length > 0 ? (
           opportunityList.map((opportunity: any, index: number) => {
             return (

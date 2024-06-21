@@ -274,7 +274,7 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
                     </div>
 
                     <div className="relative w-full mt-1">
-                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
                         Frequency
                       </label>
                       <select className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
@@ -396,7 +396,7 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
                     </div>
 
                     <div className="relative w-full mt-1">
-                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
                         Frequency
                       </label>
                       <select className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
@@ -413,7 +413,7 @@ const CreateEventStep3 = ({ setShowModal }: any) => {
                     </div>
 
                     <div className="relative w-full mt-1">
-                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                      <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
                         Commitment
                       </label>
                       <select className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">

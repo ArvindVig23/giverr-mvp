@@ -164,7 +164,7 @@ export default function ProfileDropdown() {
           leaveTo="md:transform md:opacity-0 md:scale-95 opacity-0  translate-y-full"
           afterLeave={() => setDropdownOpen(false)}
         >
-          <Menu.Items className="!fixed !bottom-0 !z-30  profile-dropdown md:absolute right-0 z-10 mt-2 !w-full md:!w-56 origin-top-right !rounded-none !rounded-t-2xl  md:!rounded-xl !border-0 md:!border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
+          <Menu.Items className="!fixed !bottom-0 !z-30  profile-dropdown md:!absolute right-0 z-10 mt-2 !w-full md:!w-56 origin-top-right !rounded-none !rounded-t-2xl  md:!rounded-xl !border-0 md:!border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
             <div className="p-1.5 flex flex-col gap-0.5">
               <Menu.Item>
                 <div

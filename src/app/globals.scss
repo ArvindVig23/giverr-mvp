@@ -275,6 +275,30 @@ body {
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }
+.datePicker input 
+{
+  background-color: #EDEBE3 !important;
+  border: 1px solid #E6E3D6 !important ;
+  height: 60px !important;
+  border-radius: 16px !important;
+  outline: none !important;
+}
+.tab-close
+{
+  position: fixed;
+  transform: translateX(100%);
+  transition: all 0.3s ease-in-out 0s;
+  z-index: 10;
+  height: 100vh;
+  top: 0;
+  overflow: auto;
+  background-color: #F5F3EF;
+}
+.show-tab
+{
+  transform: translateX(0);
+}
+
 @media screen and (max-width: 1420px)
 {
   .search-bar
