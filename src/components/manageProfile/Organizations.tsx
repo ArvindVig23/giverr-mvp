@@ -72,7 +72,7 @@ const Organizations: React.FC = () => {
   };
   return (
     <div className="w-full">
-      <h3 className="text-[32px] font-medium mb-2 mt-0 leading-[36px]">
+      <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
         Organizations
       </h3>
       {memberOfOrgList.length > 0 ? (
@@ -89,7 +89,7 @@ const Organizations: React.FC = () => {
               <button
                 onClick={() => leave(orgMember.id, orgMember.organizationId)}
                 type="button"
-                className="text-base h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                className="text-base h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
               >
                 Leave
               </button>
@@ -133,7 +133,7 @@ const Organizations: React.FC = () => {
                       );
                     }}
                     type="button"
-                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
                   >
                     Ignore
                   </button>
@@ -145,7 +145,7 @@ const Organizations: React.FC = () => {
                       );
                     }}
                     type="button"
-                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
                   >
                     Accept
                   </button>

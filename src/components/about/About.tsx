@@ -204,7 +204,7 @@ const About: React.FC = () => {
 
             <Link
               href={'#'}
-              className="text-base  w-auto h-11 px-4 py-2.5 inlineflex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+              className="text-base  w-auto h-11 px-4 py-2.5 inlineflex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
             >
               Contact us
             </Link>

@@ -22,7 +22,7 @@ const OrgSubmittedContent = ({ orgName, setShowModal }: any) => {
       <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
           onClick={() => setShowModal(false)}
-          className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+          className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038]"
           type="button"
         >
           Close

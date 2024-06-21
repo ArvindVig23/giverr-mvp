@@ -69,7 +69,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
   }, []);
   const skeleton = Array(7).fill(null);
   return (
-    <div className="px-5 relative mb-5 opportunities-swiper">
+    <div className="px-5 relative mb-5 opportunities-swiper md:py-0 py-5">
       {opportunityTypeList.length === 0 ? (
         <div className="grid grid-cols-7">
           {skeleton.map((_, index) => (
@@ -104,7 +104,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
             opportunityTypeList.map((type: any, index: number) => (
               <SwiperSlide key={index} onClick={() => filterClick(type.slug)}>
                 <div
-                  className={`group  border border-[#D1CFC7] rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && 'border-[#E60054] text-[#E60054]'}`}
+                  className={`group  border border-[#E6E3D6] rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer  hover:bg-[#EDEBE3] ${opportunityFilter.includes(type.slug) && '!border-[#E60054] text-[#E60054]'}`}
                 >
                   {type.name}
                 </div>

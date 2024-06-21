@@ -135,7 +135,7 @@ const Organization: React.FC<{
   };
 
   return (
-    <div className="w-full border-t border-[#E6E3D6] p-5 organization-section">
+    <div className="w-full md:border-t border-[#E6E3D6] p-4 md:p-5 organization-section">
       <div className="max-w-[652px] m-auto w-full">
         <>
           {loading && (
@@ -167,10 +167,10 @@ const Organization: React.FC<{
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
-                    className={`flex flex-wrap p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${openOrgs.includes(organization.id) ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
+                    className={`flex flex-wrap p-3 md:p-5 w-full hover:bg-[#EDEBE3] border-b border-[#E6E3D6] hover:rounded-xl ${openOrgs.includes(organization.id) ? '!bg-[#EAE7DC]  !rounded-xl !rounded-b-none border-0' : ''}`}
                   >
-                    <div className="w-full flex flex-wrap gap-5">
-                      <div className="flex-1 flex gap-4 items-center">
+                    <div className="w-full flex  gap-2.5 md:gap-5">
+                      <div className="flex-1 flex gap-3 md:gap-4 items-center">
                         <div
                           className={`w-11 min-w-11 h-11 overflow-hidden rounded-full flex justify-center items-center ${openOrgs.includes(organization.id) ? 'bg-[#bbb9b4]' : 'bg-[#e6e3d6]'}`}
                         >
@@ -245,6 +245,22 @@ const Organization: React.FC<{
                         pagination={{
                           clickable: true,
                           el: '.swiper-pagination',
+                        }}
+                        breakpoints={{
+                          100: {
+                            slidesPerView: 1,
+                            spaceBetween: 10,
+                          },
+
+                          640: {
+                            slidesPerView: 2,
+                            spaceBetween: 10,
+                          },
+
+                          768: {
+                            slidesPerView: 2,
+                            spaceBetween: 12,
+                          },
                         }}
                       >
                         {organization.opportunities.map((oppurtunity: any) => (

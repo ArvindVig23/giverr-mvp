@@ -5,6 +5,7 @@ import Header from '../common/header/Header';
 import Footer from '../common/footer/Footer';
 import { useSelector } from 'react-redux';
 import Spinner from '../common/loader/Spinner';
+import MobileHeader from '../common/header/MobileHeader';
 const AppWrapper = ({ children }: any) => {
   const [mounted, setMounted] = useState(false);
   const excludedPaths = [
@@ -31,6 +32,7 @@ const AppWrapper = ({ children }: any) => {
       ) : (
         <>
           <Header />
+          <MobileHeader />
           {children}
           <Footer />
         </>

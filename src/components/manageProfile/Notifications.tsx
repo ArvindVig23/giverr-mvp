@@ -259,6 +259,7 @@ const Notifications: React.FC = () => {
             onChange={handleChange}
             options={options}
             classNamePrefix="select"
+            // menuIsOpen={true}
           />
         </div>
       </div>

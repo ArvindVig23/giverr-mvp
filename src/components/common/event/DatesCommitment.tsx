@@ -84,6 +84,7 @@ const DatesCommitment = () => {
           rules={{ required: 'Event Date is required' }}
           render={({ field }) => (
             <MaterialDatepicker
+              minDate={new Date()}
               useRange={false}
               value={field.value}
               onChange={(range: any) =>

@@ -17,7 +17,7 @@ body {
   font-family: 'Rethink Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  color: #1e1e1e;
+  color: #24181B;
   background-color: #f5f3ef;
 }
 
@@ -277,4 +277,64 @@ body {
 {
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
+}
+.datePicker input 
+{
+  background-color: #EDEBE3 !important;
+  border: 1px solid #E6E3D6 !important ;
+  height: 60px !important;
+  border-radius: 16px !important;
+  outline: none !important;
+}
+
+@media screen and (max-width: 1420px)
+{
+  .search-bar
+  {
+    max-width: 450px;
+  }
+}
+
+@media screen and (max-width: 1200px)
+{
+  .search-bar
+  {
+    position: relative;
+    max-width: 310px;
+  }
+}
+@media screen and (max-width: 1023px)
+{
+  .search-bar {
+      max-width: 230px;
+  }
+}
+@media screen and (min-width: 767px)
+{
+  .profile-dropdown
+  {
+    bottom: inherit !important;
+  }
+}
+@media screen and (max-width: 767px)
+{
+  .search-bar {
+      max-width: 100%;
+  }
+  .tab-close
+{
+  position: fixed;
+  transform: translateX(100%);
+  transition: all 0.3s ease-in-out 0s;
+  z-index: 10;
+  height: 100vh;
+  top: 0;
+  overflow: auto;
+  background-color: #F5F3EF;
+}
+.show-tab
+{
+  transform: translateX(0);
+}
+
 }

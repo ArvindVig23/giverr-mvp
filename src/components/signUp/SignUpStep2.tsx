@@ -217,7 +217,7 @@ const SignUpStep2: React.FC = () => {
             Join
           </button>
 
-          <p className="mt-2 text-center w-full text-[#1E1E1E80]">
+          <p className="md:mt-2 text-center w-full text-[#1E1E1E80]">
             By creating an account, you accept our{' '}
             <Link className="underline" href="#">
               Terms

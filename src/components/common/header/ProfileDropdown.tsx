@@ -3,6 +3,9 @@ import { Fragment, useEffect, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import check from '/public/images/check-circle.svg';
+import activity from '/public/images/activity.svg';
+import setting from '/public/images/settings.svg';
+import heart from '/public/images/heart1.svg';
 import Image from 'next/image';
 import { getInitialOfEmail, logOut } from '@/services/frontend/userService';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -22,6 +25,8 @@ import { sweetAlertToast } from '@/services/frontend/toastServices';
 export default function ProfileDropdown() {
   const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
   const [highlightWishlist, setHighlightWishlist] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+
   const router = useRouter();
   const dispatch = useDispatch();
   const [cookies] = useCookies();
@@ -110,160 +115,167 @@ export default function ProfileDropdown() {
     return 'o';
   };
 
-  const displayOrgName =
-    nameOrUserName().length > 16
-      ? nameOrUserName().slice(0, 16) + '...'
-      : nameOrUserName();
   return (
-    <Menu as="div" className="relative inline-block text-left">
-      <div>
-        <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden ">
-          {cookies.userDetails.loginAsOrg ? (
-            userOrgDetails?.avatarLink ? (
-              <Image
-                width={40}
-                height={40}
-                unoptimized={true}
-                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
-                alt="profile"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              getInitialOfEmail(nameOrUserName())
-            )
-          ) : null}
-          {!cookies.userDetails.loginAsOrg ? (
-            cookies.userDetails.profileUrl ? (
-              <Image
-                width={40}
-                height={40}
-                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
-                alt="profile"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              getInitialOfEmail(fullNameOrEmail())
-            )
-          ) : null}
-        </Menu.Button>
-      </div>
+    <>
+      {dropdownOpen && (
+        <div className="fixed inset-0 bg-black opacity-50 z-20"></div>
+      )}
+      <Menu as="div" className="relative inline-block text-left">
+        <div>
+          <Menu.Button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden "
+          >
+            {cookies.userDetails.loginAsOrg ? (
+              userOrgDetails?.avatarLink ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitialOfEmail(nameOrUserName())
+              )
+            ) : null}
+            {!cookies.userDetails.loginAsOrg ? (
+              cookies.userDetails.profileUrl ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitialOfEmail(fullNameOrEmail())
+              )
+            ) : null}
+          </Menu.Button>
+        </div>
 
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
-          <div className="p-1.5 flex flex-col gap-0.5">
-            <Menu.Item>
-              <div
-                onClick={() =>
-                  cookies.userDetails.loginAsOrg
-                    ? handleLoginAsOrg(false)
-                    : null
-                }
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
-              >
-                <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
-                  {cookies.userDetails.profileUrl ? (
-                    <Image
-                      width={40}
-                      height={40}
-                      src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
-                      alt="profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    getInitialOfEmail(fullNameOrEmail())
-                  )}
-                </div>{' '}
-                {displayName}
-                {!cookies.userDetails.loginAsOrg && (
-                  <div className="ml-auto">
-                    <Image src={check} alt="check" />
-                  </div>
-                )}
-              </div>
-            </Menu.Item>
-
-            {showOrganization ? (
+        <Transition
+          as={Fragment}
+          enter="md:transition md:ease-out md:duration-100 transition-all ease-in-out duration-500 delay-[200ms]"
+          enterFrom="md:transform md:opacity-0 md:scale-95 md:translate-y-2 opacity-0 translate-y-full"
+          enterTo="md:transform md:opacity-100 md:scale-100 opacity-100 translate-y-0"
+          leave="md:transition md:ease-in md:duration-75 transition-all ease-in-out duration-300"
+          leaveFrom="md:transform md:opacity-100 md:scale-100 opacity-100 translate-y-0"
+          leaveTo="md:transform md:opacity-0 md:scale-95 opacity-0  translate-y-full"
+          afterLeave={() => setDropdownOpen(false)}
+        >
+          <Menu.Items className="!fixed !bottom-0 !z-30  profile-dropdown md:!absolute right-0 z-10 mt-2 !w-full md:!w-56 origin-top-right !rounded-none !rounded-t-2xl  md:!rounded-xl !border-0 md:!border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
+            <div className="p-1.5 flex flex-col gap-0.5">
               <Menu.Item>
                 <div
                   onClick={() =>
-                    !cookies.userDetails.loginAsOrg
-                      ? handleLoginAsOrg(true)
+                    cookies.userDetails.loginAsOrg
+                      ? handleLoginAsOrg(false)
                       : null
                   }
-                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
+                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
                 >
-                  <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
-                    {userOrgDetails.avatarLink ? (
+                  <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
+                    {cookies.userDetails.profileUrl ? (
                       <Image
                         width={40}
                         height={40}
-                        src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
-                        alt="avatar"
+                        src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(cookies.userDetails.profileUrl)}`}
+                        alt="profile"
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      getInitialOfEmail(
-                        userOrgDetails.name ? userOrgDetails.name : 'O',
-                      )
+                      getInitialOfEmail(fullNameOrEmail())
                     )}
                   </div>{' '}
-                  {displayOrgName}
-                  {cookies.userDetails.loginAsOrg && (
+                  {displayName}
+                  {!cookies.userDetails.loginAsOrg && (
                     <div className="ml-auto">
                       <Image src={check} alt="check" />
                     </div>
                   )}
                 </div>
               </Menu.Item>
-            ) : null}
-            <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
-            <Menu.Item>
-              <Link
-                href="/activity?events=true"
-                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightActivity ? 'bg-[#F5F3EF]' : ''}`}
-              >
-                Events & Activity
-              </Link>
-            </Menu.Item>
 
-            <Menu.Item>
-              <Link
-                href="/activity?wishlist=true"
-                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightWishlist ? 'bg-[#F5F3EF]' : ''}`}
-              >
-                Wishlist
-              </Link>
-            </Menu.Item>
-            <hr className="border-[#E6E3D6]  relative -left-[1.5px] -right-[1.5px]"></hr>
+              {showOrganization ? (
+                <Menu.Item>
+                  <div
+                    onClick={() =>
+                      !cookies.userDetails.loginAsOrg
+                        ? handleLoginAsOrg(true)
+                        : null
+                    }
+                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
+                  >
+                    <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
+                      {userOrgDetails.avatarLink ? (
+                        <Image
+                          width={40}
+                          height={40}
+                          src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        getInitialOfEmail(
+                          userOrgDetails.name ? userOrgDetails.name : 'O',
+                        )
+                      )}
+                    </div>{' '}
+                    {userOrgDetails.name}
+                    {cookies.userDetails.loginAsOrg && (
+                      <div className="ml-auto">
+                        <Image src={check} alt="check" />
+                      </div>
+                    )}
+                  </div>
+                </Menu.Item>
+              ) : null}
+              <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
+              <Menu.Item>
+                <Link
+                  href="/activity?events=true"
+                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightActivity ? 'bg-[#F5F3EF]' : ''}`}
+                >
+                  <Image className="md:hidden" src={activity} alt="" />
+                  Events & Activity
+                </Link>
+              </Menu.Item>
 
-            <Menu.Item>
-              <Link
-                href="/profile"
-                className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
-              >
-                Account settings
-              </Link>
-            </Menu.Item>
+              <Menu.Item>
+                <Link
+                  href="/activity?wishlist=true"
+                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightWishlist ? 'bg-[#F5F3EF]' : ''}`}
+                >
+                  <Image className="md:hidden" src={heart} alt="" />
+                  Wishlist
+                </Link>
+              </Menu.Item>
+              <hr className="border-[#E6E3D6]  relative -left-[1.5px] -right-[1.5px]"></hr>
 
-            <Menu.Item>
-              <button
-                className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                onClick={() => logOut(router, dispatch)}
-              >
-                Log out
-              </button>
-            </Menu.Item>
-          </div>
-        </Menu.Items>
-      </Transition>
-    </Menu>
+              <Menu.Item>
+                <Link
+                  href="/profile"
+                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
+                >
+                  <Image className="md:hidden" src={setting} alt="" />
+                  Account settings
+                </Link>
+              </Menu.Item>
+
+              <Menu.Item>
+                <button
+                  className="mx-2.5 my-2 md:m-0 font-normal md:font-medium flex items-center gap-2 text-base md:text-[#24181B] text-[#E60054] px-3 py-2	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg border border-[#E6005433] md:border-0 md:justify-start justify-center"
+                  onClick={() => logOut(router, dispatch)}
+                >
+                  Log out
+                </button>
+              </Menu.Item>
+            </div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    </>
   );
 }
