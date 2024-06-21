@@ -82,11 +82,12 @@ export const volunteerOpportunity = async (oppId: string) => {
 
 export const getUserOpportunityList = async (
   userId: string,
+  orgId: string,
   currrentPage?: number,
 ) => {
   try {
     const response = await callApi(
-      `/opportunity?page=${currrentPage}&userId=${userId}`,
+      `/opportunity?page=${currrentPage}&userId=${userId}&orgId=${orgId}`,
       'get',
     );
     return response.data;

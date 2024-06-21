@@ -71,7 +71,9 @@ const InviteSection = ({ memberList, setMemberList }: any) => {
   return (
     <div className="flex w-full flex-col gap-5 mt-5" ref={dropdownRef}>
       <div>
-        <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
+        <h4 className="w-full text-[#24181B] text-[20px] md:text-2xl font-medium">
+          Members
+        </h4>
         <span>All new members will be invited with no permissions.</span>
       </div>
       <div className="relative flex gap-5">

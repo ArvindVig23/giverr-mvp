@@ -13,13 +13,40 @@ import {
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { Tooltip } from '@material-tailwind/react';
 import { useCookies } from 'react-cookie';
-
+import { usePathname } from 'next/navigation';
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
   addRemoveWishlist,
 }: any) => {
   const [cookies] = useCookies();
+  const pathname = usePathname();
+  const displayVolunteerName = (name: string) => {
+    return name[0].toUpperCase();
+  };
 
+  const pickColor = (): string => {
+    let previousColor: string | null = null;
+    const colors = [
+      'bg-[#FF97B5]',
+      'bg-[#0B9EDE]',
+      'bg-[#0B9EDE]',
+      'bg-[#FF532D]',
+      'bg-[#FFC430]',
+      'bg-[#7FE548]',
+    ];
+
+    let availableColors = colors.filter((color) => color !== previousColor);
+
+    if (availableColors.length === 0) {
+      availableColors = [...colors];
+    }
+
+    const randomIndex = Math.floor(Math.random() * availableColors.length);
+    const selectedColor = availableColors[randomIndex];
+
+    previousColor = selectedColor;
+    return selectedColor;
+  };
   // const timeZoneCookie = cookies?.userDetails?.timeZoneSettings;
   const statusIsPending = opportunity.status === 'PENDING';
   const statusIsRejected = opportunity.status === 'REJECTED';
@@ -99,9 +126,8 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             {getFormattedLocalTime(opportunity.eventDate, cookies)}
           </span>
           <div className="text-[#24181B80] truncate text-base">
-            1001 Ocean Drive, Miami Beach, FL 33139
+            {opportunity.location[0]?.address}
           </div>
-          <div className="mt-1 text-[#1E1E1E80]">{opportunity.location}</div>
 
           {opportunity?.organization?.name && (
             <div className="flex items-center mt-5 gap-2 text-base">
@@ -113,6 +139,30 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                 />
               </div>
               {opportunity?.organization?.name}
+            </div>
+          )}
+          {pathname == '/activity' && (
+            <div className="flex gap-2 items-center text-base text-[#24181B]">
+              <div className="flex gap-2">
+                <div className="flex">
+                  {opportunity.volunteers.length &&
+                    opportunity.volunteers.map((vol: any) => (
+                      <div
+                        key={vol.id}
+                        className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]`}
+                      >
+                        {displayVolunteerName(
+                          vol?.username?.length
+                            ? vol?.username
+                            : vol?.fullName?.length
+                              ? vol?.fullName
+                              : vol?.email,
+                        )}
+                      </div>
+                    ))}
+                </div>
+                {opportunity.volunteers.length}/20 volunteers
+              </div>
             </div>
           )}
         </div>

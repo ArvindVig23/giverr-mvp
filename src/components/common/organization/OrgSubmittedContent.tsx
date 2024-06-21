@@ -5,7 +5,7 @@ import submittedImage from '/public/images/org-success.jpg';
 const OrgSubmittedContent = ({ orgName, setShowModal }: any) => {
   return (
     <div className="flex flex-col gap-5">
-      <div className="p-5 flex flex-col gap-5">
+      <div className="p-5 flex flex-col gap-5 submit-events">
         {' '}
         <h4 className="text-[#24181B] text-2xl font-medium">
           Your organization was submitted!
