@@ -4,6 +4,9 @@ import close from '/public/images/close.svg';
 import right from '/public/images/chevron-right-black.svg';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
 
 const CreateEventModal = ({
   heading,
@@ -13,6 +16,7 @@ const CreateEventModal = ({
 }: any) => {
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
   const router = useRouter();
+  const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const currentStep = parseInt(searchParams.get('step') || '1');
   useEffect(() => {
@@ -72,6 +76,7 @@ const CreateEventModal = ({
     router.push(`${window.location.pathname}${query}`);
     setShowModal(false);
     setIsEscPressed(false);
+    dispatch(updateSubmitOppDetails(submitEventState));
   };
   return (
     <>
