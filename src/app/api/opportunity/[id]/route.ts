@@ -13,6 +13,7 @@ import {
   limit,
   query,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
@@ -140,6 +141,76 @@ export async function GET(request: NextRequest, { params }: any) {
       false,
       null,
       'Error in fetching opportunitiy details',
+    );
+    return response;
+  }
+}
+
+// delete opportunity
+export async function DELETE(request: NextRequest, { params }: any) {
+  try {
+    const { id }: any = params;
+    const opportunitiesRef = collection(db, 'opportunities');
+    const docRef = doc(opportunitiesRef, id);
+    const docSnap = await getDoc(docRef);
+    const opportunityData: any = docSnap.data();
+    const loggedInUser = getUserDetailsCookie();
+    if (
+      !opportunityData ||
+      (!loggedInUser && opportunityData.status !== 'APPROVED')
+    ) {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Opportunity not found',
+      );
+      return response;
+    }
+
+    const batch = writeBatch(db);
+
+    // Delete the opportunity
+    batch.delete(docRef);
+
+    // Delete related records from opportunityLocations
+    const locationsQuery = query(
+      collection(db, 'opportunityLocations'),
+      where('opportunityId', '==', id),
+    );
+    const locationsSnapshot = await getDocs(locationsQuery);
+    locationsSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    // Delete related records from opportunityCommitment
+    const commitmentQuery = query(
+      collection(db, 'opportunityCommitment'),
+      where('opportunityId', '==', id),
+    );
+    const commitmentSnapshot = await getDocs(commitmentQuery);
+    commitmentSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+
+    // Commit the batch
+    await batch.commit();
+
+    const response = responseHandler(
+      200,
+      false,
+      null,
+      'Opportunity delete successfully',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in deleting Opportunity');
+
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in deleting Opportunity',
     );
     return response;
   }

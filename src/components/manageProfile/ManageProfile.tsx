@@ -15,6 +15,9 @@ import account from '/public/images/account.svg';
 import notifications from '/public/images/notifications.svg';
 import setting from '/public/images/settings.svg';
 import chevronRight from '/public/images/chevron-right-black.svg';
+import { compose } from '@reduxjs/toolkit';
+import { hocUserGuard } from '../hoc/HOCUserGuard';
+import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
 
 const ManageProfile: React.FC = () => {
   const [tabSlideClass, setTabSlideClass] = useState<boolean>(false);
@@ -254,4 +257,4 @@ const ManageProfile: React.FC = () => {
   );
 };
 
-export default ManageProfile;
+export default compose(hocUserGuard, hocOrganizationGuard)(ManageProfile);

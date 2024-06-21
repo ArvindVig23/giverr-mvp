@@ -62,3 +62,53 @@ export interface OpportunityDetails {
   updatedAt: string;
   volunteerRequirements: string;
 }
+
+export interface CreateOppDetails {
+  imageLink?: string;
+  createdBy: string;
+  name: string;
+  opportunityType: string;
+  description: string;
+  activities: string;
+  volunteerRequirements: string;
+  thumbnailFile?: File | null;
+  virtualLocationLink: '';
+  physicalLocations: Location[];
+  registrationType: string;
+  registrationWebsiteLink: string;
+  spots: string;
+  selectedDate: string | null;
+  type: string;
+  minHour: string;
+  maxHour: string;
+  startTime: string;
+  endTime: string;
+  endDate: string;
+  maxAccessStep?: number;
+  locationType: string;
+  organizationId: string;
+  frequency: string;
+  commitment: string;
+}
+
+export interface Location {
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  id?: string;
+}
+export interface CreateEventStep2Form {
+  physicalLocations: Location[];
+  locationType: string;
+  virtualLocationLink: string;
+}
+
+export interface SearchParam {
+  key: string;
+  value: string;
+}
+
+export interface OppIdProps {
+  oppId: string;
+}

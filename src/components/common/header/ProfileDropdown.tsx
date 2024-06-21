@@ -114,6 +114,11 @@ export default function ProfileDropdown() {
     }
     return 'o';
   };
+
+  const displayOrgName =
+    nameOrUserName().length > 16
+      ? nameOrUserName().slice(0, 16) + '...'
+      : nameOrUserName();
   return (
     <>
       {dropdownOpen && (
@@ -188,8 +193,8 @@ export default function ProfileDropdown() {
                       getInitialOfEmail(fullNameOrEmail())
                     )}
                   </div>{' '}
-                  {displayName}
-                  {!cookies.userDetails.loginAsOrg && (
+                  {displayOrgName}
+                  {cookies.userDetails.loginAsOrg && (
                     <div className="ml-auto">
                       <Image src={check} alt="check" />
                     </div>

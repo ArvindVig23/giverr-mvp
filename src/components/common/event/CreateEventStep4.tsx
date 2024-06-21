@@ -1,105 +1,90 @@
 'use client';
 import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-// import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
-import moment from 'moment-timezone';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-// import DatePicker from 'react-datepicker';
-// import { FileUploader } from 'react-drag-drop-files';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-// import chevronDown from '/public/images/chevron-down.svg';
-// import close from '/public/images/close.svg';
-// import Image from 'next/image';
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  getEventList,
-  getOrganizationList,
-  uploadFile,
-} from '@/services/frontend/opportunityService';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { uploadFile } from '@/services/frontend/opportunityService';
+import { CreateOppDetails } from '@/interface/opportunity';
 
-const CreateEventStep4 = ({ setShowModal }: any) => {
+const CreateEventStep4 = ({
+  setThankYouModal,
+}: {
+  setThankYouModal: Function;
+}) => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
+  console.log(eventDetails, 'eventDetails');
+
   const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
-  const [, setFileError] = useState<string>('');
-  const [, setThumbnailUrl] = useState<string>('');
   const [cookies] = useCookies();
   const {
     register,
     handleSubmit,
     watch,
-    reset,
     setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
-      registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
+      registrationType: 'GIVER_PLATFORM',
       registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
-      publishAs: cookies.userDetails.id,
+      spots: '',
     },
   });
   const radioValue = watch('registrationType');
-  const router = useRouter();
-  const eventList = useSelector((state: any) => state.eventListReducer);
-  const organizationList = useSelector(
-    (state: any) => state.organizationReducer,
-  );
+  const removeExtraPhysicalLocation = (arr: any) => {
+    return arr.filter((obj: any) => {
+      const allValuesZero = Object.values(obj).every((val) => val === 0);
+      return !allValuesZero;
+    });
+  };
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
-      setFileError('Please Select thumbnail');
-      return;
-    }
     dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
     try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message, 1000);
-      reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
+      const formData: CreateOppDetails = {
+        name: eventDetails.name,
+        description: eventDetails.description,
+        activities: eventDetails.activities,
+        volunteerRequirements: eventDetails.volunteerRequirements,
+        opportunityType: eventDetails.opportunityType,
+        createdBy: eventDetails.createdBy,
+        organizationId:
+          eventDetails.createdBy === cookies.userDetails.id
+            ? ''
+            : eventDetails.createdBy,
+        locationType: eventDetails.locationType,
+        virtualLocationLink: eventDetails.virtualLocationLink || '',
+        physicalLocations: removeExtraPhysicalLocation(
+          eventDetails.physicalLocations,
+        ),
+        selectedDate: eventDetails.selectedDate,
+        minHour: eventDetails.minHour,
+        maxHour: eventDetails.maxHour,
+        startTime: eventDetails.startTime,
+        endTime: eventDetails.endTime,
+        endDate: eventDetails.endDate,
+        frequency: eventDetails.frequency,
+        type: eventDetails.type,
+        registrationType: data.registrationType,
+        registrationWebsiteLink: data.registrationWebsiteLink,
+        spots: data.spots,
+        commitment: eventDetails.commitment,
+      };
+      if (eventDetails.thumbnailFile) {
+        const filePathName = `opportunities/${eventDetails.thumbnailFile.name}`;
+        const pathOfFile = await uploadFile(
+          eventDetails.thumbnailFile,
+          filePathName,
+        );
+        formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
+      }
+      await callApi('/opportunity', 'post', formData);
+      setThankYouModal(true);
       dispatch(setLoader(false));
-      router.push('/');
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
@@ -107,20 +92,15 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
     }
   };
 
-  useEffect(() => {
-    if (eventList.length === 0) {
-      getEventList(dispatch);
-    }
-    if (organizationList.length === 0) {
-      getOrganizationList(dispatch);
-    } // eslint-disable-next-line
-  }, []);
-
   // to set the website link value to empty
   useEffect(() => {
-    if (radioValue !== '3') {
+    if (radioValue !== 'WEBSITE_LINK') {
       setValue('registrationWebsiteLink', '');
-    } //eslint-disable-next-line
+    }
+    if (radioValue !== 'GIVER_PLATFORM') {
+      setValue('spots', '');
+    }
+    //eslint-disable-next-line
   }, [radioValue]);
 
   return (
@@ -130,7 +110,9 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
 
         <div className="w-full flex flex-col gap-5">
           <div className="w-full border border-[#E6E3D6] rounded-xl overflow-hidden">
-            <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer">
+            <label
+              className={`relative w-full  border-[#1E1E1E0D] inline-flex  p-4 d-flex items-center gap-5 cursor-pointer ${radioValue === 'GIVER_PLATFORM' ? '' : 'border-b'}`}
+            >
               <div>
                 <span className="text-[#24181B]">
                   Registration through Giverr platform
@@ -144,12 +126,40 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={1}
+                value={'GIVER_PLATFORM'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
+            {radioValue === 'GIVER_PLATFORM' ? (
+              <div className="px-5 pb-5 border-b border-[#1E1E1E0D] ">
+                <div className="relative w-full ">
+                  <input
+                    min={0}
+                    disabled={radioValue !== 'GIVER_PLATFORM'}
+                    {...register('spots', {
+                      required:
+                        radioValue === 'GIVER_PLATFORM'
+                          ? 'Spots are required.'
+                          : false,
+                    })}
+                    type="number"
+                    id="spots"
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Spots
+                  </label>
+                  {errors.spots && (
+                    <span className="text-red-500">
+                      {(errors.spots as { message: string }).message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : null}
 
             <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex p-4 d-flex items-center gap-5 cursor-pointer">
               <div>
@@ -161,7 +171,7 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={2}
+                value={'SHOW_UP'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
@@ -181,43 +191,47 @@ const CreateEventStep4 = ({ setShowModal }: any) => {
                 className="hidden peer"
                 name="registrationType"
                 type="radio"
-                value={3}
+                value={'WEBSITE_LINK'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
 
-            <div className="px-5 mb-5">
-              <div className="relative w-full ">
-                <input
-                  disabled={radioValue !== '3'}
-                  {...register('registrationWebsiteLink', {
-                    required:
-                      radioValue === '3' ? 'Website link is required.' : false,
-                    pattern: {
-                      value: websiteLinkRegex,
-                      message: 'Enter valid website link',
-                    },
-                  })}
-                  type="text"
-                  id="registrationWebsiteLink"
-                  className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                  placeholder=" "
-                />
-                <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                  Website link
-                </label>
-                {errors.registrationWebsiteLink && (
-                  <span className="text-red-500">
-                    {
-                      (errors.registrationWebsiteLink as { message: string })
-                        .message
-                    }
-                  </span>
-                )}
+            {radioValue === 'WEBSITE_LINK' ? (
+              <div className="px-5 mb-5">
+                <div className="relative w-full ">
+                  <input
+                    disabled={radioValue !== 'WEBSITE_LINK'}
+                    {...register('registrationWebsiteLink', {
+                      required:
+                        radioValue === 'WEBSITE_LINK'
+                          ? 'Website link is required.'
+                          : false,
+                      pattern: {
+                        value: websiteLinkRegex,
+                        message: 'Enter valid website link',
+                      },
+                    })}
+                    type="text"
+                    id="registrationWebsiteLink"
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Website link
+                  </label>
+                  {errors.registrationWebsiteLink && (
+                    <span className="text-red-500">
+                      {
+                        (errors.registrationWebsiteLink as { message: string })
+                          .message
+                      }
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>

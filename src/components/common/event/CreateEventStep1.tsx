@@ -1,8 +1,4 @@
 'use client';
-import callApi from '@/services/frontend/callApiService';
-import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
-import moment from 'moment-timezone';
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { FileUploader } from 'react-drag-drop-files';
@@ -11,101 +7,78 @@ import { useDispatch, useSelector } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 import close from '/public/images/close.svg';
 import Image from 'next/image';
-import 'react-datepicker/dist/react-datepicker.css';
 import {
   createFileUrl,
   getEventList,
   getOrganizationList,
-  uploadFile,
 } from '@/services/frontend/opportunityService';
 import { FILE_TYPES } from '@/constants/constants';
-import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { min4CharWithoutSpace } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { updateSearchParams } from '@/services/frontend/commonServices';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { SearchParam } from '@/interface/opportunity';
 
-const CreateEventStep1 = ({ setShowModal }: any) => {
+const CreateEventStep1 = () => {
   const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [fileError, setFileError] = useState<string>('');
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>(
+    eventDetails.thumbnailUrl || '',
+  );
   const [cookies] = useCookies();
+  console.log(thumbnailUrl, 'thumbnailUrl');
+
   const {
     register,
     handleSubmit,
-    watch,
-    reset,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
-      registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
-      registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
+      name: eventDetails.name,
+      description: eventDetails.description,
+      activities: eventDetails.activities,
+      volunteerRequirements: eventDetails.volunteerRequirements,
+      opportunityType: eventDetails.opportunityType,
       publishAs: cookies.userDetails.id,
     },
   });
-  const radioValue = watch('registrationType');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const eventList = useSelector((state: any) => state.eventListReducer);
   const organizationList = useSelector(
     (state: any) => state.organizationReducer,
   );
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
+    if (!eventDetails.thumbnailFile) {
       setFileError('Please Select thumbnail');
       return;
     }
-    dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
-    try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message, 1000);
-      reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
-      dispatch(setLoader(false));
-      router.push('/');
-    } catch (error: any) {
-      dispatch(setLoader(false));
-      const { message } = error.data;
-      sweetAlertToast('error', message);
-    }
+    const updatedSubmitEventState = {
+      ...eventDetails,
+      name: data.name,
+      description: data.description,
+      activities: data.activities,
+      volunteerRequirements: data.volunteerRequirements,
+      opportunityType: data.opportunityType,
+      createdBy: data.publishAs,
+      maxAccessStep: 2,
+      thumbnailUrl: thumbnailUrl,
+    };
+    dispatch(updateSubmitOppDetails(updatedSubmitEventState));
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '2',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
 
   useEffect(() => {
@@ -123,7 +96,11 @@ const CreateEventStep1 = ({ setShowModal }: any) => {
       setFileError('');
       const url = createFileUrl(file);
       setThumbnailUrl(url);
-      setThumbnailFile(file);
+      const updatedEventState = {
+        ...eventDetails,
+        thumbnailFile: file,
+      };
+      dispatch(updateSubmitOppDetails(updatedEventState));
     }
   };
 
@@ -131,7 +108,11 @@ const CreateEventStep1 = ({ setShowModal }: any) => {
   const removeImg = () => {
     setFileError('Please choose thumbnail file.');
     setThumbnailUrl('');
-    setThumbnailFile(null);
+    const updatedEventState = {
+      ...eventDetails,
+      thumbnailFile: null,
+    };
+    dispatch(updateSubmitOppDetails(updatedEventState));
   };
 
   // validate file
@@ -141,19 +122,16 @@ const CreateEventStep1 = ({ setShowModal }: any) => {
         'Unsupported format. Use PNG, JPG (under 5MB), 1068x646 pixels.',
       );
       setThumbnailUrl('');
-      setThumbnailFile(null);
+      const updatedEventState = {
+        ...eventDetails,
+        thumbnailFile: null,
+      };
+      dispatch(updateSubmitOppDetails(updatedEventState));
       return;
     } else {
       setFileError('');
     }
   };
-
-  // to set the website link value to empty
-  useEffect(() => {
-    if (radioValue !== '3') {
-      setValue('registrationWebsiteLink', '');
-    } //eslint-disable-next-line
-  }, [radioValue]);
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -275,150 +253,19 @@ const CreateEventStep1 = ({ setShowModal }: any) => {
             </span>
           )}
         </div>
-        {/* <div className="flex gap-5">
-                        <div className="relative w-full">
-                            <Controller
-                                name="eventDate"
-                                control={control}
-                                rules={{ required: 'Event Date is required' }}
-                                render={({ field }) => (
-                                    <DatePicker
-                                        className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                                        selected={field.value}
-                                        onChange={(date) =>
-                                            field.onChange(moment.utc(date).toISOString())
-                                        }
-                                        timeCaption="Time"
-                                        dateFormat="yyyy-MM-dd"
-                                        minDate={new Date()}
-                                    />
-                                )}
-                            />
-                            <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                                Date
-                            </label>
-                            {errors.eventDate && (
-                                <span className="text-red-500">
-                                    {(errors.eventDate as { message: string }).message}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="relative w-full">
-                            <Controller
-                                name="eventTime"
-                                control={control}
-                                rules={{ required: 'Event time is required' }}
-                                render={({ field }) => (
-                                    <DatePicker
-                                        className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                                        selected={field.value}
-                                        onChange={(date: any) => field.onChange(date)}
-                                        showTimeSelect
-                                        showTimeSelectOnly
-                                        timeIntervals={15}
-                                        timeCaption="Time"
-                                        dateFormat="h:mm aa"
-                                    />
-                                )}
-                            />
-                            <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                                Time
-                            </label>
-                            {errors.eventTime && (
-                                <span className="text-red-500">
-                                    {(errors.eventTime as { message: string }).message}
-                                </span>
-                            )}
-                        </div>
-                    </div> */}
 
         <div className="relative w-full mt-1">
           <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
             Category
           </label>
           <select
-            id="frequency"
-            {...register('frequency', {
-              required: 'Frequency is required.',
-            })}
-            className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          >
-            <option value="" selected disabled hidden>
-              Select
-            </option>
-            {eventFrequency.map((option: any, index: number) => (
-              <option key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <Image
-            src={chevronDown}
-            alt="arrow"
-            className="absolute top-[18px] right-4 pointer-events-none"
-          />
-          {errors.frequency && (
-            <span className="text-red-500">
-              {(errors.frequency as { message: string }).message}
-            </span>
-          )}
-        </div>
-
-        {/* <div className="relative w-full">
-                        <input
-                            {...register}
-                            type="text"
-                            id="location"
-                            className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                            placeholder=" "
-                        />
-                        <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                            Location (optional)
-                        </label>
-                    </div> */}
-
-        {/* <div className="relative w-full mt-1">
-          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
-            Organization name
-          </label>
-          <select
-            id="organizationId"
-            {...register('organizationId')}
-            className="block rounded-2xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-          >
-            <option value="" selected disabled hidden>
-              Select
-            </option>
-            {organizationList.length ? (
-              organizationList.map((option: any, index: number) => (
-                <option key={index} value={option.id}>
-                  {option.name}
-                </option>
-              ))
-            ) : (
-              <option disabled>No options to choose</option>
-            )}
-          </select>
-          <Image
-            src={chevronDown}
-            alt="arrow"
-            className="absolute top-[18px] right-4 pointer-events-none"
-          />
-        </div> */}
-
-        <div className="relative w-full mt-1">
-          <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
-            Event type
-          </label>
-          <select
             {...register('opportunityType', {
-              required: 'Event type is required',
+              required: 'Event Category is required',
             })}
             className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
           >
             <option value="" selected disabled hidden>
-              Event type
+              Category
             </option>
             {eventList.length > 0 ? (
               eventList.map((option: any, index: any) => (
@@ -497,7 +344,7 @@ const CreateEventStep1 = ({ setShowModal }: any) => {
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >
-          Save Changes
+          Continue to location
         </button>
       </div>
     </form>

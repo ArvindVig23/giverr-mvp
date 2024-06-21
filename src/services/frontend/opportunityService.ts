@@ -96,3 +96,12 @@ export const getUserOpportunityList = async (
     throw error.data;
   }
 };
+
+export const deleteOppApi = async (oppId: string) => {
+  try {
+    const response: any = await callApi(`/opportunity/${oppId}`, 'delete');
+    return response;
+  } catch (error: any) {
+    throw error.data;
+  }
+};

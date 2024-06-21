@@ -1,121 +1,111 @@
 'use client';
-import callApi from '@/services/frontend/callApiService';
-import { sweetAlertToast } from '@/services/frontend/toastServices';
-// import { eventFrequency } from '@/utils/staticDropdown/dropdownOptions';
-import moment from 'moment-timezone';
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-// import DatePicker from 'react-datepicker';
-// import { FileUploader } from 'react-drag-drop-files';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
-// import close from '/public/images/close.svg';
 import Image from 'next/image';
-import 'react-datepicker/dist/react-datepicker.css';
-import {
-  getEventList,
-  getOrganizationList,
-  uploadFile,
-} from '@/services/frontend/opportunityService';
-// import { FILE_TYPES } from '@/constants/constants';
-import { setLoader } from '@/app/redux/slices/loaderSlice';
-// import { min4CharWithoutSpace, websiteLinkRegex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { websiteLinkRegex } from '@/utils/regex';
+import { CreateEventStep2Form, SearchParam } from '@/interface/opportunity';
+import { updateSearchParams } from '@/services/frontend/commonServices';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 
-const CreateEventStep2 = ({ setShowModal }: any) => {
-  const dispatch = useDispatch();
-  const [thumbnailFile, setThumbnailFile] = useState<any>('');
-  const [, setFileError] = useState<string>('');
-  const [, setThumbnailUrl] = useState<string>('');
-  const [cookies] = useCookies();
-  const { handleSubmit, watch, reset, setValue } = useForm({
+const CreateEventStep2 = () => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    getValues,
+    setError,
+    trigger,
+    formState: { errors },
+  } = useForm<CreateEventStep2Form>({
     defaultValues: {
-      name: '',
-      registrationType: '1',
-      frequency: '',
-      description: '',
-      activities: '',
-      volunteerRequirements: '',
-      registrationWebsiteLink: '',
-      organizationId: '',
-      opportunityType: '',
-      eventDate: null,
-      eventTime: null,
-      location: '',
-      publishAs: cookies.userDetails.id,
+      locationType: eventDetails.locationType,
+      virtualLocationLink: eventDetails.virtualLocationLink || '',
+      physicalLocations: eventDetails.physicalLocations,
     },
   });
-  const radioValue = watch('registrationType');
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'physicalLocations',
+  });
+  const dispatch = useDispatch();
+  const locationType = watch('locationType');
   const router = useRouter();
-  const eventList = useSelector((state: any) => state.eventListReducer);
-  const organizationList = useSelector(
-    (state: any) => state.organizationReducer,
-  );
-  //   handle submit for create event
-  const handleFormSubmit = async (data: any) => {
-    if (!thumbnailFile) {
-      setFileError('Please Select thumbnail');
-      return;
-    }
-    dispatch(setLoader(true));
-    if (thumbnailFile) {
-      const filePathName = `opportunities/${thumbnailFile.name}`;
-      const pathOfFile = await uploadFile(thumbnailFile, filePathName);
-      data.imageLink = `${pathOfFile}?alt=media`;
-    }
-    data.createdBy = cookies.userDetails.id;
-    const eventDate = data.eventDate;
-    const eventTime = data.eventTime;
-    // 1. Convert eventDate to UTC
-    const utcEventDate = moment.tz(eventDate, moment.locale()).utc();
-    // 2. Convert eventTime to UTC
-    const utcEventTime = moment.tz(eventTime, moment.locale()).utc();
-    // 3. Replace the time in utcEventDate with the time of utcEventTime
-    utcEventDate.set({
-      hour: utcEventTime.hour(),
-      minute: utcEventTime.minute(),
-      second: utcEventTime.second(),
-      millisecond: utcEventTime.millisecond(),
-    });
-    const eventDateTime = utcEventDate.format();
-    data.eventDate = eventDateTime;
-    if (data.publishAs !== cookies.userDetails.id) {
-      data.organizationId = data.publishAs;
-    }
-    try {
-      const response = await callApi('/opportunity', 'post', data);
-      const { message } = response;
-      sweetAlertToast('success', message, 1000);
-      reset();
-      setShowModal(false);
-      setFileError('');
-      setThumbnailUrl('');
-      setThumbnailFile(null);
-      dispatch(setLoader(false));
-      router.push('/');
-    } catch (error: any) {
-      dispatch(setLoader(false));
-      const { message } = error.data;
-      sweetAlertToast('error', message);
-    }
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const handleFormSubmit = async (data: CreateEventStep2Form) => {
+    const updatedSubmitEventState = {
+      ...eventDetails,
+      virtualLocationLink: data.virtualLocationLink,
+      physicalLocations: data.physicalLocations,
+      locationType: data.locationType,
+    };
+    dispatch(updateSubmitOppDetails(updatedSubmitEventState));
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '3',
+      },
+      {
+        key: 'commitment',
+        value: eventDetails.type ? eventDetails.type : 'ONETIME',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
   };
 
   useEffect(() => {
-    if (eventList.length === 0) {
-      getEventList(dispatch);
+    if (locationType === 'PHYSICAL') {
+      setValue('virtualLocationLink', '');
     }
-    if (organizationList.length === 0) {
-      getOrganizationList(dispatch);
-    } // eslint-disable-next-line
-  }, []);
+    if (locationType === 'VIRTUAL') {
+      setValue('physicalLocations', [
+        { address: '', city: '', province: '', postalCode: '' },
+      ]);
+    }
+    //eslint-disable-next-line
+  }, [locationType]);
 
-  // to set the website link value to empty
-  useEffect(() => {
-    if (radioValue !== '3') {
-      setValue('registrationWebsiteLink', '');
-    } //eslint-disable-next-line
-  }, [radioValue]);
+  const addLocation = () => {
+    const lastLocation = getValues('physicalLocations').slice(-1)[0];
+    let hasError = false;
+
+    if (!lastLocation.address) {
+      setError(`physicalLocations.${fields.length - 1}.address`, {
+        type: 'manual',
+        message: 'Address is required',
+      });
+      hasError = true;
+    }
+    if (!lastLocation.city) {
+      setError(`physicalLocations.${fields.length - 1}.city`, {
+        type: 'manual',
+        message: 'City is required',
+      });
+      hasError = true;
+    }
+    if (!lastLocation.postalCode) {
+      setError(`physicalLocations.${fields.length - 1}.postalCode`, {
+        type: 'manual',
+        message: 'Postal Code is required',
+      });
+      hasError = true;
+    }
+
+    if (!hasError) {
+      append({ address: '', city: '', province: '', postalCode: '' });
+    }
+  };
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -129,81 +119,129 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
 
             <label className="relative cursor-pointer">
               <input
+                {...register('locationType')}
                 className="hidden peer"
-                name="registrationType"
+                name="locationType"
                 type="radio"
-                value={2}
+                value={'PHYSICAL'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
           </div>
-
-          <div className="flex flex-col gap-5">
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                Address
-              </label>
-            </div>
-
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                City
-              </label>
-            </div>
-
-            <div className="relative w-full mt-1">
-              <label className="text-xs text-[#24181B80] absolute top-[10px] left-5 z-10">
-                Province (optional)
-              </label>
-              <select className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
-                <option>Province</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-              </select>
-              <Image
-                src={chevronDown}
-                alt="arrow"
-                className="absolute top-[17px] right-4 pointer-events-none"
-              />
-            </div>
-
-            <div className="relative w-full">
-              <input
-                type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                placeholder=" "
-              />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
-                Postal Code
-              </label>
-            </div>
-
-            <hr className="border-[#E6E3D6]"></hr>
-
+          {locationType === 'PHYSICAL' &&
+            fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="physical-location-group flex flex-col gap-5"
+              >
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.address`, {
+                      required:
+                        locationType === 'PHYSICAL'
+                          ? 'Address is required'
+                          : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.address`),
+                    })}
+                    type="text"
+                    id={`address-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Address
+                  </label>
+                  {errors.physicalLocations?.[index]?.address && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.address?.message}
+                    </span>
+                  )}
+                </div>
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.city`, {
+                      required:
+                        locationType === 'PHYSICAL'
+                          ? 'City is required'
+                          : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.city`),
+                    })}
+                    type="text"
+                    id={`city-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    City
+                  </label>
+                  {errors.physicalLocations?.[index]?.city && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.city?.message}
+                    </span>
+                  )}
+                </div>
+                <div className="relative w-full mt-1">
+                  <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                    Province (optional)
+                  </label>
+                  <select
+                    {...register(`physicalLocations.${index}.province`)}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  >
+                    <option>Province</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                  </select>
+                  <Image
+                    src={chevronDown}
+                    alt="arrow"
+                    className="absolute top-[17px] right-4 pointer-events-none"
+                  />
+                </div>
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.postalCode`, {
+                      required:
+                        locationType === 'PHYSICAL'
+                          ? 'Postal Code is required'
+                          : false,
+                      onChange: () =>
+                        trigger(`physicalLocations.${index}.postalCode`),
+                    })}
+                    type="number"
+                    id={`postalCode-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+                    Postal Code
+                  </label>
+                  {errors.physicalLocations?.[index]?.postalCode && (
+                    <span className="error-message text-red-500">
+                      {errors.physicalLocations[index]?.postalCode?.message}
+                    </span>
+                  )}
+                </div>
+                {index !== fields.length - 1 && (
+                  <hr className="border-[#E6E3D6] realtive -left-[1.5px] -right-[1.5px]"></hr>
+                )}
+              </div>
+            ))}
+          {locationType === 'PHYSICAL' && (
             <button
-              className="cursro-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
+              onClick={addLocation}
+              disabled={fields.length >= 10}
+              className="cursor-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
               type="button"
-              onClick={() => setShowModal(false)}
             >
               Add location
             </button>
-          </div>
+          )}
         </div>
         <div className="border border-[#E6E3D6] border-t-0 rounded-b-xl p-5 flex flex-col gap-5">
           <div className="flex justify-between items-center">
@@ -211,10 +249,11 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
 
             <label className="relative cursor-pointer">
               <input
+                {...register('locationType')}
                 className="hidden peer"
-                name="registrationType"
+                name="locationType"
                 type="radio"
-                value={2}
+                value={'VIRTUAL'}
               />
               <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
@@ -222,17 +261,34 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
             </label>
           </div>
 
-          <div className="flex flex-col gap-5 hidden">
+          <div
+            className={`flex flex-col gap-5 ${locationType === 'VIRTUAL' ? '' : 'hidden'}`}
+          >
             <div className="relative w-full">
               <input
+                {...register('virtualLocationLink', {
+                  required:
+                    locationType === 'VIRTUAL'
+                      ? 'Virtual location link is required.'
+                      : false,
+                  pattern: {
+                    value: websiteLinkRegex,
+                    message: 'Enter valid location link',
+                  },
+                })}
                 type="text"
-                id="name"
-                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                id="virtualLocationLink"
+                className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                 placeholder=" "
               />
-              <label className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
+              <label className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                 Link
               </label>
+              {errors.virtualLocationLink && (
+                <span className="text-red-500">
+                  {(errors.virtualLocationLink as { message: string }).message}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -248,4 +304,5 @@ const CreateEventStep2 = ({ setShowModal }: any) => {
     </form>
   );
 };
+
 export default CreateEventStep2;

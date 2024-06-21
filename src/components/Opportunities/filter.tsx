@@ -35,15 +35,6 @@ const Filter = (props: {
   const [page, setPage] = useState<number>(0);
   const loading = useSelector((state: any) => state.loaderReducer);
   const handleRangeChange = (range: any) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (range.startDate && range.endDate) {
-      params.set('startDate', range.startDate);
-      params.set('endDate', range.endDate);
-    } else {
-      if (params.has('startDate')) params.set('startDate', '');
-      if (params.has('endDate')) params.set('endDate', '');
-    }
-    router.push(pathname + '?' + params.toString());
     setDateRange(range);
   };
 
@@ -73,6 +64,15 @@ const Filter = (props: {
   }, [dateRange.startDate, dateRange.endDate]);
 
   const handleShowRecords = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (dateRange.startDate && dateRange.endDate) {
+      params.set('startDate', dateRange.startDate);
+      params.set('endDate', dateRange.endDate);
+    } else {
+      if (params.has('startDate')) params.set('startDate', '');
+      if (params.has('endDate')) params.set('endDate', '');
+    }
+    router.push(pathname + '?' + params.toString());
     dispatch(updateOpportunityList(opportunities));
     setCurrentPage(page);
     setTotalRecords(totalCount);

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import close from '/public/images/close.svg';
 import right from '/public/images/chevron-right-black.svg';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const CreateEventModal = ({
   heading,
@@ -11,6 +12,9 @@ const CreateEventModal = ({
   children,
 }: any) => {
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentStep = parseInt(searchParams.get('step') || '1');
   useEffect(() => {
     if (showModal) {
       document.body.style.overflow = 'hidden';
@@ -45,10 +49,30 @@ const CreateEventModal = ({
 
   useEffect(() => {
     if (isEscPressed && showModal) {
-      setShowModal(false);
-      setIsEscPressed(false);
+      closeModal();
     } // eslint-disable-next-line
   }, [isEscPressed, showModal]);
+
+  const updateStep = (increment: number) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    const newStep = Math.min(Math.max(1, currentStep + increment), 4);
+    current.set('step', newStep.toString());
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    router.push(`${window.location.pathname}${query}`);
+  };
+
+  const closeModal = () => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.delete('submit-event');
+    current.delete('step');
+    current.delete('commitment');
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    router.push(`${window.location.pathname}${query}`);
+    setShowModal(false);
+    setIsEscPressed(false);
+  };
   return (
     <>
       {showModal && (
@@ -59,12 +83,16 @@ const CreateEventModal = ({
                 <div className="gap-5 flex items-center ">
                   <div className="flex gap-2.5">
                     <button
+                      onClick={() => currentStep !== 1 && updateStep(-1)}
+                      disabled={currentStep === 1}
                       type="button"
                       className="w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]"
                     >
                       <Image className="rotate-180" src={right} alt=""></Image>
                     </button>
                     <button
+                      disabled={currentStep === 4}
+                      onClick={() => updateStep(1)}
                       type="button"
                       className="w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]"
                     >
@@ -74,10 +102,12 @@ const CreateEventModal = ({
                   <h3 className="text-base font-semibold">{heading}</h3>
                 </div>
                 <div className="flex gap-5 items-center">
-                  <span className="text-[#24181B80] font-medium">1 of 4</span>
+                  <span className="text-[#24181B80] font-medium">
+                    {currentStep} of 4
+                  </span>
                   <button
                     className="w-[30px] h-[30px] ml-auto bg-[#24181B] hover:bg-[#454545] border-0 text-white rounded-[10px] flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={() => setShowModal(false)}
+                    onClick={closeModal}
                   >
                     <Image src={close} alt="close" />
                   </button>
