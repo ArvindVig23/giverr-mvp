@@ -36,7 +36,7 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
     }
   };
   return (
-    <div>
+    <>
       <div className="relative p-5 pt-2.5 flex-auto flex flex-col gap-5 overflow-auto">
         <p className="text-base text-[#24181B] m-0">
           By deleting your account you and your organization will lose access to
@@ -81,7 +81,7 @@ const DeleteAcoountModalContent = ({ setShowModal }: any) => {
           Permanently delete account
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

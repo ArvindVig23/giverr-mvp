@@ -11,8 +11,9 @@ import ManageOrgMemebers from './ManageOrgMemebers';
 import Image from 'next/image';
 import herobeige from '/public/images/herobeige.png';
 import account from '/public/images/account.svg';
-// import members from '/public/images/members.svg';
 import notifications from '/public/images/notifications.svg';
+import myOrganization from '/public/images/my-organization.svg';
+import organizations from '/public/images/organizations.svg';
 import setting from '/public/images/settings.svg';
 import chevronRight from '/public/images/chevron-right-black.svg';
 import { compose } from '@reduxjs/toolkit';
@@ -47,10 +48,10 @@ const ManageProfile: React.FC = () => {
         <div className="flex flex-wrap">
           <div className="w-full flex flex-wrap md:flex-nowrap ">
             <ul
-              className="flex flex-col md:px-0 mb-0 list-none max-w-full md:max-w-[252px] w-full py-4 md:py-5 md:border-r border-[#E6E3D6] md:min-h-[800px] relative before:absolute before:h-6 before:w-1 before:border-r before:border-[#E6E3D6] before:content:[''] before:-bottom-[24px] before:-right-[1px] z-[1]"
+              className={`flex flex-col md:px-0 mb-0 list-none max-w-full md:max-w-[252px] w-full py-4 pb-10 md:py-5 md:border-r border-[#E6E3D6] md:min-h-[800px] relative before:absolute before:h-6 before:w-1 before:border-r before:border-[#E6E3D6] before:content:[''] before:-bottom-[24px] before:-right-[1px] z-[1]   ${tabSlideClass ? 'tab-open' : ''}`}
               role="tablist"
             >
-              <li className="mb-8 block md:hidden">
+              <li className="mb-8 block md:hidden px-4 md:px-0">
                 <div className="rounded-2xl bg-[#EDEBE3] overflow-hidden">
                   <div className="rounded-2xl overflow-hidden">
                     <Image className="w-full" src={herobeige} alt="" />
@@ -98,12 +99,15 @@ const ManageProfile: React.FC = () => {
                   />
                 </Link>
               </li>
+              <li className="px-4 my-3 md:hidden block">
+                <hr className="border-[#E6E3D6]"></hr>
+              </li>
               {!cookies.userDetails.loginAsOrg ? (
-                <li className="md:block hidden">
+                <li className="">
                   <Link
                     onClick={toogleShowSliderClass}
                     className={
-                      'px-[11px] py-2.5 md:p-[5px] w-full  gap-2 text-base inline-flex justify-between text-[#24181B] md:text-[#24181B80] hover:text-[#24181B] ' +
+                      'px-4 py-2.5 md:p-[5px] w-full gap-2 text-base inline-flex justify-between text-[#24181B] md:text-[#24181B80] hover:text-[#24181B] ' +
                       (eventsTab === 'my-organizations'
                         ? '!text-[#24181B]'
                         : '')
@@ -112,12 +116,25 @@ const ManageProfile: React.FC = () => {
                     href="/profile?tab=my-organizations"
                     role="tablist"
                   >
-                    My Organization
+                    <div className="flex gap-2">
+                      <Image
+                        className="md:hidden block"
+                        src={myOrganization}
+                        alt="my-organization"
+                      />{' '}
+                      My Organization
+                    </div>
+                    <Image
+                      className="md:hidden block"
+                      src={chevronRight}
+                      alt="right-icon"
+                    />
                   </Link>
                 </li>
               ) : null}
+
               {!cookies.userDetails.loginAsOrg ? (
-                <li className="md:block hidden">
+                <li className="">
                   <Link
                     onClick={toogleShowSliderClass}
                     className={
@@ -128,7 +145,19 @@ const ManageProfile: React.FC = () => {
                     href="/profile?tab=organizations"
                     role="tablist"
                   >
-                    Organizations
+                    <div className="flex gap-2">
+                      <Image
+                        className="md:hidden block"
+                        src={organizations}
+                        alt="organizations"
+                      />{' '}
+                      Organizations
+                    </div>
+                    <Image
+                      className="md:hidden block"
+                      src={chevronRight}
+                      alt="right-icon"
+                    />
                   </Link>
                 </li>
               ) : null}
@@ -161,7 +190,9 @@ const ManageProfile: React.FC = () => {
                   </Link>
                 </li>
               ) : null}
-
+              <li className="px-4 my-3 md:hidden block">
+                <hr className="border-[#E6E3D6]"></hr>
+              </li>
               <li className="">
                 <Link
                   onClick={toogleShowSliderClass}
@@ -219,13 +250,23 @@ const ManageProfile: React.FC = () => {
             <div
               className={`relative flex flex-col min-w-0 break-words w-full  ${tabSlideClass ? 'tab-close show-tab' : 'tab-close'}`}
             >
-              <div className="px-5 py-5 flex-auto">
+              <div className="md:p-5 md:p-4 flex-auto">
                 <div className="tab-content tab-space">
                   <div
                     id="link1"
                     className={`${eventsTab === 'accounts' ? 'accounts accounts-active' : 'accounts'} `}
                   >
-                    <button onClick={toogleBodyOverFlow}>Back</button>
+                    <button
+                      className="absolute md:hidden block p-3 top-[14px]  left-2.5"
+                      onClick={toogleBodyOverFlow}
+                    >
+                      {' '}
+                      <Image
+                        className="rotate-180"
+                        src={chevronRight}
+                        alt=""
+                      />{' '}
+                    </button>
                     {eventsTab === 'accounts' ? <Accounts /> : null}
                   </div>
                   <div id="link2">

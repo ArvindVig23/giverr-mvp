@@ -141,7 +141,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
           <div className="max-h-modal overflow-auto flex gap-5 w-full flex-col  p-5">
             <h4 className="text-[#24181B] text-2xl font-medium">Details</h4>
             <div className="inline-flex w-full items-center rounded-2xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
-              <div className="w-20 h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
+              <div className="w-16 h-16 min-w-16 md:w-20 md:min-w-20 md:h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
                 {avatarLink || userOrgDetails?.avatarLink ? (
                   <Image
                     width={20}

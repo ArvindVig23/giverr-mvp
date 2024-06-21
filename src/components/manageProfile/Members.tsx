@@ -124,201 +124,214 @@ const Members = () => {
     }
   }, [searchMember, userOrgDetails]);
   return (
-    <div className="flex w-full flex-col gap-5">
-      <h4 className="w-full text-[#24181B] text-2xl font-medium">Members</h4>
-      <div className="flex gap-5">
-        <div className="relative flex-1">
-          <input
-            autoComplete="off"
-            id="searchMember"
-            {...register('searchMember')}
-            type="text"
-            className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-2xl focus:outline-none px-10"
-            placeholder="Search Members"
-          />
-          <Image
-            className="absolute top-3 left-3 pointer-events-none"
-            src={lightSearch}
-            alt="search"
-          />
+    <>
+      <h3 className="member-heading text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left md:hidden block border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
+        Members
+      </h3>
+      <div className="flex w-full flex-col gap-4 md:gap-5 relative px-4 md:p-0 member-box">
+        <h4 className="w-full text-[#24181B] text-[20px] md:text-2xl font-medium">
+          Members
+        </h4>
+        <div className="flex gap-4 md:gap-5 mt-3 md:mt-0">
+          <div className="relative flex-1">
+            <input
+              autoComplete="off"
+              id="searchMember"
+              {...register('searchMember')}
+              type="text"
+              className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-2xl focus:outline-none px-10"
+              placeholder="Search Members"
+            />
+            <Image
+              className="absolute top-3 left-3 pointer-events-none"
+              src={lightSearch}
+              alt="search"
+            />
+          </div>
+
+          <button
+            onClick={() => setInviteMembersModal(true)}
+            className="invite-button text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038] absolute top-[-6px] md:top-0 right-4 md:right-0  md:relative"
+          >
+            Invite member
+          </button>
         </div>
-
-        <button
-          onClick={() => setInviteMembersModal(true)}
-          className="text-base h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
-        >
-          Invite member
-        </button>
-      </div>
-      {filteredMembers?.length > 0 ? (
-        filteredMembers.map(
-          (member: any, index: number) =>
-            member.userDetails && (
-              <div
-                className="flex p-3 items-center gap-3 border-b border-[#E6E3D6]"
-                key={index}
-              >
-                <MemberOption member={member.userDetails} />
-                <div className="ml-auto flex gap-2 items-center">
-                  {cookies.userDetails.id === member.userId ? (
-                    <Tooltip
-                      content={
-                        'Owners can manage events and member permissions.'
-                      }
-                    >
-                      <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                        Owner
-                      </span>
-                    </Tooltip>
-                  ) : member.status === 'PENDING' ? (
+        <div>
+          {filteredMembers?.length > 0 ? (
+            filteredMembers.map(
+              (member: any, index: number) =>
+                member.userDetails && (
+                  <div
+                    className={`flex px-0 py-3 md:p-3 items-center gap-3 border-[#E6E3D6] ${index !== filteredMembers.length - 1 ? 'border-b' : ''}`}
+                    key={index}
+                  >
+                    <MemberOption member={member.userDetails} />
                     <div className="ml-auto flex gap-2 items-center">
-                      <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full">
-                        Invite pending
-                      </span>
-                      <Menu
-                        as="div"
-                        className="relative inline-block text-left"
-                      >
-                        <div>
-                          <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
-                            <Image src={more} alt="more" />
-                          </Menu.Button>
-                        </div>
-
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
+                      {cookies.userDetails.id === member.userId ? (
+                        <Tooltip
+                          content={
+                            'Owners can manage events and member permissions.'
+                          }
                         >
-                          <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
-                            <div className="p-1.5 flex flex-col gap-0.5">
-                              <Menu.Item>
-                                <button
-                                  onClick={() =>
-                                    resendInvite(member.id, member.userId)
-                                  }
-                                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                                >
-                                  Resend invite
-                                </button>
-                              </Menu.Item>
+                          <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[60px]">
+                            Owner
+                          </span>
+                        </Tooltip>
+                      ) : member.status === 'PENDING' ? (
+                        <div className="ml-auto flex gap-2 items-center">
+                          <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[109px]">
+                            Invite pending
+                          </span>
+                          <Menu
+                            as="div"
+                            className="relative inline-block text-left"
+                          >
+                            <div>
+                              <Menu.Button className="inline-flex justify-center gap-x-1.5 rounded-[10px] hover:bg-[#1E1E1E1A] min-w-[30px] w-[30px] h-[30px] items-center text-base font-medium ">
+                                <Image src={more} alt="more" />
+                              </Menu.Button>
+                            </div>
 
-                              <Menu.Item>
-                                {showCopiedTooltip ? (
-                                  <Tooltip content={'copied'}>
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right !rounded-xl border !border-[#E6E3D6] !ring-0 bg-white !shadow-none">
+                                <div className="p-1.5 flex flex-col gap-0.5">
+                                  <Menu.Item>
                                     <button
                                       onClick={() =>
-                                        copyToClipboard(
-                                          member.inviteToken.token,
-                                        )
+                                        resendInvite(member.id, member.userId)
                                       }
                                       className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
                                     >
-                                      Copy invite link
+                                      Resend invite
                                     </button>
-                                  </Tooltip>
-                                ) : (
-                                  <button
-                                    onClick={() =>
-                                      copyToClipboard(member.inviteToken.token)
-                                    }
-                                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
-                                  >
-                                    Copy invite link
-                                  </button>
-                                )}
-                              </Menu.Item>
+                                  </Menu.Item>
 
-                              <Menu.Item>
-                                <button
-                                  onClick={() => revokeInviteModal(member.id)}
-                                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg text-[#F93742]"
-                                >
-                                  Revoke invite
-                                </button>
-                              </Menu.Item>
-                            </div>
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
+                                  <Menu.Item>
+                                    {showCopiedTooltip ? (
+                                      <Tooltip content={'copied'}>
+                                        <button
+                                          onClick={() =>
+                                            copyToClipboard(
+                                              member.inviteToken.token,
+                                            )
+                                          }
+                                          className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                                        >
+                                          Copy invite link
+                                        </button>
+                                      </Tooltip>
+                                    ) : (
+                                      <button
+                                        onClick={() =>
+                                          copyToClipboard(
+                                            member.inviteToken.token,
+                                          )
+                                        }
+                                        className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg"
+                                      >
+                                        Copy invite link
+                                      </button>
+                                    )}
+                                  </Menu.Item>
+
+                                  <Menu.Item>
+                                    <button
+                                      onClick={() =>
+                                        revokeInviteModal(member.id)
+                                      }
+                                      className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg text-[#F93742]"
+                                    >
+                                      Revoke invite
+                                    </button>
+                                  </Menu.Item>
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </Menu>
+                        </div>
+                      ) : member.status === 'APPROVED' ? (
+                        <div className="ml-auto flex gap-2 items-center">
+                          <Tooltip
+                            content={'Members currently have no permissions.'}
+                          >
+                            <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
+                              Member
+                            </span>
+                          </Tooltip>
+                          <button
+                            onClick={() => openDeleteModal(member.id)}
+                            className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                          >
+                            <Image
+                              className="brightness-0 group-hover:brightness-0 "
+                              src={deleteIcon}
+                              alt="delete"
+                            />
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
-                  ) : member.status === 'APPROVED' ? (
-                    <div className="ml-auto flex gap-2 items-center">
-                      <Tooltip
-                        content={'Members currently have no permissions.'}
-                      >
-                        <span className="inline-flex  text-[#24181B80] border border-[#E6E3D6] py-1 px-2 text-sm gap-2.5 rounded-full">
-                          Member
-                        </span>
-                      </Tooltip>
-                      <button
-                        onClick={() => openDeleteModal(member.id)}
-                        className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                      >
-                        <Image
-                          className="brightness-0 group-hover:brightness-0 "
-                          src={deleteIcon}
-                          alt="delete"
-                        />
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
+                  </div>
+                ),
+            )
+          ) : (
+            <span>No Members found</span>
+          )}
+        </div>
+        {showDeleteMemberModal ? (
+          <CommonDeleteModal
+            heading={'Remove Member'}
+            showModal={showDeleteMemberModal}
+            setShowModal={setShowDeleteMemberModal}
+          >
+            <div>
+              <div className="relative p-5 pt-0 flex-auto flex flex-col gap-5 overflow-auto">
+                <p className="text-base text-[#24181B] m-0">
+                  {isRevokeInvite
+                    ? 'Are you sure you want to revoke this invite?'
+                    : 'Are you sure you want to remove this member?'}
+                </p>
               </div>
-            ),
-        )
-      ) : (
-        <span>No Members found</span>
-      )}
-      {showDeleteMemberModal ? (
-        <CommonDeleteModal
-          heading={'Remove Member'}
-          showModal={showDeleteMemberModal}
-          setShowModal={setShowDeleteMemberModal}
-        >
-          <div>
-            <div className="relative p-5 pt-0 flex-auto flex flex-col gap-5 overflow-auto">
-              <p className="text-base text-[#24181B] m-0">
-                {isRevokeInvite
-                  ? 'Are you sure you want to revoke this invite?'
-                  : 'Are you sure you want to remove this member?'}
-              </p>
+              {/*footer*/}
+              <div className="flex items-center justify-end p-5  rounded-b gap-2.5">
+                <button
+                  className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#24181B]  border border-[#E6E3D6] hover:bg-[#EDEBE3]"
+                  type="button"
+                  onClick={() => setShowDeleteMemberModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]`}
+                  type="button"
+                  onClick={() => removeMember()}
+                >
+                  {isRevokeInvite ? 'Revoke Invite' : 'Remove'}
+                </button>
+              </div>
             </div>
-            {/*footer*/}
-            <div className="flex items-center justify-end p-5  rounded-b gap-2.5">
-              <button
-                className="text-base  w-3/6 h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#24181B]  border border-[#E6E3D6] hover:bg-[#EDEBE3]"
-                type="button"
-                onClick={() => setShowDeleteMemberModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className={`text-base w-3/6 h-11 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]`}
-                type="button"
-                onClick={() => removeMember()}
-              >
-                {isRevokeInvite ? 'Revoke Invite' : 'Remove'}
-              </button>
-            </div>
-          </div>
-        </CommonDeleteModal>
-      ) : null}
-      {inviteMembersModal ? (
-        <CommonModal
-          heading={'Invite Members'}
-          subHeading={'Send Invite to'}
-          showModal={inviteMembersModal}
-          setShowModal={setInviteMembersModal}
-        >
-          <ModalInvite setShowModal={setInviteMembersModal} />
-        </CommonModal>
-      ) : null}
-    </div>
+          </CommonDeleteModal>
+        ) : null}
+        {inviteMembersModal ? (
+          <CommonModal
+            heading={'Invite Members'}
+            subHeading={'Send Invite to'}
+            showModal={inviteMembersModal}
+            setShowModal={setInviteMembersModal}
+          >
+            <ModalInvite setShowModal={setInviteMembersModal} />
+          </CommonModal>
+        ) : null}
+      </div>
+    </>
   );
 };
 
