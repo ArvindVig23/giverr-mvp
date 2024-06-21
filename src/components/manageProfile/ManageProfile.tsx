@@ -33,12 +33,12 @@ const ManageProfile: React.FC = () => {
   }, []);
 
   const toogleShowSliderClass = () => {
-    document.body.classList.add('overflow-hidden');
+    document.body.classList.add('mobile-overflow');
     setTabSlideClass(true);
   };
 
   const toogleBodyOverFlow = () => {
-    document.body.classList.remove('overflow-hidden');
+    document.body.classList.remove('mobile-overflow');
     setTabSlideClass(false);
   };
   return (
