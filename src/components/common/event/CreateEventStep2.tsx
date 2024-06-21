@@ -24,7 +24,7 @@ const CreateEventStep2 = () => {
     formState: { errors },
   } = useForm<CreateEventStep2Form>({
     defaultValues: {
-      locationType: eventDetails.locationType,
+      locationType: eventDetails.virtualLocationLink ? 'VIRTUAL' : 'PHYSICAL',
       virtualLocationLink: eventDetails.virtualLocationLink || '',
       physicalLocations: eventDetails.physicalLocations,
     },
