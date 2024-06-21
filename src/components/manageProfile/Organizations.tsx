@@ -72,89 +72,91 @@ const Organizations: React.FC = () => {
   };
   return (
     <div className="w-full">
-      <h3 className="text-[32px] font-medium mb-5 mt-0 leading-[36px]">
+      <h3 className="text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left   border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
         Organizations
       </h3>
-      {memberOfOrgList.length > 0 ? (
-        <>
-          <p className="m-0 text-[#24181B80]">
-            You are a member of the following organizations
-          </p>
-          {memberOfOrgList.map((orgMember) => (
-            <div
-              key={orgMember.id}
-              className="inline-flex w-full items-center gap-4 justify-between mt-5"
-            >
-              <DisplayMemberItem orgMember={orgMember} />
-              <button
-                onClick={() => leave(orgMember.id, orgMember.organizationId)}
-                type="button"
-                className="text-base h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
-              >
-                Leave
-              </button>
-            </div>
-          ))}
-        </>
-      ) : (
-        <div className="flex w-full justify-between gap-3 items-center">
-          <div>
-            <span className="text-[#24181B] text-base">
-              There are no organizations to display
-            </span>
-            <p className="text-[#24181B80] text-base m-0">
-              You are not a member of any organization{' '}
+      <div className="px-4 md:p-0">
+        {memberOfOrgList.length > 0 ? (
+          <>
+            <p className="m-0 text-[#24181B80]">
+              You are a member of the following organizations
             </p>
-          </div>
-        </div>
-      )}
-
-      <hr className="my-[60px] border-[#E6E3D6]"></hr>
-
-      {pendingRequests.length > 0 ? (
-        <div className="flex w-full flex-col gap-5">
-          <h4 className="w-full text-[#24181B] text-2xl font-medium">
-            Pending invites
-          </h4>
-          <div className="w-full">
-            {pendingRequests.map((pendingRequest) => (
+            {memberOfOrgList.map((orgMember) => (
               <div
-                key={pendingRequest.id}
-                className="flex py-5 items-center gap-3 border-b border-[#E6E3D6]"
+                key={orgMember.id}
+                className="inline-flex w-full items-center gap-4 justify-between mt-5"
               >
-                <DisplayMemberItem orgMember={pendingRequest} />
-
-                <div className="ml-auto flex gap-2 items-center">
-                  <button
-                    onClick={() => {
-                      updateInviteStatus(
-                        'REJECTED',
-                        pendingRequest.tokenDetails.token,
-                      );
-                    }}
-                    type="button"
-                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
-                  >
-                    Ignore
-                  </button>
-                  <button
-                    onClick={() => {
-                      updateInviteStatus(
-                        'APPROVED',
-                        pendingRequest.tokenDetails.token,
-                      );
-                    }}
-                    type="button"
-                    className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
-                  >
-                    Accept
-                  </button>
-                </div>
+                <DisplayMemberItem orgMember={orgMember} />
+                <button
+                  onClick={() => leave(orgMember.id, orgMember.organizationId)}
+                  type="button"
+                  className="text-base h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                >
+                  Leave
+                </button>
               </div>
             ))}
+          </>
+        ) : (
+          <div className="flex w-full justify-center md:justify-between gap-3 items-center text-center md:text-left fit-screen">
+            <div>
+              <span className="text-[#24181B] text-base">
+                There are no organizations to display
+              </span>
+              <p className="text-[#24181B80] text-base m-0">
+                You are not a member of any organization{' '}
+              </p>
+            </div>
           </div>
-        </div>
-      ) : null}
+        )}
+
+        <hr className="my-[40px] md:my-[60px] border-[#E6E3D6] md:block hidden"></hr>
+
+        {pendingRequests.length > 0 ? (
+          <div className="flex w-full flex-col gap-5">
+            <h4 className="w-full text-[#24181B] text-2xl font-medium">
+              Pending invites
+            </h4>
+            <div className="w-full">
+              {pendingRequests.map((pendingRequest) => (
+                <div
+                  key={pendingRequest.id}
+                  className="flex py-5 items-center gap-3 border-b border-[#E6E3D6]"
+                >
+                  <DisplayMemberItem orgMember={pendingRequest} />
+
+                  <div className="ml-auto flex gap-2 items-center">
+                    <button
+                      onClick={() => {
+                        updateInviteStatus(
+                          'REJECTED',
+                          pendingRequest.tokenDetails.token,
+                        );
+                      }}
+                      type="button"
+                      className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
+                    >
+                      Ignore
+                    </button>
+                    <button
+                      onClick={() => {
+                        updateInviteStatus(
+                          'APPROVED',
+                          pendingRequest.tokenDetails.token,
+                        );
+                      }}
+                      type="button"
+                      className="text-base  w-full h-11 px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
+                    >
+                      Accept
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

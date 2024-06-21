@@ -5,6 +5,7 @@ import shape2 from '/public/images/shape2.jpg';
 import shape3 from '/public/images/shape3.jpg';
 import plus from '/public/images/plus.svg';
 import minus from '/public/images/minus.svg';
+import herobg from '/public/images/hero-mb.svg';
 import Link from 'next/link';
 
 import {
@@ -18,14 +19,23 @@ const About: React.FC = () => {
   return (
     <div className="w-full">
       <div className="px-5 relative mb-5  overflow-hidden px-5">
-        <Image src={aboutbg} className="rounded-xl w-full" alt="bg" />
-        <div className="absolute left-0 top-0 right-0 bottom-0 flex items-center justify-center text-center flex-col gap-8">
-          <h1 className=" flex items-center justify-center text-center w-full text-[70px] leading-[70px] text-[#F5F3EF] font-Boris">
+        <Image
+          src={aboutbg}
+          className="rounded-xl w-full hidden md:block"
+          alt="bg"
+        />
+        <Image
+          src={herobg}
+          className="rounded-xl w-full block md:hidden"
+          alt="bg"
+        />
+        <div className="absolute left-0 top-0 right-0 bottom-0 flex items-center justify-center text-center flex-col gap-8 p-6 md:p-0">
+          <h1 className=" flex items-center justify-center text-center w-full text-[40px] leading-[40px]  lg:text-[70px] lg:leading-[70px] text-[#F5F3EF] font-Boris">
             {' '}
             Empowering <br></br> volunteers, <br></br>connecting <br></br>
             communities
           </h1>
-          <p className="text-[#FFF3D6] max-w-[500px] text-[20px]">
+          <p className="text-[#FFF3D6] md:max-w-[500px] text-base md:text-[20px]">
             Giverr is a volunteer-run project that is dedicated to increasing
             accessibility to volunteering opportunities. Our mission is simple
             yet profound: to empower the world to volunteer.{' '}
@@ -33,18 +43,18 @@ const About: React.FC = () => {
 
           <Link
             href="#"
-            className="font-Boris  text-base text-[#FFF3D6] border border-[#FFF3D6] flex items-center justify-center pt-1.5 px-2.5 rounded-full w-[85px] h-[33px] text-center absolute bottom-[88px]"
+            className="font-Boris  text-base text-[#FFF3D6] border border-[#FFF3D6] flex items-center justify-center pt-1.5 px-2.5 rounded-full w-[85px] h-[33px] text-center absolute bottom-[30px] .lg:bottom-[88px]"
           >
             SCROLL
           </Link>
         </div>
       </div>
-      <div className="py-24 pb-0 px-5">
+      <div className="py-14 md:py-24 pb-0 px-5">
         <div className="max-w-[484px] w-full m-auto text-center ">
           <label className="font-medium text-base text-[#24181B] border border-[#24181B] rounded-full px-2.5 py-1 ">
             FOR WHO
           </label>
-          <h1 className="text-[#24181B] text-[48px] font-medium leading-[57px] mt-5">
+          <h1 className="text-[#24181B] text-[32px] md:text-[48px] font-medium leading-[32px] md:leading-[57px] mt-5">
             Connecting everyone on a single platform
           </h1>
           <p className="text-[#24181B80] text-base mt-5">
@@ -99,11 +109,11 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-[484px] w-full m-auto text-center  py-24">
+        <div className="max-w-[484px] w-full m-auto text-center py-24 pt-16 md:py-24">
           <label className="font-medium text-base text-[#24181B] border border-[#24181B] rounded-full px-2.5 py-1 ">
             Faq
           </label>
-          <h1 className="text-[#24181B] text-[48px] font-medium leading-[57px] mt-5 mb-[60px]">
+          <h1 className="text-[#24181B] text-[32px] md:text-[48px] font-medium leading-[32px] leading-[57px] mt-5 mb-[60px]">
             Frequently asked questions
           </h1>
 
@@ -212,10 +222,10 @@ const About: React.FC = () => {
         </div>
       </div>
 
-      <div className="pb-24 px-5">
+      <div className="pb-8 md:pb-24 px-5">
         <div className="max-w-[985px] w-full m-auto">
-          <div className=" w-full bg-[#1A5EF4] inline-flex gap-5 rounded-3xl p-[120px] flex-col justify-center items-center">
-            <h2 className="max-w-[550px] text-[45px] text-[#F5F3EF] font-medium tex-center">
+          <div className=" w-full bg-[#1A5EF4] inline-flex gap-5 rounded-3xl px-4 py-[70px] md:p-[80px] lg:p-[120px] flex-col justify-center items-center">
+            <h2 className="max-w-[550px] text-[32px] leading-[32px] md:text-[45px] text-[#F5F3EF] font-medium text-center">
               Join us in making a change
             </h2>
             <p className="max-w-[484px] text-base text-[#F5F3EF] font-medium text-center">

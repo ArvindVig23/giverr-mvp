@@ -2,10 +2,10 @@ import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
-import mobleftshape from '/public/images/left-mob-shape.svg';
-import mobrightshape from '/public/images/right-mob-shape.svg';
-import leftshape from '/public/images/left-shapes.svg';
-import rightshape from '/public/images/right-shapes.svg';
+import mobleftshape from '/public/images/left-mob-shape1.svg';
+import mobrightshape from '/public/images/right-mob-shape1.svg';
+import leftshape from '/public/images/login-left-shape-1.svg';
+import rightshape from '/public/images/login-right-shape-1.svg';
 import back from '/public/images/arrow-left.svg';
 import { useForm } from 'react-hook-form';
 import { emailregex } from '@/utils/regex';
@@ -42,7 +42,7 @@ const ForgotStep1: React.FC<{
     <div className="flex w-full overflow-auto min-h-screen items-center justify-center flex-col bg-[#F5F3EF] relative p-6 pb-32 md:pb-0">
       {/* Use next/image component */}
       <div className="w-full text-center  absolute top-16 ">
-        <Link className="inline-block" href="#">
+        <Link className="inline-block" href="/">
           <Image className="h-8 md:h-auto" src={logo} alt="Logo" />
         </Link>
       </div>

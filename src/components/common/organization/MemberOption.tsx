@@ -6,8 +6,8 @@ import React from 'react';
 
 const MemberOption = ({ member }: any) => {
   return (
-    <div className="flex gap-2.5 items-center">
-      <div className="w-8 h-8 flex items-center justify-center font-medium overflow-hidden rounded-full text-xs bg-[#BAA388] text-[#24181B]">
+    <div className="flex gap-2.5 items-center w-2/4		 md:w-full">
+      <div className="w-8 h-8 min-w-8 flex items-center justify-center font-medium overflow-hidden rounded-full text-xs bg-[#BAA388] text-[#24181B]">
         {member.profileUrl ? (
           <Image
             width={40}
@@ -21,11 +21,13 @@ const MemberOption = ({ member }: any) => {
         )}
       </div>
 
-      <div className="text-base">
+      <div className="text-base truncate ">
         {member.fullName ? member.fullName : member.email}
       </div>
       {member.username ? (
-        <span className="text-[#24181B80]">@{member.username}</span>
+        <span className="text-[#24181B80] md:block hidden">
+          @{member.username}
+        </span>
       ) : null}
     </div>
   );
