@@ -5,14 +5,14 @@ import dummy from '/public/images/dummy.jpg';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
-import location from '/public/images/location.svg';
+import locationImage from '/public/images/location.svg';
 import leftSHape from '/public/images/bottom-left-shapes.svg';
 import LongArrow from '/public/images/long-arrow-left.svg';
 import arrow from '/public/images/chevron-right.svg';
 // import volunteer from '/public/images/volunteer.svg';
 import RightSHape from '/public/images/bottom-right-shapes.svg';
-// import virutalLeft from '/public/images/virtual-left.svg';
-// import virutalRight from '/public/images/virtual-right.svg';
+import virutalLeft from '/public/images/virtual-left.svg';
+import virutalRight from '/public/images/virtual-right.svg';
 import Link from 'next/link';
 import {
   encodeUrl,
@@ -36,7 +36,7 @@ import CreateEventStep3 from '../common/event/CreateEventStep3';
 import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
 import CreateEventModal from '../common/modal/CreateEventModal';
-import { SearchParam } from '@/interface/opportunity';
+import { Location, SearchParam } from '@/interface/opportunity';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
@@ -251,8 +251,11 @@ const OpportunitiesDetail = ({
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={time} alt="time" />
                 </div>
-                {opportunityDetail?.eventDate &&
-                  getFormattedLocalTime(opportunityDetail?.eventDate, cookies)}
+                {opportunityDetail?.selectedDate &&
+                  getFormattedLocalTime(
+                    opportunityDetail?.selectedDate,
+                    cookies,
+                  )}
               </div>
 
               {opportunityDetail?.opportunityData && (
@@ -271,14 +274,22 @@ const OpportunitiesDetail = ({
                 </div>
               )}
 
-              {opportunityDetail?.location && (
-                <div className="flex gap-2 items-center text-base text-[#24181B]">
-                  <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
-                    <Image src={location} alt="location" />
-                  </div>
-                  {opportunityDetail?.location && opportunityDetail?.location}
-                </div>
-              )}
+              {opportunityDetail?.physicalLocations &&
+              opportunityDetail?.physicalLocations.length > 0
+                ? opportunityDetail?.physicalLocations.map(
+                    (location: Location) => (
+                      <div
+                        key={location.id}
+                        className="flex gap-2 items-center text-base text-[#24181B]"
+                      >
+                        <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                          <Image src={locationImage} alt="location" />
+                        </div>
+                        {`${location.address}, ${location.city}, ${location.postalCode}`}
+                      </div>
+                    ),
+                  )
+                : null}
 
               {/* <div className="flex gap-2 items-center text-base text-[#24181B]">
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
@@ -298,16 +309,33 @@ const OpportunitiesDetail = ({
               </div> */}
             </div>
 
-            <div className="w-full rounded-xl overflow-hidden my-10">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.39567879181!2d-80.31185925136802!3d25.782538872180993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C%20FL%2C%20USA!5e0!3m2!1sen!2sin!4v1715846922507!5m2!1sen!2sin"
-                width="100%"
-                height="450"
-                loading="lazy"
-              ></iframe>
-            </div>
+            {opportunityDetail?.physicalLocations.length ? (
+              <div className="w-full rounded-xl overflow-hidden my-10">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.39567879181!2d-80.31185925136802!3d25.782538872180993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C%20FL%2C%20USA!5e0!3m2!1sen!2sin!4v1715846922507!5m2!1sen!2sin"
+                  width="100%"
+                  height="450"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            ) : null}
 
-            {opportunityDetail?.registrationType === '3' ? (
+            {opportunityDetail?.virtualLocationLink ? (
+              <div className="flex justify-between items-center">
+                <p>{opportunityDetail?.virtualLocationLink}</p>
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      opportunityDetail?.virtualLocationLink,
+                    )
+                  }
+                  className="cursor-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
+                  type="button"
+                >
+                  Copy
+                </button>{' '}
+              </div>
+            ) : opportunityDetail?.registrationType === 'WEBSITE_LINK' ? (
               <div className={`flex flex-col gap-5  `}>
                 <div className="flex flex-col gap-1">
                   <h4 className="text-base text-[#24181B] font-medium">
@@ -438,7 +466,7 @@ const OpportunitiesDetail = ({
           alt=""
         ></Image>
 
-        {/* <Image
+        <Image
           className="absolute left-0 bottom-0"
           src={virutalLeft}
           alt=""
@@ -447,7 +475,7 @@ const OpportunitiesDetail = ({
           className="absolute right-0 bottom-0"
           src={virutalRight}
           alt=""
-        ></Image> */}
+        ></Image>
       </div>
       {showDeleteModal && (
         <CommonDeleteModal

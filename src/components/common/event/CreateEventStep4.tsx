@@ -28,8 +28,8 @@ const CreateEventStep4 = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      registrationType: 'GIVER_PLATFORM',
-      registrationWebsiteLink: '',
+      registrationType: eventDetails.registrationType || 'GIVER_PLATFORM',
+      registrationWebsiteLink: eventDetails.registrationWebsiteLink || '',
       spots: eventDetails.spots || '',
     },
   });
@@ -306,7 +306,7 @@ const CreateEventStep4 = ({
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >
-          Submit event
+          {eventDetails.id ? 'Update' : 'Submit'} event
         </button>
       </div>
     </form>
