@@ -11,27 +11,33 @@ import React, { useEffect, useState } from 'react';
 
 const OpportunityDetailPage: React.FC = ({ params }: any) => {
   const [loading, setLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [opportunityDetail, setOpportunityDetail] =
     useState<OpportunityDetail>();
   const [similarInterest, setSimilarInterest] = useState<SimilarInterest[]>([]);
   const router = useRouter();
+  const [updateSuccess, setUpdateSuccess] = useState<boolean>(true);
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const getList = await getOpportunityDetails(params.id);
-        const { opportunityData, similarOpportunity } = getList;
-        setOpportunityDetail(opportunityData);
-        setSimilarInterest(similarOpportunity);
-        setLoading(false);
-      } catch (error: any) {
-        const { message } = error;
-        sweetAlertToast('error', message);
-        router.push('/');
-        setLoading(false);
-      }
-    })(); //eslint-disable-next-line
-  }, []);
+    if (updateSuccess) {
+      (async () => {
+        try {
+          setLoading(true);
+          const getList = await getOpportunityDetails(params.id);
+          const { opportunityData, similarOpportunity } = getList;
+          setOpportunityDetail(opportunityData);
+          setSimilarInterest(similarOpportunity);
+          setLoading(false);
+          setUpdateSuccess(false);
+          setShowEditModal(false);
+        } catch (error: any) {
+          const { message } = error;
+          sweetAlertToast('error', message);
+          router.push('/');
+          setLoading(false);
+        }
+      })();
+    } //eslint-disable-next-line
+  }, [updateSuccess]);
   const cards = Array(5).fill(null);
   return (
     <div>
@@ -41,6 +47,9 @@ const OpportunityDetailPage: React.FC = ({ params }: any) => {
         <OpportunitiesDetail
           opportunityDetail={opportunityDetail}
           oppId={params.id}
+          showEditModal={showEditModal}
+          setShowEditModal={setShowEditModal}
+          setUpdateSuccess={setUpdateSuccess}
         />
       )}
 

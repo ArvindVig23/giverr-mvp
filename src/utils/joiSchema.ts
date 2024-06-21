@@ -58,10 +58,6 @@ export const eventValidationSchema = Joi.object({
     'string.required': 'opportunityType is required',
   }),
 
-  organizationId: Joi.string().allow(null, '').required().messages({
-    'string.base': 'Opportunty Name must be a string',
-    'string.required': 'Opportunty Name is required',
-  }),
   imageLink: Joi.string().allow(null, '').required().messages({
     'string.base': 'Image url must be a string',
     'string.required': 'Image url is required',

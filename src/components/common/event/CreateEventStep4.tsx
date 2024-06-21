@@ -14,10 +14,9 @@ import { CreateOppDetails } from '@/interface/opportunity';
 const CreateEventStep4 = ({
   setThankYouModal,
 }: {
-  setThankYouModal: Function;
+  setThankYouModal?: Function;
 }) => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
-  console.log(eventDetails, 'eventDetails');
 
   const dispatch = useDispatch();
   const [cookies] = useCookies();
@@ -31,25 +30,26 @@ const CreateEventStep4 = ({
     defaultValues: {
       registrationType: 'GIVER_PLATFORM',
       registrationWebsiteLink: '',
-      spots: '',
+      spots: eventDetails.spots || '',
     },
   });
   const radioValue = watch('registrationType');
   const removeExtraPhysicalLocation = (arr: any) => {
     return arr.filter((obj: any) => {
-      const allValuesZero = Object.values(obj).every((val) => val === 0);
+      const allValuesZero = Object.values(obj).every((val) => !val);
       return !allValuesZero;
     });
   };
   //   handle submit for create event
-  const handleFormSubmit = async (data: any) => {
+  const createOpportunity = async (data: any) => {
     dispatch(setLoader(true));
     try {
+      //  created this form data to avoid unessary fields to go in payload like file
       const formData: CreateOppDetails = {
         name: eventDetails.name,
         description: eventDetails.description,
-        activities: eventDetails.activities,
-        volunteerRequirements: eventDetails.volunteerRequirements,
+        activities: eventDetails.activities || '',
+        volunteerRequirements: eventDetails.volunteerRequirements || '',
         opportunityType: eventDetails.opportunityType,
         createdBy: eventDetails.createdBy,
         organizationId:
@@ -83,7 +83,7 @@ const CreateEventStep4 = ({
         formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
       }
       await callApi('/opportunity', 'post', formData);
-      setThankYouModal(true);
+      setThankYouModal && setThankYouModal(true);
       dispatch(setLoader(false));
     } catch (error: any) {
       dispatch(setLoader(false));
@@ -103,8 +103,74 @@ const CreateEventStep4 = ({
     //eslint-disable-next-line
   }, [radioValue]);
 
+  const submitEvent = (data: any) => {
+    if (eventDetails.id) {
+      updateDetails(data);
+    } else {
+      createOpportunity(data);
+    }
+  };
+
+  const updateDetails = async (data: any) => {
+    try {
+      dispatch(setLoader(true));
+      const formData: CreateOppDetails = {
+        name: eventDetails.name,
+        description: eventDetails.description,
+        activities: eventDetails.activities || '',
+        volunteerRequirements: eventDetails.volunteerRequirements || '',
+        opportunityType: eventDetails.opportunityType,
+        createdBy: eventDetails.createdBy,
+        organizationId:
+          eventDetails.createdBy === cookies.userDetails.id
+            ? ''
+            : eventDetails.createdBy,
+        locationType: eventDetails.locationType,
+        virtualLocationLink: eventDetails.virtualLocationLink || '',
+        physicalLocations: removeExtraPhysicalLocation(
+          eventDetails.physicalLocations,
+        ),
+        selectedDate: eventDetails.selectedDate,
+        minHour: eventDetails.minHour,
+        maxHour: eventDetails.maxHour,
+        startTime: eventDetails.startTime,
+        endTime: eventDetails.endTime,
+        endDate: eventDetails.endDate,
+        frequency: eventDetails.frequency,
+        type: eventDetails.type,
+        registrationType: data.registrationType,
+        registrationWebsiteLink: data.registrationWebsiteLink,
+        spots: data.spots,
+        commitment: eventDetails.commitment,
+        commitmentId: eventDetails.commitmentId,
+        imageLink: eventDetails.imageLink,
+      };
+      if (eventDetails.thumbnailFile) {
+        const filePathName = `opportunities/${eventDetails.thumbnailFile.name}`;
+        const pathOfFile = await uploadFile(
+          eventDetails.thumbnailFile,
+          filePathName,
+        );
+        formData.imageLink = pathOfFile ? `${pathOfFile}?alt=media` : '';
+      }
+
+      const response = await callApi(
+        `/opportunity/${eventDetails.id}`,
+        'put',
+        formData,
+      );
+      const { message } = response;
+      sweetAlertToast('success', message);
+      dispatch(setLoader(false));
+      setThankYouModal && setThankYouModal(true);
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error.data;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
-    <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
+    <form className="" onSubmit={handleSubmit(submitEvent)}>
       <div className="flex gap-5 w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
         <h4 className="text-[#24181B] text-2xl font-medium">Event Details</h4>
 

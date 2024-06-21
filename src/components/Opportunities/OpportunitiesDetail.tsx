@@ -17,6 +17,7 @@ import Link from 'next/link';
 import {
   encodeUrl,
   getFormattedLocalTime,
+  updateSearchParams,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { useCookies } from 'react-cookie';
@@ -24,15 +25,33 @@ import {
   deleteOppApi,
   volunteerOpportunity,
 } from '@/services/frontend/opportunityService';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import CreateEventStep4 from '../common/event/CreateEventStep4';
+import CreateEventStep3 from '../common/event/CreateEventStep3';
+import CreateEventStep2 from '../common/event/CreateEventStep2';
+import CreateEventStep1 from '../common/event/CreateEventStep1';
+import CreateEventModal from '../common/modal/CreateEventModal';
+import { SearchParam } from '@/interface/opportunity';
 
-const OpportunitiesDetail = ({ opportunityDetail, oppId }: any) => {
+const OpportunitiesDetail = ({
+  opportunityDetail,
+  oppId,
+  showEditModal,
+  setShowEditModal,
+  setUpdateSuccess,
+}: any) => {
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const step = searchParams.get('step') || '1';
   const [successfullContent, setSuccessfullContent] = useState<boolean>(false);
+
   const handleJoin = async () => {
     try {
       dispatch(setLoader(true));
@@ -61,11 +80,30 @@ const OpportunitiesDetail = ({ opportunityDetail, oppId }: any) => {
       sweetAlertToast('error', message);
     }
   };
+
+  const openEditOppModal = () => {
+    setShowEditModal(true);
+    const updateOppDetails = {
+      ...opportunityDetail,
+    };
+    dispatch(updateSubmitOppDetails(updateOppDetails));
+    const params: SearchParam[] = [
+      {
+        key: 'submit-event',
+        value: 'true',
+      },
+      {
+        key: 'step',
+        value: '1',
+      },
+    ];
+    updateSearchParams(searchParams, pathname, router, params);
+  };
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
         <Link
-          href="#"
+          href="/"
           className="absolute top-5 z-10 left-5 w-[30px] h-[30px] md:w-11 md:h-11 md:min-w-11 border border-[#24181B] md:border-[#E6E3D6] rounded-xl flex justify-center items-center hover:!bg-[#24181B] bg-[#24181B] md:bg-transparent md:hover:!bg-[#EDEBE3]"
         >
           <Image
@@ -86,9 +124,13 @@ const OpportunitiesDetail = ({ opportunityDetail, oppId }: any) => {
                 <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
                 Pre-Entry
               </div>
-              {cookies.userDetails?.id === opportunityDetail?.createdBy ? (
+              {opportunityDetail?.createdBy === cookies.userDetails?.id ||
+              opportunityDetail?.createdBy === userOrgDetails.id ? (
                 <div className="relative cursor-pointer">
-                  <button className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0">
+                  <button
+                    onClick={openEditOppModal}
+                    className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0"
+                  >
                     Edit
                   </button>
                   <button
@@ -438,6 +480,23 @@ const OpportunitiesDetail = ({ opportunityDetail, oppId }: any) => {
             </div>
           </div>
         </CommonDeleteModal>
+      )}
+      {showEditModal && (
+        <CreateEventModal
+          heading={'Update event'}
+          showModal={showEditModal}
+          setShowModal={setShowEditModal}
+        >
+          {step === '1' ? (
+            <CreateEventStep1 />
+          ) : step === '2' ? (
+            <CreateEventStep2 />
+          ) : step === '3' ? (
+            <CreateEventStep3 />
+          ) : step === '4' ? (
+            <CreateEventStep4 setThankYouModal={setUpdateSuccess} />
+          ) : null}
+        </CreateEventModal>
       )}
     </div>
   );

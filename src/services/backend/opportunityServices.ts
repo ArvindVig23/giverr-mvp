@@ -81,7 +81,7 @@ export const createOpportunity = async (opportunity: any) => {
 
     // Add opportunity commitment document
     const opportunityCommitmentRef = doc(
-      collection(db, 'opportuntyCommitment'),
+      collection(db, 'opportunityCommitment'),
     );
     batch.set(opportunityCommitmentRef, {
       opportunityId: opportunityRef.id,
@@ -245,7 +245,7 @@ export const sendEmailForApproval = async (
     let userEmail = '';
     if (createdBy) {
       const user = await getUserDetailsById(createdBy);
-      userEmail = user.email;
+      userEmail = user ? user.email : '';
     }
     const emailData = {
       name,
@@ -259,7 +259,7 @@ export const sendEmailForApproval = async (
       volunteerRequirements,
       organizationName: org,
       oppType,
-      email: userEmail,
+      email: userEmail || org,
     };
     const template = compileEmailTemplate(approveEvent, emailData);
     await sendEmail(
@@ -441,5 +441,56 @@ export const sendEmailsForSubscribeCatUser = async (
     );
   } catch (error) {
     console.log('Error in sending email to subscribed users');
+  }
+};
+
+// get locations list on the basis of organization id
+
+export const getOpportunityLocationsByOppId = async (oppId: string) => {
+  const opportunityLocationsRef = collection(db, 'opportunityLocations');
+  const opportunityQuery = query(
+    opportunityLocationsRef,
+    where('opportunityId', '==', oppId),
+  );
+  try {
+    const querySnapshot = await getDocs(opportunityQuery);
+    if (querySnapshot.empty) {
+      return []; // Return an empty array if no documents found
+    } else {
+      const opportunityLocations: any = [];
+      querySnapshot.forEach((doc) => {
+        opportunityLocations.push({ ...doc.data(), id: doc.id });
+      });
+      return opportunityLocations;
+    }
+  } catch (error) {
+    console.log(error, 'Error in fetching the opp locations');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error fetching the opportunity data',
+    );
+    throw response;
+  }
+};
+
+//  get opportunity commitment by id
+export const getOppCommitmentByOppId = async (oppId: string) => {
+  const oppCommitmentRef = collection(db, 'opportunityCommitment');
+  const oppCommitmentQuery = query(
+    oppCommitmentRef,
+    where('opportunityId', '==', oppId),
+  );
+  const commitmentDetails = await getDocs(oppCommitmentQuery);
+
+  if (commitmentDetails.size === 0) {
+    return null;
+  } else {
+    const commitment = commitmentDetails.docs[0];
+    return {
+      commitmentId: commitment.id,
+      ...commitment.data(),
+    };
   }
 };

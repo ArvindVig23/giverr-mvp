@@ -64,6 +64,7 @@ export interface OpportunityDetails {
 }
 
 export interface CreateOppDetails {
+  id?: string;
   imageLink?: string;
   createdBy: string;
   name: string;
@@ -89,6 +90,7 @@ export interface CreateOppDetails {
   organizationId: string;
   frequency: string;
   commitment: string;
+  commitmentId?: string;
 }
 
 export interface Location {

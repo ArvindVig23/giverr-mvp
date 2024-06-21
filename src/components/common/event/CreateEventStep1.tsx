@@ -12,22 +12,28 @@ import {
   getEventList,
   getOrganizationList,
 } from '@/services/frontend/opportunityService';
-import { FILE_TYPES } from '@/constants/constants';
+import {
+  FILE_TYPES,
+  FIRESTORE_IMG_BASE_START_URL,
+} from '@/constants/constants';
 import { min4CharWithoutSpace } from '@/utils/regex';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { updateSearchParams } from '@/services/frontend/commonServices';
+import {
+  encodeUrl,
+  updateSearchParams,
+} from '@/services/frontend/commonServices';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { SearchParam } from '@/interface/opportunity';
 
 const CreateEventStep1 = () => {
   const dispatch = useDispatch();
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [fileError, setFileError] = useState<string>('');
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(
     eventDetails.thumbnailUrl || '',
   );
   const [cookies] = useCookies();
-  console.log(thumbnailUrl, 'thumbnailUrl');
 
   const {
     register,
@@ -35,12 +41,15 @@ const CreateEventStep1 = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      thumbnail: eventDetails.thumbnailFile,
       name: eventDetails.name,
       description: eventDetails.description,
       activities: eventDetails.activities,
       volunteerRequirements: eventDetails.volunteerRequirements,
       opportunityType: eventDetails.opportunityType,
-      publishAs: cookies.userDetails.id,
+      createdBy: eventDetails.organizationId
+        ? eventDetails.organizationId
+        : eventDetails.createdBy || cookies.userDetails.id,
     },
   });
   const router = useRouter();
@@ -52,7 +61,12 @@ const CreateEventStep1 = () => {
   );
   //   handle submit for create event
   const handleFormSubmit = async (data: any) => {
-    if (!eventDetails.thumbnailFile) {
+    if (
+      (!eventDetails.thumbnailFile && !eventDetails.id) ||
+      (eventDetails.id &&
+        !eventDetails.imageLink &&
+        !eventDetails.thumbnailFile)
+    ) {
       setFileError('Please Select thumbnail');
       return;
     }
@@ -63,9 +77,13 @@ const CreateEventStep1 = () => {
       activities: data.activities,
       volunteerRequirements: data.volunteerRequirements,
       opportunityType: data.opportunityType,
-      createdBy: data.publishAs,
+      createdBy: data.createdBy,
       maxAccessStep: 2,
       thumbnailUrl: thumbnailUrl,
+      organizationId:
+        data.createdBy.createdBy === cookies.userDetails.id
+          ? ''
+          : data.createdBy,
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     const params: SearchParam[] = [
@@ -111,6 +129,7 @@ const CreateEventStep1 = () => {
     const updatedEventState = {
       ...eventDetails,
       thumbnailFile: null,
+      imageLink: '',
     };
     dispatch(updateSubmitOppDetails(updatedEventState));
   };
@@ -144,21 +163,19 @@ const CreateEventStep1 = () => {
             </div>
             <div className="relative w-full">
               <select
-                id="publishAs"
-                {...register('publishAs')}
+                id="createdBy"
+                {...register('createdBy')}
                 className="block w-full px-5 text-base text-[#24181B] bg-[#EDEBE3] border-none rounded-2xl focus:outline-none focus:ring-0 focus:border-[#E60054] appearance-none peer"
               >
-                <option value={cookies.userDetails.id} selected disabled hidden>
+                <option value={cookies.userDetails.id}>
                   {cookies.userDetails.fullName
                     ? cookies.userDetails.fullName
                     : cookies.userDetails.email}
                 </option>
-                {organizationList.length ? (
-                  organizationList.map((option: any, index: number) => (
-                    <option key={index} value={option.id}>
-                      {option.name}
-                    </option>
-                  ))
+                {userOrgDetails.id && userOrgDetails.status === 'APPROVED' ? (
+                  <option value={userOrgDetails.id}>
+                    {userOrgDetails.name}
+                  </option>
                 ) : (
                   <option disabled>No options to choose</option>
                 )}
@@ -177,7 +194,7 @@ const CreateEventStep1 = () => {
             Upload image thumbnail
           </h4>
           <div className="border border-dashed border-[#D1CFC7] rounded-lg h-[200px] w-full overflow-hidden relative">
-            {thumbnailUrl && (
+            {(thumbnailUrl || eventDetails.imageLink) && (
               <>
                 <button
                   type="button"
@@ -194,7 +211,11 @@ const CreateEventStep1 = () => {
                   width={1068}
                   height={646}
                   className="h-full w-full object-cover"
-                  src={thumbnailUrl}
+                  src={
+                    thumbnailUrl
+                      ? thumbnailUrl
+                      : `${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(eventDetails.imageLink)}`
+                  }
                   alt="dog"
                 />
               </>

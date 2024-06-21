@@ -2,9 +2,13 @@ import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import {
+  currentUtcDate,
+  getOppCommitmentByOppId,
+  getOpportunityLocationsByOppId,
   getOpportunityTypeById,
   getOrgDetailsById,
 } from '@/services/backend/opportunityServices';
+import { eventValidationSchema } from '@/utils/joiSchema';
 import {
   collection,
   doc,
@@ -22,16 +26,6 @@ export async function GET(request: NextRequest, { params }: any) {
   try {
     const cookieStore = cookies();
     const userDetailCookie: any = cookieStore.get('userDetails');
-
-    // if (!userDetailCookie) {
-    //   const response = responseHandler(
-    //     401,
-    //     false,
-    //     null,
-    //     'Please login before joining the event',
-    //   );
-    //   return response;
-    // }
 
     const { id }: any = params;
     const opportunitiesRef = collection(db, 'opportunities');
@@ -51,6 +45,7 @@ export async function GET(request: NextRequest, { params }: any) {
       );
       return response;
     }
+
     const foundOppId = docSnap.id;
     opportunityData.id = foundOppId;
     // get opportunityType details
@@ -67,6 +62,43 @@ export async function GET(request: NextRequest, { params }: any) {
         opportunityData.organizationId,
       );
       opportunityData.organizationDetails = orgDetails;
+    }
+    // get the locations list if virtual location link is not there
+    opportunityData.physicalLocations = [];
+    if (!opportunityData.virtualLocationLink) {
+      opportunityData.physicalLocations =
+        await getOpportunityLocationsByOppId(id);
+    }
+
+    // get the commitment data of the  opportunity
+    const commitmentDetails = await getOppCommitmentByOppId(id);
+    if (commitmentDetails) {
+      const {
+        commitmentId,
+        commitment,
+        frequency,
+        selectedDate,
+        opportunityId,
+        startTime,
+        endTime,
+        minHour,
+        type,
+        maxHour,
+        endDate,
+      }: any = commitmentDetails;
+      Object.assign(opportunityData, {
+        commitmentId,
+        commitment,
+        frequency,
+        selectedDate,
+        opportunityId,
+        startTime,
+        endTime,
+        minHour,
+        type,
+        maxHour,
+        endDate,
+      });
     }
 
     //  get the similar interests
@@ -112,7 +144,7 @@ export async function GET(request: NextRequest, { params }: any) {
     const filteredOpportunities = opportunities.filter((opportunity) =>
       Boolean(opportunity),
     );
-    //  check if user already
+    //  check if user already joined the opportunity
     if (userDetailCookie) {
       const convertString = JSON.parse(userDetailCookie.value);
       const userId = convertString.id;
@@ -211,6 +243,177 @@ export async function DELETE(request: NextRequest, { params }: any) {
       false,
       null,
       'Error in deleting Opportunity',
+    );
+    return response;
+  }
+}
+
+// update opportunity
+
+export async function PUT(req: NextRequest, { params }: any) {
+  try {
+    const { id }: any = params;
+    const opportunitiesRef = collection(db, 'opportunities');
+    const docRef = doc(opportunitiesRef, id);
+    const docSnap = await getDoc(docRef);
+    const opportunityData: any = docSnap.data();
+    const loggedInUser = getUserDetailsCookie();
+    if (
+      !opportunityData ||
+      (!loggedInUser && opportunityData.status !== 'APPROVED')
+    ) {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Opportunity not found',
+      );
+      return response;
+    }
+
+    //  validations for field
+    const reqBody: any = await req.json();
+
+    const {
+      name,
+      description,
+      activities,
+      volunteerRequirements,
+      opportunityType,
+      createdBy,
+      organizationId,
+      locationType,
+      virtualLocationLink,
+      physicalLocations,
+      selectedDate,
+      minHour,
+      maxHour,
+      startTime,
+      endTime,
+      endDate,
+      frequency,
+      type,
+      registrationType,
+      registrationWebsiteLink,
+      spots,
+      imageLink,
+      commitment,
+      commitmentId,
+    } = reqBody;
+    const { error } = eventValidationSchema.validate({
+      name,
+      description,
+      activities,
+      volunteerRequirements,
+      opportunityType,
+      createdBy,
+      locationType,
+      virtualLocationLink,
+      selectedDate,
+      imageLink,
+      frequency,
+    });
+    if (error) {
+      const errorMessage: string = error.details
+        .map((err) => err.message)
+        .join('; ');
+
+      const response = responseHandler(403, false, null, errorMessage);
+      return response;
+    }
+
+    const batch = writeBatch(db);
+
+    // Update opportunity document
+    batch.update(docRef, {
+      name: name.trim(),
+      registrationType,
+      spots,
+      description,
+      activities,
+      volunteerRequirements,
+      registrationWebsiteLink,
+      organizationId,
+      opportunityType,
+      virtualLocationLink,
+      createdBy,
+      imageLink,
+      lowercaseName: name.toLowerCase().trim(),
+      updatedAt: currentUtcDate,
+    });
+
+    // Update commitment document
+    const commitmentRef = doc(db, 'opportunityCommitment', commitmentId);
+    batch.update(commitmentRef, {
+      opportunityId: id,
+      type,
+      selectedDate,
+      endDate,
+      minHour,
+      maxHour,
+      startTime,
+      endTime,
+      frequency,
+      commitment,
+      updatedAt: currentUtcDate,
+    });
+
+    // Handle locations
+    if (virtualLocationLink) {
+      const locationRef = collection(db, 'opportunityLocations');
+      const q = query(locationRef, where('opportunityId', '==', id));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+    } else if (physicalLocations.length > 0) {
+      const opportunityLocationsRef = collection(db, 'opportunityLocations');
+
+      for (const location of physicalLocations) {
+        if (location.id) {
+          // Update existing document
+          const locationDocRef = doc(opportunityLocationsRef, location.id);
+          batch.update(locationDocRef, {
+            opportunityId: id,
+            address: location.address,
+            city: location.city,
+            province: location.province,
+            postalCode: location.postalCode,
+            updatedAt: currentUtcDate,
+          });
+        } else {
+          // Create new document
+          const newLocationRef = doc(opportunityLocationsRef);
+          batch.set(newLocationRef, {
+            opportunityId: id,
+            address: location.address,
+            city: location.city,
+            province: location.province,
+            postalCode: location.postalCode,
+            createdAt: currentUtcDate,
+            updatedAt: currentUtcDate,
+          });
+        }
+      }
+    }
+
+    // Commit the batch
+    await batch.commit();
+    const response = responseHandler(
+      200,
+      false,
+      null,
+      'Opportunity updated successfully',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in updating Opportunity');
+
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in updating Opportunity',
     );
     return response;
   }
