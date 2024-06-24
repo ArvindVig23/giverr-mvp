@@ -172,7 +172,9 @@ const CreateEventStep4 = ({
   return (
     <form className="" onSubmit={handleSubmit(submitEvent)}>
       <div className="flex gap-5 w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
-        <h4 className="text-[#24181B] text-2xl font-medium">Event Details</h4>
+        <h4 className="text-[#24181B] text-2xl font-medium">
+          Registration Type
+        </h4>
 
         <div className="w-full flex flex-col gap-5">
           <div className="w-full border border-[#E6E3D6] rounded-xl overflow-hidden">
