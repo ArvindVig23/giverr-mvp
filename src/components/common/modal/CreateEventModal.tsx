@@ -4,7 +4,7 @@ import close from '/public/images/close.svg';
 import right from '/public/images/chevron-right-black.svg';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
 
@@ -14,6 +14,7 @@ const CreateEventModal = ({
   setShowModal,
   children,
 }: any) => {
+  const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -61,6 +62,9 @@ const CreateEventModal = ({
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     const newStep = Math.min(Math.max(1, currentStep + increment), 4);
     current.set('step', newStep.toString());
+    if (newStep === 3) {
+      current.set('commitment', eventDetails.commitment || 'ONETIME');
+    }
     const search = current.toString();
     const query = search ? `?${search}` : '';
     router.push(`${window.location.pathname}${query}`);
@@ -91,7 +95,7 @@ const CreateEventModal = ({
                       onClick={() => currentStep !== 1 && updateStep(-1)}
                       disabled={currentStep === 1}
                       type="button"
-                      className="w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]"
+                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]  ${currentStep === 1 ? 'cursor-not-allowed' : ''}`}
                     >
                       <Image className="rotate-180" src={right} alt=""></Image>
                     </button>
@@ -99,7 +103,7 @@ const CreateEventModal = ({
                       disabled={currentStep === 4}
                       onClick={() => updateStep(1)}
                       type="button"
-                      className="w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]"
+                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3] ${currentStep === 4 ? 'cursor-not-allowed' : ''}`}
                     >
                       <Image src={right} alt=""></Image>
                     </button>

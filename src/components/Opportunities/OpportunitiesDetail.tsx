@@ -5,18 +5,22 @@ import dummy from '/public/images/dummy.jpg';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
-import location from '/public/images/location.svg';
+
+import virtual from '/public/images/virtual.svg';
+import locationImage from '/public/images/location.svg';
 import leftSHape from '/public/images/bottom-left-shapes.svg';
 import LongArrow from '/public/images/long-arrow-left.svg';
 import arrow from '/public/images/chevron-right.svg';
 // import volunteer from '/public/images/volunteer.svg';
 import RightSHape from '/public/images/bottom-right-shapes.svg';
-// import virutalLeft from '/public/images/virtual-left.svg';
-// import virutalRight from '/public/images/virtual-right.svg';
+import virutalLeft from '/public/images/virtual-left.svg';
+import virutalRight from '/public/images/virtual-right.svg';
 import Link from 'next/link';
 import {
+  convertToLocalDateWithDay,
   encodeUrl,
-  getFormattedLocalTime,
+  findCommitment,
+  getLocalTimeRangeForDetail,
   updateSearchParams,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
@@ -36,7 +40,7 @@ import CreateEventStep3 from '../common/event/CreateEventStep3';
 import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
 import CreateEventModal from '../common/modal/CreateEventModal';
-import { SearchParam } from '@/interface/opportunity';
+import { Location, SearchParam } from '@/interface/opportunity';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
@@ -52,6 +56,7 @@ const OpportunitiesDetail = ({
   const step = searchParams.get('step') || '1';
   const [successfullContent, setSuccessfullContent] = useState<boolean>(false);
 
+  const [copied, setCopied] = useState(false);
   const handleJoin = async () => {
     try {
       dispatch(setLoader(true));
@@ -99,6 +104,14 @@ const OpportunitiesDetail = ({
     ];
     updateSearchParams(searchParams, pathname, router, params);
   };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(opportunityDetail?.virtualLocationLink);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  };
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
@@ -121,8 +134,12 @@ const OpportunitiesDetail = ({
           <div className="w-full md:bg-white md:rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">
               <div className="text-sm font-medium hidden md:inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
-                <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
-                Pre-Entry
+                <span
+                  className={` w-2 h-2 rounded-full ${opportunityDetail?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'}`}
+                ></span>{' '}
+                {opportunityDetail?.registrationType === 'SHOW_UP'
+                  ? 'Show up'
+                  : 'Pre-Entry'}
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
               opportunityDetail?.createdBy === userOrgDetails.id ? (
@@ -251,8 +268,28 @@ const OpportunitiesDetail = ({
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={time} alt="time" />
                 </div>
-                {opportunityDetail?.eventDate &&
-                  getFormattedLocalTime(opportunityDetail?.eventDate, cookies)}
+                {opportunityDetail?.frequency
+                  ? `${opportunityDetail?.minHour}-${opportunityDetail?.maxHour}h ${opportunityDetail.frequency} ${opportunityDetail?.commitment ? ` for ${findCommitment(opportunityDetail?.commitment)}` : ''} `
+                  : opportunityDetail?.selectedDate &&
+                    convertToLocalDateWithDay(
+                      opportunityDetail?.selectedDate,
+                      cookies,
+                    )}
+                {opportunityDetail?.startTime && opportunityDetail?.endTime && (
+                  <p className="text-xs md:text-sm text-[#857E7E]">
+                    {getLocalTimeRangeForDetail(
+                      opportunityDetail?.startTime,
+                      cookies,
+                      false, // send true if want the timeZone
+                    )}{' '}
+                    -{' '}
+                    {getLocalTimeRangeForDetail(
+                      opportunityDetail?.endTime,
+                      cookies,
+                      true,
+                    )}
+                  </p>
+                )}
               </div>
 
               {opportunityDetail?.opportunityData && (
@@ -270,15 +307,37 @@ const OpportunitiesDetail = ({
                   {opportunityDetail?.opportunityData?.name}
                 </div>
               )}
-
-              {opportunityDetail?.location && (
+              {opportunityDetail?.virtualLocationLink ? (
                 <div className="flex gap-2 items-center text-base text-[#24181B]">
                   <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
-                    <Image src={location} alt="location" />
+                    <Image
+                      width={20}
+                      height={20}
+                      src={virtual}
+                      alt="location"
+                    />
                   </div>
-                  {opportunityDetail?.location && opportunityDetail?.location}
+                  Virtual
                 </div>
-              )}
+              ) : null}
+              {opportunityDetail?.physicalLocations &&
+              opportunityDetail?.physicalLocations.length > 0
+                ? opportunityDetail?.physicalLocations.map(
+                    (location: Location, index: number) => (
+                      <div
+                        key={location.id}
+                        className="flex gap-2 items-center text-base text-[#24181B]"
+                      >
+                        <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                          {index === 0 ? (
+                            <Image src={locationImage} alt="location" />
+                          ) : null}
+                        </div>
+                        {`${location.address}, ${location.city}, ${location.postalCode}`}
+                      </div>
+                    ),
+                  )
+                : null}
 
               {/* <div className="flex gap-2 items-center text-base text-[#24181B]">
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
@@ -297,17 +356,31 @@ const OpportunitiesDetail = ({
                 </div>
               </div> */}
             </div>
+            {opportunityDetail?.physicalLocations.length ? (
+              <div className="w-full rounded-xl overflow-hidden my-10">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.39567879181!2d-80.31185925136802!3d25.782538872180993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C%20FL%2C%20USA!5e0!3m2!1sen!2sin!4v1715846922507!5m2!1sen!2sin"
+                  width="100%"
+                  height="450"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            ) : null}
 
-            <div className="w-full rounded-xl overflow-hidden my-10">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.39567879181!2d-80.31185925136802!3d25.782538872180993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C%20FL%2C%20USA!5e0!3m2!1sen!2sin!4v1715846922507!5m2!1sen!2sin"
-                width="100%"
-                height="450"
-                loading="lazy"
-              ></iframe>
-            </div>
-
-            {opportunityDetail?.registrationType === '3' ? (
+            {opportunityDetail?.virtualLocationLink &&
+            opportunityDetail?.registrationType === 'SHOW_UP' ? (
+              <div className="flex justify-between items-center">
+                <p>{opportunityDetail?.virtualLocationLink}</p>
+                <button
+                  disabled={copied}
+                  onClick={handleCopyLink}
+                  className={` text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]  cursor-not-allowed`}
+                  type="button"
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </button>{' '}
+              </div>
+            ) : opportunityDetail?.registrationType === 'WEBSITE_LINK' ? (
               <div className={`flex flex-col gap-5  `}>
                 <div className="flex flex-col gap-1">
                   <h4 className="text-base text-[#24181B] font-medium">
@@ -334,38 +407,84 @@ const OpportunitiesDetail = ({
                   </Link>
                 )}
               </div>
-            ) : successfullContent ? (
-              <div className={`flex flex-col gap-5 `}>
+            ) : opportunityDetail?.registrationType === 'SHOW_UP' ? (
+              <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1">
-                  <div>
-                    <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
-                      Congratulations!
-                    </h3>
-                    <h4 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
-                      You are now a volunteer on this event!
-                    </h4>
-                  </div>
-                  <p className="text-base text-[#24181B] mb-2">
-                    We&apos;re thrilled to have you on board for our upcoming
-                    event! To ensure everything runs smoothly, please plan to
-                    arrive 15 minutes before the start time. Your punctuality
-                    will greatly assist with our organization efforts.
-                  </p>
-                  <p className="text-base text-[#24181B] mb-2">
-                    If, for any reason, you are unable to attend, kindly send an
-                    email to
-                    <Link className="text-[#E60054] hover:underline" href="#">
-                      {' '}
-                      events@giverr.com.
-                    </Link>
-                    This will allow us to open up your spot to another eager
-                    volunteer.
-                  </p>
-                  <p className="text-base text-[#24181B]">
-                    Let&apos;s make it a memorable and impactful day together!
+                  <h4 className="text-base text-[#24181B] font-medium">
+                    Ready to make a difference?
+                  </h4>
+                  <p className="text-base text-[#24181B80] mb-1">
+                    Join us at our location and help make the world a better
+                    place!
                   </p>
                 </div>
               </div>
+            ) : successfullContent ? (
+              opportunityDetail?.virtualLocationLink ? (
+                <div className={`flex flex-col gap-5 `}>
+                  <div className="flex flex-col gap-1">
+                    <div>
+                      <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        You are now registered for this event!
+                      </h3>
+                    </div>
+                    <p className="text-base text-[#24181B] mb-2">
+                      If you can&apos;t attend, email us at
+                      <Link className="text-[#E60054] hover:underline" href="#">
+                        {' '}
+                        events@giverr.com.
+                      </Link>
+                      so we can offer your spot to another eager volunteer.
+                    </p>
+                    <p className="text-base text-[#24181B]">
+                      Let&apos;s make it a memorable and impactful day together!
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <p>{opportunityDetail?.virtualLocationLink}</p>
+                      <button
+                        disabled={copied}
+                        onClick={handleCopyLink}
+                        className={` text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017] ${copied ? ' cursor-not-allowed' : ''}`}
+                        type="button"
+                      >
+                        {copied ? 'Copied' : 'Copy'}
+                      </button>{' '}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={`flex flex-col gap-5 `}>
+                  <div className="flex flex-col gap-1">
+                    <div>
+                      <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        Congratulations!
+                      </h3>
+                      <h4 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        You are now a volunteer on this event!
+                      </h4>
+                    </div>
+                    <p className="text-base text-[#24181B] mb-2">
+                      We&apos;re thrilled to have you on board for our upcoming
+                      event! To ensure everything runs smoothly, please plan to
+                      arrive 15 minutes before the start time. Your punctuality
+                      will greatly assist with our organization efforts.
+                    </p>
+                    <p className="text-base text-[#24181B] mb-2">
+                      If, for any reason, you are unable to attend, kindly send
+                      an email to
+                      <Link className="text-[#E60054] hover:underline" href="#">
+                        {' '}
+                        events@giverr.com.
+                      </Link>
+                      This will allow us to open up your spot to another eager
+                      volunteer.
+                    </p>
+                    <p className="text-base text-[#24181B]">
+                      Let&apos;s make it a memorable and impactful day together!
+                    </p>
+                  </div>
+                </div>
+              )
             ) : (
               <div
                 className={`flex flex-col p-6 rounded-2xl md:rounded-none bg-white md:bg-transparent md:p-0 gap-5`}
@@ -409,45 +528,21 @@ const OpportunitiesDetail = ({
                 )}
               </div>
             )}
-
-            <div className="flex flex-col gap-5 hidden">
-              <div className="flex flex-col gap-1">
-                <h4 className="text-base text-[#24181B] font-medium">
-                  Ready to make a difference?
-                </h4>
-                <p className="text-base text-[#24181B80] mb-1">
-                  Come join us at the location and be part of the team of
-                  volunteers making the world a better place.
-                </p>
-                <p className="text-base text-[#24181B80]">
-                  Together, let&apos;s create positive change and spread joy in
-                  our community. Every helping hand counts!
-                </p>
-              </div>
-            </div>
           </div>
         </div>
-        <Image
-          className="absolute left-0 bottom-0 h-[141px] w-auto lg:h-auto"
-          src={leftSHape}
-          alt=""
-        ></Image>
-        <Image
-          className="absolute right-0 bottom-0 h-[149px]  w-auto lg:h-auto"
-          src={RightSHape}
-          alt=""
-        ></Image>
 
-        {/* <Image
+        <Image
           className="absolute left-0 bottom-0"
-          src={virutalLeft}
+          src={opportunityDetail?.virtualLocationLink ? virutalLeft : leftSHape}
           alt=""
         ></Image>
         <Image
           className="absolute right-0 bottom-0"
-          src={virutalRight}
+          src={
+            opportunityDetail?.virtualLocationLink ? virutalRight : RightSHape
+          }
           alt=""
-        ></Image> */}
+        ></Image>
       </div>
       {showDeleteModal && (
         <CommonDeleteModal

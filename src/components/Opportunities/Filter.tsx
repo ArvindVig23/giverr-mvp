@@ -34,32 +34,35 @@ const Filter = (props: {
   const [opportunities, setOpportunities] = useState<OpportunityDetails[]>([]);
   const [page, setPage] = useState<number>(0);
   const loading = useSelector((state: any) => state.loaderReducer);
+  const [firstTime, setFirstTime] = useState(true); // Flag to check whether we are loading filter for the first time to avoid unnecessary API call.
   const handleRangeChange = (range: any) => {
+    setFirstTime(false);
     setDateRange(range);
   };
-
   useEffect(() => {
-    (async () => {
-      try {
-        dispatch(setLoader(true));
-        const getList = await getOpportunityList(
-          opportunityIds,
-          1,
-          dateRange?.startDate?.length ? dateRange.startDate : undefined,
-          dateRange?.endDate?.length ? dateRange.endDate : undefined,
-        );
-        const { opportunities, page, totalRecords } = getList;
-        setOpportunities(opportunities);
-        setPage(page);
-        setTotalCount(totalRecords);
-      } catch (error: any) {
-        console.log('== err ==', error);
-        const { message } = error;
-        sweetAlertToast('error', message);
-      } finally {
-        dispatch(setLoader(false));
-      }
-    })();
+    if (!firstTime && dateRange.startDate && dateRange.endDate) {
+      (async () => {
+        try {
+          dispatch(setLoader(true));
+          const getList = await getOpportunityList(
+            opportunityIds,
+            1,
+            dateRange?.startDate?.length ? dateRange.startDate : undefined,
+            dateRange?.endDate?.length ? dateRange.endDate : undefined,
+          );
+          const { opportunities, page, totalRecords } = getList;
+          setOpportunities(opportunities);
+          setPage(page);
+          setTotalCount(totalRecords);
+        } catch (error: any) {
+          console.log('== err ==', error);
+          const { message } = error;
+          sweetAlertToast('error', message);
+        } finally {
+          dispatch(setLoader(false));
+        }
+      })();
+    }
     //eslint-disable-next-line
   }, [dateRange.startDate, dateRange.endDate]);
 
@@ -153,8 +156,8 @@ const Filter = (props: {
         <div className="flex items-center justify-end p-4 md:p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
           <button
             disabled={!totalCount}
-            onClick={() => handleShowRecords()}
-            className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]"
+            onClick={() => (!totalCount ? null : handleShowRecords())}
+            className={`${totalCount > 0 ? '' : 'cursor-not-allowed '}text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-xl font-medium text-white hover:bg-[#C20038]`}
             type="submit"
           >
             {totalCount
