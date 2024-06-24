@@ -126,7 +126,9 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             {getFormattedLocalTime(opportunity.eventDate, cookies)}
           </span>
           <div className="text-[#24181B80] truncate text-base">
-            {opportunity.location[0]?.address}
+            {opportunity?.location.length
+              ? opportunity?.location[0]?.address
+              : ''}
           </div>
 
           {opportunity?.organization?.name && (

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Filter from './Filter';
 import { useCookies } from 'react-cookie';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { CurrentPage, OpportunityDetails } from '@/interface/opportunity';
 import { getOpportunityList } from '@/services/frontend/opportunityService';
@@ -16,6 +16,7 @@ import MobileFilterSlider from '../mobileComponents/MobileFilterSlider';
 import Image from 'next/image';
 import filtericon from '/public/images/filter.svg';
 import CommonModal from '../common/modal/CommonModal';
+import { useRouter } from 'next/navigation';
 
 const OpportunitiesList: React.FC<CurrentPage> = ({
   currrentPage,
@@ -33,6 +34,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const [opportunityIds, setOpportunityIds] = useState('');
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   // const [limit, setLimit] = useState<number>(20);
   const [cookies] = useCookies();
   const createQueryParams = () => {
@@ -107,6 +110,13 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       sweetAlertToast('error', message);
     }
   };
+  const clearDateRange = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.has('startDate')) params.delete('startDate');
+    if (params.has('endDate')) params.delete('endDate');
+    router.push(pathname + '?' + params.toString());
+    setShowFilterModal(false);
+  };
   return (
     <div className="pb-16">
       <div className="flex justify-between px-5 py-2 items-center ">
@@ -178,6 +188,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
           subHeading={'Send Invite to'}
           showModal={showFilterModal}
           setShowModal={setShowFilterModal}
+          closeModalOptional={clearDateRange}
         >
           <Filter
             opportunityIds={opportunityIds}
