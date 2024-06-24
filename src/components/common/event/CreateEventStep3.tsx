@@ -11,10 +11,10 @@ const CreateEventStep3 = () => {
   const commitment = searchParams.get('commitment');
   return (
     <div>
-      <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
+      <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal-new overflow-auto">
         <h4 className="text-[#24181B] text-2xl font-medium mb-5">Commitment</h4>
 
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col flex-1">
           <ul
             className="flex gap-[5px] mb-0 list-none  w-full relative"
             role="tablist"
@@ -58,24 +58,28 @@ const CreateEventStep3 = () => {
               </Link>
             </li>
           </ul>
-          <div className="relative flex flex-col min-w-0 break-words w-full">
-            <div className=" py-5 flex-auto">
-              <div className="tab-content tab-space">
+          <div className="relative flex flex-col min-w-0 break-words w-full flex-1">
+            <div className=" py-5 flex-auto pb-0">
+              <div className="tab-content tab-space h-full">
                 <div
-                  className={commitment === 'ONETIME' ? 'block' : 'hidden'}
+                  className={
+                    commitment === 'ONETIME' ? 'block h-full' : 'hidden'
+                  }
                   id="link1"
                 >
                   <OneTimeCommitment />
                 </div>
                 <div
-                  className={commitment === 'DATES' ? 'block' : 'hidden'}
+                  className={commitment === 'DATES' ? 'block h-full' : 'hidden'}
                   id="link2"
                 >
                   <DatesCommitment />
                 </div>
 
                 <div
-                  className={commitment === 'ONGOING' ? 'block' : 'hidden'}
+                  className={
+                    commitment === 'ONGOING' ? 'block h-full' : 'hidden'
+                  }
                   id="link3"
                 >
                   <OnGoingCommitment />
