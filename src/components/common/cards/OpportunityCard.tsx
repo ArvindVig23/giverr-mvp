@@ -64,8 +64,12 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
           </div>
         ) : (
           <div className="text-sm font-medium inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
-            <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
-            Pre-Entry
+            <span
+              className={`${opportunity?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'} w-2 h-2 rounded-full`}
+            ></span>{' '}
+            {opportunity?.registrationType === 'SHOW_UP'
+              ? 'Show up'
+              : 'Pre-Entry'}
           </div>
         )}
         {!statusIsPending && !statusIsRejected ? (

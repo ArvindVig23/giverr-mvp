@@ -7,6 +7,8 @@ import {
   getOpportunityLocationsByOppId,
   getOpportunityTypeById,
   getOrgDetailsById,
+  getUserDetailsById,
+  getWishlistWithUser,
 } from '@/services/backend/opportunityServices';
 import { eventValidationSchema } from '@/utils/joiSchema';
 import {
@@ -70,6 +72,25 @@ export async function GET(request: NextRequest, { params }: any) {
         await getOpportunityLocationsByOppId(id);
     }
 
+    // get volunteer list
+    let oppVolunteers: any[] = [];
+    if (opportunityData.registrationType === 'GIVER_PLATFORM') {
+      const oppVolunteersQuery = query(
+        collection(db, 'opportunityMembers'),
+        where('opportunityId', '==', foundOppId),
+      );
+      const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+      oppVolunteers = await Promise.all(
+        oppVolunteersSnapShot.docs.map(async (volDoc) => {
+          const volunteer = volDoc.data();
+          const userDetails = await getUserDetailsById(volunteer.userId);
+          return userDetails;
+        }),
+      );
+    }
+
+    opportunityData.volunteer = oppVolunteers;
+
     // get the commitment data of the  opportunity
     const commitmentDetails = await getOppCommitmentByOppId(id);
     if (commitmentDetails) {
@@ -109,41 +130,98 @@ export async function GET(request: NextRequest, { params }: any) {
       limit(10),
     );
     const getSimilarInterests = await getDocs(getSilimarTypeQuery);
+    let opportunitiesPromises: Promise<any>[] = [];
 
-    let opportunities: any[] = [];
     if (getSimilarInterests.size > 0) {
-      let opportunitiesPromises = getSimilarInterests.docs.map(async (docs) => {
+      opportunitiesPromises = getSimilarInterests.docs.map(async (docs) => {
         const opportunityData = docs.data();
         opportunityData.id = docs.id;
+        const organizationId = opportunityData.organizationId;
 
-        if (docs.id !== foundOppId) {
-          const organizationId = opportunityData.organizationId;
-          if (organizationId) {
-            const organizationDocRef = doc(
-              collection(db, 'organizations'),
-              organizationId,
-            );
+        // Fetch organization data using a separate query (for complex data)
+        if (organizationId) {
+          const organizationDocRef = doc(
+            collection(db, 'organizations'),
+            organizationId,
+          );
 
-            const organizationSnapshot = await getDoc(organizationDocRef);
+          const organizationSnapshot = await getDoc(organizationDocRef);
 
-            if (organizationSnapshot) {
-              const orgData = organizationSnapshot.data();
-              opportunityData.organization = orgData;
-            } else {
-              opportunityData.organization = null;
-            }
+          if (organizationSnapshot.exists()) {
+            const orgData = organizationSnapshot.data();
+            opportunityData.organization = orgData;
           } else {
             opportunityData.organization = null;
           }
-
-          return opportunityData;
+        } else {
+          opportunityData.organization = null;
         }
+
+        let oppLocation: any[] = [];
+        // fetching opportunity location if virtual link is not present
+        if (!opportunityData.virtualLocationLink?.length) {
+          const oppLocationQuery = query(
+            collection(db, 'opportunityLocations'),
+            where('opportunityId', '==', docs.id),
+          );
+          const oppLocationSnapShot = await getDocs(oppLocationQuery);
+          if (!oppLocationSnapShot.empty) {
+            oppLocationSnapShot.docs.forEach((doc: any) => {
+              const location = doc.data();
+              location.id = doc.id;
+              oppLocation.push(location);
+            });
+          }
+        }
+
+        // fetching opportunity commitment
+        let oppCommitments: any[] = [];
+        const oppCommitmentQuery = query(
+          collection(db, 'opportunityCommitment'),
+          where('opportunityId', '==', docs.id),
+        );
+        const oppCommitmentSnapShot = await getDocs(oppCommitmentQuery);
+        if (!oppCommitmentSnapShot.empty) {
+          oppCommitmentSnapShot.docs.forEach((doc: any) => {
+            const commitment = doc.data();
+            commitment.id = doc.id;
+            oppCommitments.push(commitment);
+          });
+        }
+
+        // fetching volunteers for opportunity only if registration type is GIVER_PLATFORM
+        let oppVolunteers: any[] = [];
+        if (opportunityData.registrationType === 'GIVER_PLATFORM') {
+          const oppVolunteersQuery = query(
+            collection(db, 'opportunityMembers'),
+            where('opportunityId', '==', docs.id),
+          );
+          const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+          oppVolunteers = await Promise.all(
+            oppVolunteersSnapShot.docs.map(async (volDoc) => {
+              const volunteer = volDoc.data();
+              const userDetails = await getUserDetailsById(volunteer.userId);
+              return userDetails;
+            }),
+          );
+        }
+
+        // get the wishlist details
+        opportunityData.isWishlist = false;
+        if (userDetailCookie) {
+          const convertString = JSON.parse(userDetailCookie.value);
+          const { id } = convertString;
+          const checkIsWishlist = await getWishlistWithUser(docs.id, id);
+          opportunityData.isWishlist = checkIsWishlist;
+        }
+        opportunityData.commitment = oppCommitments;
+        opportunityData.location = oppLocation;
+        opportunityData.volunteers = oppVolunteers;
+        return opportunityData;
       });
-      opportunities = await Promise.all(opportunitiesPromises);
     }
-    const filteredOpportunities = opportunities.filter((opportunity) =>
-      Boolean(opportunity),
-    );
+
+    const filteredOpportunities = await Promise.all(opportunitiesPromises);
     //  check if user already joined the opportunity
     if (userDetailCookie) {
       const convertString = JSON.parse(userDetailCookie.value);

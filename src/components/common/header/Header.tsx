@@ -77,7 +77,7 @@ const Header: React.FC = () => {
                 )}
                 {pathName === '/' && (
                   <input
-                    placeholder={'Search location'}
+                    placeholder={'Search opportunities'}
                     className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
                   />
                 )}
