@@ -5,6 +5,8 @@ import dummy from '/public/images/dummy.jpg';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
+
+import virtual from '/public/images/virtual.svg';
 import locationImage from '/public/images/location.svg';
 import leftSHape from '/public/images/bottom-left-shapes.svg';
 import LongArrow from '/public/images/long-arrow-left.svg';
@@ -15,8 +17,10 @@ import virutalLeft from '/public/images/virtual-left.svg';
 import virutalRight from '/public/images/virtual-right.svg';
 import Link from 'next/link';
 import {
+  convertToLocalDateWithDay,
   encodeUrl,
-  getFormattedLocalTime,
+  findCommitment,
+  getLocalTimeRangeForDetail,
   updateSearchParams,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
@@ -52,6 +56,7 @@ const OpportunitiesDetail = ({
   const step = searchParams.get('step') || '1';
   const [successfullContent, setSuccessfullContent] = useState<boolean>(false);
 
+  const [copied, setCopied] = useState(false);
   const handleJoin = async () => {
     try {
       dispatch(setLoader(true));
@@ -99,6 +104,14 @@ const OpportunitiesDetail = ({
     ];
     updateSearchParams(searchParams, pathname, router, params);
   };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(opportunityDetail?.virtualLocationLink);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  };
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
@@ -121,8 +134,12 @@ const OpportunitiesDetail = ({
           <div className="w-full md:bg-white md:rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">
               <div className="text-sm font-medium hidden md:inline-flex py-[5px] px-3 gap-[5px] border border-[#FFFFFF80] bg-[#FFFFFFE5] rounded-full items-center">
-                <span className="bg-[#FFC430] w-2 h-2 rounded-full"></span>{' '}
-                Pre-Entry
+                <span
+                  className={` w-2 h-2 rounded-full ${opportunityDetail?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'}`}
+                ></span>{' '}
+                {opportunityDetail?.registrationType === 'SHOW_UP'
+                  ? 'Show up'
+                  : 'Pre-Entry'}
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
               opportunityDetail?.createdBy === userOrgDetails.id ? (
@@ -251,11 +268,28 @@ const OpportunitiesDetail = ({
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={time} alt="time" />
                 </div>
-                {opportunityDetail?.selectedDate &&
-                  getFormattedLocalTime(
-                    opportunityDetail?.selectedDate,
-                    cookies,
-                  )}
+                {opportunityDetail?.frequency
+                  ? `${opportunityDetail?.minHour}-${opportunityDetail?.maxHour}h ${opportunityDetail.frequency} ${opportunityDetail?.commitment ? ` for ${findCommitment(opportunityDetail?.commitment)}` : ''} `
+                  : opportunityDetail?.selectedDate &&
+                    convertToLocalDateWithDay(
+                      opportunityDetail?.selectedDate,
+                      cookies,
+                    )}
+                {opportunityDetail?.startTime && opportunityDetail?.endTime && (
+                  <p className="text-xs md:text-sm text-[#857E7E]">
+                    {getLocalTimeRangeForDetail(
+                      opportunityDetail?.startTime,
+                      cookies,
+                      false, // send true if want the timeZone
+                    )}{' '}
+                    -{' '}
+                    {getLocalTimeRangeForDetail(
+                      opportunityDetail?.endTime,
+                      cookies,
+                      true,
+                    )}
+                  </p>
+                )}
               </div>
 
               {opportunityDetail?.opportunityData && (
@@ -273,17 +307,31 @@ const OpportunitiesDetail = ({
                   {opportunityDetail?.opportunityData?.name}
                 </div>
               )}
-
+              {opportunityDetail?.virtualLocationLink ? (
+                <div className="flex gap-2 items-center text-base text-[#24181B]">
+                  <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                    <Image
+                      width={20}
+                      height={20}
+                      src={virtual}
+                      alt="location"
+                    />
+                  </div>
+                  Virtual
+                </div>
+              ) : null}
               {opportunityDetail?.physicalLocations &&
               opportunityDetail?.physicalLocations.length > 0
                 ? opportunityDetail?.physicalLocations.map(
-                    (location: Location) => (
+                    (location: Location, index: number) => (
                       <div
                         key={location.id}
                         className="flex gap-2 items-center text-base text-[#24181B]"
                       >
                         <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
-                          <Image src={locationImage} alt="location" />
+                          {index === 0 ? (
+                            <Image src={locationImage} alt="location" />
+                          ) : null}
                         </div>
                         {`${location.address}, ${location.city}, ${location.postalCode}`}
                       </div>
@@ -308,7 +356,6 @@ const OpportunitiesDetail = ({
                 </div>
               </div> */}
             </div>
-
             {opportunityDetail?.physicalLocations.length ? (
               <div className="w-full rounded-xl overflow-hidden my-10">
                 <iframe
@@ -320,19 +367,17 @@ const OpportunitiesDetail = ({
               </div>
             ) : null}
 
-            {opportunityDetail?.virtualLocationLink ? (
+            {opportunityDetail?.virtualLocationLink &&
+            opportunityDetail?.registrationType === 'SHOW_UP' ? (
               <div className="flex justify-between items-center">
                 <p>{opportunityDetail?.virtualLocationLink}</p>
                 <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      opportunityDetail?.virtualLocationLink,
-                    )
-                  }
-                  className="cursor-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
+                  disabled={copied}
+                  onClick={handleCopyLink}
+                  className={` text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]  cursor-not-allowed`}
                   type="button"
                 >
-                  Copy
+                  {copied ? 'Copied' : 'Copy'}
                 </button>{' '}
               </div>
             ) : opportunityDetail?.registrationType === 'WEBSITE_LINK' ? (
@@ -362,38 +407,84 @@ const OpportunitiesDetail = ({
                   </Link>
                 )}
               </div>
-            ) : successfullContent ? (
-              <div className={`flex flex-col gap-5 `}>
+            ) : opportunityDetail?.registrationType === 'SHOW_UP' ? (
+              <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1">
-                  <div>
-                    <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
-                      Congratulations!
-                    </h3>
-                    <h4 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
-                      You are now a volunteer on this event!
-                    </h4>
-                  </div>
-                  <p className="text-base text-[#24181B] mb-2">
-                    We&apos;re thrilled to have you on board for our upcoming
-                    event! To ensure everything runs smoothly, please plan to
-                    arrive 15 minutes before the start time. Your punctuality
-                    will greatly assist with our organization efforts.
-                  </p>
-                  <p className="text-base text-[#24181B] mb-2">
-                    If, for any reason, you are unable to attend, kindly send an
-                    email to
-                    <Link className="text-[#E60054] hover:underline" href="#">
-                      {' '}
-                      events@giverr.com.
-                    </Link>
-                    This will allow us to open up your spot to another eager
-                    volunteer.
-                  </p>
-                  <p className="text-base text-[#24181B]">
-                    Let&apos;s make it a memorable and impactful day together!
+                  <h4 className="text-base text-[#24181B] font-medium">
+                    Ready to make a difference?
+                  </h4>
+                  <p className="text-base text-[#24181B80] mb-1">
+                    Join us at our location and help make the world a better
+                    place!
                   </p>
                 </div>
               </div>
+            ) : successfullContent ? (
+              opportunityDetail?.virtualLocationLink ? (
+                <div className={`flex flex-col gap-5 `}>
+                  <div className="flex flex-col gap-1">
+                    <div>
+                      <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        You are now registered for this event!
+                      </h3>
+                    </div>
+                    <p className="text-base text-[#24181B] mb-2">
+                      If you can&apos;t attend, email us at
+                      <Link className="text-[#E60054] hover:underline" href="#">
+                        {' '}
+                        events@giverr.com.
+                      </Link>
+                      so we can offer your spot to another eager volunteer.
+                    </p>
+                    <p className="text-base text-[#24181B]">
+                      Let&apos;s make it a memorable and impactful day together!
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <p>{opportunityDetail?.virtualLocationLink}</p>
+                      <button
+                        disabled={copied}
+                        onClick={handleCopyLink}
+                        className={` text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017] ${copied ? ' cursor-not-allowed' : ''}`}
+                        type="button"
+                      >
+                        {copied ? 'Copied' : 'Copy'}
+                      </button>{' '}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={`flex flex-col gap-5 `}>
+                  <div className="flex flex-col gap-1">
+                    <div>
+                      <h3 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        Congratulations!
+                      </h3>
+                      <h4 className="text-base text-[#24181B] font-medium m-0 leading-[28px]">
+                        You are now a volunteer on this event!
+                      </h4>
+                    </div>
+                    <p className="text-base text-[#24181B] mb-2">
+                      We&apos;re thrilled to have you on board for our upcoming
+                      event! To ensure everything runs smoothly, please plan to
+                      arrive 15 minutes before the start time. Your punctuality
+                      will greatly assist with our organization efforts.
+                    </p>
+                    <p className="text-base text-[#24181B] mb-2">
+                      If, for any reason, you are unable to attend, kindly send
+                      an email to
+                      <Link className="text-[#E60054] hover:underline" href="#">
+                        {' '}
+                        events@giverr.com.
+                      </Link>
+                      This will allow us to open up your spot to another eager
+                      volunteer.
+                    </p>
+                    <p className="text-base text-[#24181B]">
+                      Let&apos;s make it a memorable and impactful day together!
+                    </p>
+                  </div>
+                </div>
+              )
             ) : (
               <div
                 className={`flex flex-col p-6 rounded-2xl md:rounded-none bg-white md:bg-transparent md:p-0 gap-5`}
@@ -437,43 +528,19 @@ const OpportunitiesDetail = ({
                 )}
               </div>
             )}
-
-            <div className="flex flex-col gap-5 hidden">
-              <div className="flex flex-col gap-1">
-                <h4 className="text-base text-[#24181B] font-medium">
-                  Ready to make a difference?
-                </h4>
-                <p className="text-base text-[#24181B80] mb-1">
-                  Come join us at the location and be part of the team of
-                  volunteers making the world a better place.
-                </p>
-                <p className="text-base text-[#24181B80]">
-                  Together, let&apos;s create positive change and spread joy in
-                  our community. Every helping hand counts!
-                </p>
-              </div>
-            </div>
           </div>
         </div>
-        <Image
-          className="absolute left-0 bottom-0 h-[141px] w-auto lg:h-auto"
-          src={leftSHape}
-          alt=""
-        ></Image>
-        <Image
-          className="absolute right-0 bottom-0 h-[149px]  w-auto lg:h-auto"
-          src={RightSHape}
-          alt=""
-        ></Image>
 
         <Image
           className="absolute left-0 bottom-0"
-          src={virutalLeft}
+          src={opportunityDetail?.virtualLocationLink ? virutalLeft : leftSHape}
           alt=""
         ></Image>
         <Image
           className="absolute right-0 bottom-0"
-          src={virutalRight}
+          src={
+            opportunityDetail?.virtualLocationLink ? virutalRight : RightSHape
+          }
           alt=""
         ></Image>
       </div>
