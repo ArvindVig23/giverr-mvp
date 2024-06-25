@@ -59,7 +59,7 @@ const UserBasedOpportunityList: React.FC = () => {
         )}
       </div>
       {loading && (
-        <div className="grid grid-cols-5 gap-4 ">
+        <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
           {cards.map((_, index) => (
             <CardSkeleton key={index} />
           ))}

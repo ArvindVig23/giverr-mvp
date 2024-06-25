@@ -125,7 +125,7 @@ const CreateEventStep2 = () => {
                 type="radio"
                 value={'PHYSICAL'}
               />
-              <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
+              <div className="ml-auto border border[#E6E3D6] min-6 w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
@@ -255,7 +255,7 @@ const CreateEventStep2 = () => {
                 type="radio"
                 value={'VIRTUAL'}
               />
-              <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
+              <div className="ml-auto border border[#E6E3D6] w-6 h-6  min-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>

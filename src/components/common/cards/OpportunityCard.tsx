@@ -151,7 +151,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             <div className="flex gap-2 items-center text-base text-[#24181B]">
               <div className="flex gap-2">
                 <div className="flex">
-                  {opportunity.volunteers.length &&
+                  {opportunity?.volunteers?.length &&
                     opportunity.volunteers.map((vol: any) => (
                       <div
                         key={vol.id}
@@ -167,7 +167,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                       </div>
                     ))}
                 </div>
-                {opportunity.volunteers.length}/20 volunteers
+                {opportunity?.volunteers?.length}/20 volunteers
               </div>
             </div>
           )}

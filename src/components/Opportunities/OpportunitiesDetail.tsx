@@ -143,7 +143,7 @@ const OpportunitiesDetail = ({
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
               opportunityDetail?.createdBy === userOrgDetails.id ? (
-                <div className="relative cursor-pointer">
+                <div className="relative cursor-pointer ml-auto">
                   <button
                     onClick={openEditOppModal}
                     className="relative text-[#24181B] text-base font-medium bg-white px-4 py-2 rounded-s-xl	after:h-6 after:w-px after:absolute after:bg-[#E6E3D6] after:right-0"
