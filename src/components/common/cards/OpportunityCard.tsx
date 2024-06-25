@@ -145,7 +145,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                       </div>
                     ))}
                 </div>
-                {opportunity?.volunteers?.length}/20 volunteers
+                {opportunity.volunteers.length}/{opportunity.spots} volunteers
               </div>
             </div>
           )}
