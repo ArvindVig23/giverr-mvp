@@ -5,7 +5,8 @@ import dummy from '/public/images/dummy.jpg';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 // import dogIcon from '/public/images/dog-icon.svg';
-
+import heart from '/public/images/heart.svg';
+import stateFill from '/public/images/state=filled.svg';
 import virtual from '/public/images/virtual.svg';
 import locationImage from '/public/images/location.svg';
 import leftSHape from '/public/images/bottom-left-shapes.svg';
@@ -41,6 +42,7 @@ import CreateEventStep2 from '../common/event/CreateEventStep2';
 import CreateEventStep1 from '../common/event/CreateEventStep1';
 import CreateEventModal from '../common/modal/CreateEventModal';
 import { Location, SearchParam } from '@/interface/opportunity';
+import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
@@ -112,6 +114,19 @@ const OpportunitiesDetail = ({
       setCopied(false);
     }, 3000);
   };
+  const addRemoveWishlist = async (oppId: string) => {
+    try {
+      dispatch(setLoader(true));
+      const response = await addRemoveWishlistService(oppId);
+      setUpdateSuccess(true);
+      dispatch(setLoader(false));
+      sweetAlertToast('success', response.message);
+    } catch (error: any) {
+      dispatch(setLoader(false));
+      const { message } = error.data;
+      sweetAlertToast('error', message);
+    }
+  };
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
@@ -158,7 +173,17 @@ const OpportunitiesDetail = ({
                     Delete
                   </button>
                 </div>
-              ) : null}
+              ) : (
+                <div
+                  className="relative cursor-pointer"
+                  onClick={() => addRemoveWishlist(opportunityDetail.id)}
+                >
+                  <Image
+                    src={opportunityDetail?.isWishlist ? stateFill : heart}
+                    alt="heart"
+                  />
+                </div>
+              )}
             </div>
             <div className="realtive md:rounded-3xl overflow-hidden">
               {opportunityDetail?.imageLink && (
