@@ -234,8 +234,11 @@ export async function GET(request: NextRequest, { params }: any) {
       );
       const alreadyAppliedUser = await getDocs(findUser);
       opportunityData.alreadyJoined = !alreadyAppliedUser.empty;
+      const isWhishList = await getWishlistWithUser(opportunityData.id, userId);
+      opportunityData.isWishlist = isWhishList;
     } else {
       opportunityData.alreadyJoined = true;
+      opportunityData.isWishlist = false;
     }
     const response = responseHandler(
       200,
