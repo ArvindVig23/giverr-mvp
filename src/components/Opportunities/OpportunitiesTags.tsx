@@ -69,7 +69,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
   }, []);
   const skeleton = Array(7).fill(null);
   return (
-    <div className="px-5 relative mb-5 opportunities-swiper md:py-0 py-5">
+    <div className="px-5 relative opportunities-swiper  py-5 ">
       {opportunityTypeList.length === 0 ? (
         <div className="grid grid-cols-7">
           {skeleton.map((_, index) => (

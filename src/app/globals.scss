@@ -56,6 +56,11 @@ body {
 .max-h-modal {
   height: calc(100vh - 230px);
 }
+.max-h-modal-new
+{
+  height: calc(100vh - 119px);
+
+}
 /* width */
 ::-webkit-scrollbar {
   width: 6px;
@@ -299,6 +304,47 @@ body {
   right: 0;
 }
 
+.materialDatepicker input
+{
+  background: #edebe3;
+  border: 1px solid #e6e3d6;
+  height: 60px;
+  border-radius: 16px;
+  box-shadow: none !important;
+  color: #24181B;
+  outline: none;
+  font-size: 16px;
+
+  &::-ms-input-placeholder { /* Edge 12-18 */
+  color: #24181B80;
+  font-size: 16px;
+
+  }
+
+  &::placeholder {
+    color: #24181B80;
+    font-size: 16px;
+  }
+}
+.materialDatepicker input:focus 
+{
+  border-color: #e60054;
+}
+.materialDatepicker
+{
+  z-index: 99;
+}
+/* Hide the arrows for number input */
+.no-spinners::-webkit-outer-spin-button,
+.no-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinners {
+  -moz-appearance: textfield;
+}
+
 @media screen and (max-width: 1420px)
 {
   .search-bar
@@ -349,6 +395,11 @@ body {
   {
     transform: translateX(0);
   }
+  .delete-modal-open .show-tab
+  {
+    transform: inherit;
+    position: relative;
+  }
   .mobile-overflow
   {
     overflow: hidden !important;
@@ -369,6 +420,11 @@ body {
 
   .max-h-modal ,.submit-events {
       height: calc(100vh - 180px);
+  }
+  .max-h-modal-new
+  {
+    height: calc(100vh - 68px);
+
   }
   .delete-modal-open .show-tab 
   {

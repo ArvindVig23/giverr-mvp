@@ -174,7 +174,7 @@ export default function ProfileDropdown() {
                       ? handleLoginAsOrg(false)
                       : null
                   }
-                  className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
+                  className="flex items-center gap-2 text-base px-3 py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
                 >
                   <div className="w-5 min-w-5 h-5 rounded-full bg-[#BAA388] flex justify-center items-center text-xs overflow-hidden">
                     {cookies.userDetails.profileUrl ? (
@@ -206,7 +206,7 @@ export default function ProfileDropdown() {
                         ? handleLoginAsOrg(true)
                         : null
                     }
-                    className="flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
+                    className="flex items-center gap-2 text-base px-3	py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
                   >
                     <div className="w-5 h-5 rounded-full bg-[#88AEBA] flex justify-center items-center text-xs overflow-hidden">
                       {userOrgDetails.avatarLink ? (
@@ -236,7 +236,7 @@ export default function ProfileDropdown() {
               <Menu.Item>
                 <Link
                   href="/activity?events=true"
-                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightActivity ? 'bg-[#F5F3EF]' : ''}`}
+                  className={`flex items-center gap-2 text-base px-3	py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightActivity ? 'bg-[#F5F3EF]' : ''}`}
                 >
                   <Image className="md:hidden" src={activity} alt="" />
                   Events & Activity
@@ -246,7 +246,7 @@ export default function ProfileDropdown() {
               <Menu.Item>
                 <Link
                   href="/activity?wishlist=true"
-                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightWishlist ? 'bg-[#F5F3EF]' : ''}`}
+                  className={`flex items-center gap-2 text-base px-3	py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg ${highlightWishlist ? 'bg-[#F5F3EF]' : ''}`}
                 >
                   <Image className="md:hidden" src={heart} alt="" />
                   Wishlist
@@ -257,7 +257,7 @@ export default function ProfileDropdown() {
               <Menu.Item>
                 <Link
                   href="/profile"
-                  className={`flex items-center gap-2 text-base px-3	py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
+                  className={`flex items-center gap-2 text-base px-3	py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg ${pathname === '/profile' ? 'bg-[#F5F3EF]' : ''}`}
                 >
                   <Image className="md:hidden" src={setting} alt="" />
                   Account settings
@@ -266,7 +266,7 @@ export default function ProfileDropdown() {
 
               <Menu.Item>
                 <button
-                  className="mx-2.5 my-2 md:m-0 font-normal md:font-medium flex items-center gap-2 text-base md:text-[#24181B] text-[#E60054] px-3 py-2	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg border border-[#E6005433] md:border-0 md:justify-start justify-center"
+                  className="mx-2.5 my-2 md:m-0 font-normal  flex items-center gap-2 text-base md:text-[#24181B] text-[#E60054] px-3 py-2.5	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg border border-[#E6005433] md:border-0 md:justify-start justify-center"
                   onClick={() => logOut(router, dispatch)}
                 >
                   Log out

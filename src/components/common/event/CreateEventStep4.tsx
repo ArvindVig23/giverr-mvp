@@ -196,7 +196,7 @@ const CreateEventStep4 = ({
                 type="radio"
                 value={'GIVER_PLATFORM'}
               />
-              <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
+              <div className="ml-auto border border[#E6E3D6]  min-w-6 w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
@@ -241,7 +241,7 @@ const CreateEventStep4 = ({
                 type="radio"
                 value={'SHOW_UP'}
               />
-              <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
+              <div className="ml-auto border border[#E6E3D6]  min-w-6 w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
@@ -261,7 +261,7 @@ const CreateEventStep4 = ({
                 type="radio"
                 value={'WEBSITE_LINK'}
               />
-              <div className="ml-auto border border[#E6E3D6] w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
+              <div className="ml-auto border border[#E6E3D6]  min-w-6 w-6 h-6 bg-white rounded-full relative flex items-center justify-center peer-checked:bg-[#E60054] peer-checked:border-[#E60054]">
                 <span className="w-2 h-2 absolute bg-white rounded-md peer-checked:bg-[#fff]"></span>
               </div>
             </label>
