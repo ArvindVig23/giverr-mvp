@@ -4,6 +4,8 @@ import Image from 'next/image'; // Import Image from next/image
 import dummy from '/public/images/dummy.jpg';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
+import volunteer from '/public/images/organizations.svg';
+
 // import dogIcon from '/public/images/dog-icon.svg';
 import heart from '/public/images/heart.svg';
 import stateFill from '/public/images/state=filled.svg';
@@ -22,6 +24,7 @@ import {
   encodeUrl,
   findCommitment,
   getLocalTimeRangeForDetail,
+  pickColor,
   updateSearchParams,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
@@ -46,6 +49,7 @@ import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
+  setOpportunityDetail,
   oppId,
   showEditModal,
   setShowEditModal,
@@ -60,6 +64,14 @@ const OpportunitiesDetail = ({
 
   const [copied, setCopied] = useState(false);
   const handleJoin = async () => {
+    if (opportunityDetail?.volunteer?.length === +opportunityDetail?.spots) {
+      sweetAlertToast(
+        'warning',
+        'No more spots are availble for the opportunity.',
+      );
+
+      return;
+    }
     try {
       dispatch(setLoader(true));
       await volunteerOpportunity(opportunityDetail.id);
@@ -114,13 +126,19 @@ const OpportunitiesDetail = ({
       setCopied(false);
     }, 3000);
   };
+
+  const displayVolunteerName = (name: string) => {
+    return name[0].toUpperCase();
+  };
+
   const addRemoveWishlist = async (oppId: string) => {
     try {
       dispatch(setLoader(true));
-      const response = await addRemoveWishlistService(oppId);
-      setUpdateSuccess(true);
+      await addRemoveWishlistService(oppId);
+      const copyOpportunityDetails: any = { ...opportunityDetail };
+      copyOpportunityDetails.isWishlist = !opportunityDetail.isWishlist;
+      setOpportunityDetail(copyOpportunityDetails);
       dispatch(setLoader(false));
-      sweetAlertToast('success', response.message);
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
@@ -293,28 +311,32 @@ const OpportunitiesDetail = ({
                 <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                   <Image src={time} alt="time" />
                 </div>
-                {opportunityDetail?.frequency
-                  ? `${opportunityDetail?.minHour}-${opportunityDetail?.maxHour}h ${opportunityDetail.frequency} ${opportunityDetail?.commitment ? ` for ${findCommitment(opportunityDetail?.commitment)}` : ''} `
-                  : opportunityDetail?.selectedDate &&
-                    convertToLocalDateWithDay(
-                      opportunityDetail?.selectedDate,
-                      cookies,
+
+                <div>
+                  {opportunityDetail?.frequency
+                    ? `${opportunityDetail?.minHour}-${opportunityDetail?.maxHour}h ${opportunityDetail.frequency} ${opportunityDetail?.commitment ? ` for ${findCommitment(opportunityDetail?.commitment)}` : ''} `
+                    : opportunityDetail?.selectedDate &&
+                      convertToLocalDateWithDay(
+                        opportunityDetail?.selectedDate,
+                        cookies,
+                      )}
+                  {opportunityDetail?.startTime &&
+                    opportunityDetail?.endTime && (
+                      <p className="text-xs md:text-sm text-[#857E7E]">
+                        {getLocalTimeRangeForDetail(
+                          opportunityDetail?.startTime,
+                          cookies,
+                          false, // send true if want the timeZone
+                        )}{' '}
+                        -{' '}
+                        {getLocalTimeRangeForDetail(
+                          opportunityDetail?.endTime,
+                          cookies,
+                          true,
+                        )}
+                      </p>
                     )}
-                {opportunityDetail?.startTime && opportunityDetail?.endTime && (
-                  <p className="text-xs md:text-sm text-[#857E7E]">
-                    {getLocalTimeRangeForDetail(
-                      opportunityDetail?.startTime,
-                      cookies,
-                      false, // send true if want the timeZone
-                    )}{' '}
-                    -{' '}
-                    {getLocalTimeRangeForDetail(
-                      opportunityDetail?.endTime,
-                      cookies,
-                      true,
-                    )}
-                  </p>
-                )}
+                </div>
               </div>
 
               {opportunityDetail?.opportunityData && (
@@ -364,22 +386,42 @@ const OpportunitiesDetail = ({
                   )
                 : null}
 
-              {/* <div className="flex gap-2 items-center text-base text-[#24181B]">
-                <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
-                  <Image src={volunteer} alt="volunteer" />
-                </div>
-                <div className='flex gap-2'>
-                  <div className='flex'>
-                    <div className='w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FF97B5] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
-                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#0B9EDE] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
-                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#0B9EDE] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
-                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FF532D] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
-                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#FFC430] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
-                    <div className='-ml-3 w-[26px] h-[26px] min-w-[26px] flex items-center justify-center bg-[#7FE548] rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]'>A</div>
+              {(opportunityDetail?.createdBy === cookies.userDetails?.id ||
+                opportunityDetail?.createdBy === userOrgDetails.id) &&
+              opportunityDetail?.registrationType === 'GIVER_PLATFORM' ? (
+                <div className="flex gap-2 items-center text-base text-[#24181B]">
+                  <div className="flex gap-2">
+                    <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
+                      <Image
+                        width={20}
+                        height={20}
+                        src={volunteer}
+                        alt="location"
+                      />
+                    </div>
+                    <div className="flex">
+                      {opportunityDetail?.volunteer?.length &&
+                        opportunityDetail.volunteer.map((vol: any) => (
+                          <div
+                            key={vol.id}
+                            className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]`}
+                          >
+                            {displayVolunteerName(
+                              vol?.username?.length
+                                ? vol?.username
+                                : vol?.fullName?.length
+                                  ? vol?.fullName
+                                  : vol?.email,
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                    {opportunityDetail?.volunteer?.length}/
+                    {opportunityDetail?.spots ? opportunityDetail?.spots : 0}{' '}
+                    volunteers
                   </div>
-                15/20 volunteers
                 </div>
-              </div> */}
+              ) : null}
             </div>
             {opportunityDetail?.physicalLocations.length ? (
               <div className="w-full rounded-xl overflow-hidden my-10">
@@ -532,25 +574,23 @@ const OpportunitiesDetail = ({
                   >
                     Login to Join
                   </Link>
-                ) : (
-                  opportunityDetail?.createdBy && (
-                    <button
-                      disabled={
-                        cookies?.userDetails
-                          ? cookies?.userDetails?.id ===
-                              opportunityDetail?.createdBy ||
-                            opportunityDetail?.alreadyJoined
-                          : false
-                      }
-                      onClick={handleJoin}
-                      className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
-                    >
-                      {opportunityDetail?.alreadyJoined
-                        ? 'Already Joined'
-                        : 'Join the event'}
-                    </button>
-                  )
-                )}
+                ) : opportunityDetail?.createdBy ? (
+                  <button
+                    disabled={
+                      cookies?.userDetails
+                        ? cookies?.userDetails?.id ===
+                            opportunityDetail?.createdBy ||
+                          opportunityDetail?.alreadyJoined
+                        : false
+                    }
+                    onClick={handleJoin}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
+                  >
+                    {opportunityDetail?.alreadyJoined
+                      ? 'Already Joined'
+                      : 'Join the event'}
+                  </button>
+                ) : null}
               </div>
             )}
           </div>

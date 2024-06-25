@@ -161,3 +161,28 @@ export const findCommitment = (value: string) => {
   const option = commitmentOptions.find((option) => option.value === value);
   return option ? option.label : null;
 };
+
+// random color
+export const pickColor = (): string => {
+  let previousColor: string | null = null;
+  const colors = [
+    'bg-[#FF97B5]',
+    'bg-[#0B9EDE]',
+    'bg-[#0B9EDE]',
+    'bg-[#FF532D]',
+    'bg-[#FFC430]',
+    'bg-[#7FE548]',
+  ];
+
+  let availableColors = colors.filter((color) => color !== previousColor);
+
+  if (availableColors.length === 0) {
+    availableColors = [...colors];
+  }
+
+  const randomIndex = Math.floor(Math.random() * availableColors.length);
+  const selectedColor = availableColors[randomIndex];
+
+  previousColor = selectedColor;
+  return selectedColor;
+};

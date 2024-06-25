@@ -46,6 +46,7 @@ const OpportunityDetailPage: React.FC = ({ params }: any) => {
       ) : (
         <OpportunitiesDetail
           opportunityDetail={opportunityDetail}
+          setOpportunityDetail={setOpportunityDetail}
           oppId={params.id}
           showEditModal={showEditModal}
           setShowEditModal={setShowEditModal}

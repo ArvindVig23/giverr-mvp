@@ -1,7 +1,10 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
-import { joinOpportunity } from '@/services/backend/opportunityServices';
+import {
+  getOpportunityById,
+  joinOpportunity,
+} from '@/services/backend/opportunityServices';
 import { oppIdSchema } from '@/utils/joiSchema';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
@@ -32,6 +35,36 @@ export async function POST(req: NextRequest) {
     }
     const convertString = JSON.parse(userDetailCookie.value);
     const { id, email } = convertString;
+
+    //  check if opportunity exists
+    const getEventDetails = await getOpportunityById(oppId);
+
+    if (!getEventDetails) {
+      const response = responseHandler(
+        404,
+        false,
+        null,
+        'Opportunity no longer available',
+      );
+      return response;
+    }
+
+    if (getEventDetails.registrationType === 'GIVER_PLATFORM') {
+      const oppVolunteersQuery = query(
+        collection(db, 'opportunityMembers'),
+        where('opportunityId', '==', oppId),
+      );
+      const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+      if (oppVolunteersSnapShot.size === +getEventDetails.spots) {
+        const response = responseHandler(
+          409,
+          false,
+          null,
+          'Opportunity spots are full.',
+        );
+        return response;
+      }
+    }
 
     const oppMemberRef = collection(db, 'opportunityMembers');
     const findUser = query(
