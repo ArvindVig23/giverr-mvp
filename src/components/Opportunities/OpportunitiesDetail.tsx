@@ -49,6 +49,7 @@ import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
+  setOpportunityDetail,
   oppId,
   showEditModal,
   setShowEditModal,
@@ -133,10 +134,11 @@ const OpportunitiesDetail = ({
   const addRemoveWishlist = async (oppId: string) => {
     try {
       dispatch(setLoader(true));
-      const response = await addRemoveWishlistService(oppId);
-      setUpdateSuccess(true);
+      await addRemoveWishlistService(oppId);
+      const copyOpportunityDetails: any = { ...opportunityDetail };
+      copyOpportunityDetails.isWishlist = !opportunityDetail.isWishlist;
+      setOpportunityDetail(copyOpportunityDetails);
       dispatch(setLoader(false));
-      sweetAlertToast('success', response.message);
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
