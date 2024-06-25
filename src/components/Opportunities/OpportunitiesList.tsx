@@ -147,20 +147,18 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
-        {opportunityList && opportunityList.length > 0 ? (
-          opportunityList.map((opportunity: any, index: number) => {
-            return (
-              <div key={index} className="relative group">
-                <OpportunityCard
-                  opportunity={opportunity}
-                  addRemoveWishlist={addRemoveWishlist}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <span>No Opportunitites</span>
-        )}
+        {opportunityList && opportunityList.length > 0
+          ? opportunityList.map((opportunity: any, index: number) => {
+              return (
+                <div key={index} className="relative group">
+                  <OpportunityCard
+                    opportunity={opportunity}
+                    addRemoveWishlist={addRemoveWishlist}
+                  />
+                </div>
+              );
+            })
+          : null}
       </div>
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
@@ -170,9 +168,11 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
         </div>
       ) : null}
       <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">
-        <div className="text-[#1E1E1E80] w-full">
-          Showing {opportunityList.length} of {totalRecords}
-        </div>
+        {totalRecords > opportunityList.length ? (
+          <div className="text-[#1E1E1E80] w-full">
+            Showing {opportunityList.length} of {totalRecords}
+          </div>
+        ) : null}
         {opportunityList.length !== totalRecords ? (
           <button
             onClick={() => setCurrentPage(currrentPage! + 1)}

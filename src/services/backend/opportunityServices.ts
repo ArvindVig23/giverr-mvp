@@ -282,16 +282,6 @@ export const joinOpportunity = async (
 ) => {
   try {
     const getEventDetails = await getOpportunityById(oppId);
-
-    if (!getEventDetails) {
-      const response = responseHandler(
-        404,
-        false,
-        null,
-        'Opportunity no longer available',
-      );
-      return response;
-    }
     await addDoc(collection(db, 'opportunityMembers'), {
       userId: id,
       opportunityId: oppId,

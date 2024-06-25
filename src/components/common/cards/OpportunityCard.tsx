@@ -9,6 +9,7 @@ import { OpportunityCardProps } from '@/interface/opportunity';
 import {
   encodeUrl,
   getFormattedLocalTime,
+  pickColor,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { Tooltip } from '@material-tailwind/react';
@@ -24,29 +25,6 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
     return name[0].toUpperCase();
   };
 
-  const pickColor = (): string => {
-    let previousColor: string | null = null;
-    const colors = [
-      'bg-[#FF97B5]',
-      'bg-[#0B9EDE]',
-      'bg-[#0B9EDE]',
-      'bg-[#FF532D]',
-      'bg-[#FFC430]',
-      'bg-[#7FE548]',
-    ];
-
-    let availableColors = colors.filter((color) => color !== previousColor);
-
-    if (availableColors.length === 0) {
-      availableColors = [...colors];
-    }
-
-    const randomIndex = Math.floor(Math.random() * availableColors.length);
-    const selectedColor = availableColors[randomIndex];
-
-    previousColor = selectedColor;
-    return selectedColor;
-  };
   // const timeZoneCookie = cookies?.userDetails?.timeZoneSettings;
   const statusIsPending = opportunity.status === 'PENDING';
   const statusIsRejected = opportunity.status === 'REJECTED';
