@@ -138,13 +138,33 @@ export async function GET(req: NextRequest) {
             opportunityDoc.data().organizationId === organizationId,
         );
         const organizationWithOpportunities = await Promise.all(
-          organizationOpportunities.map(async (opportunityDoc) => ({
-            id: opportunityDoc.id,
-            ...opportunityDoc.data(),
-            isWishlist: userId
-              ? await getWishlistWithUser(opportunityDoc.id, userId)
-              : false,
-          })),
+          organizationOpportunities.map(async (opportunityDoc) => {
+            const opportunityData = opportunityDoc.data();
+            opportunityData.id = opportunityDoc.id;
+            let oppLocation: any = [];
+            // fetching opportunity location if virtual link is not present
+            if (!opportunityData.virtualLocationLink?.length) {
+              const oppLocationQuery = query(
+                collection(db, 'opportunityLocations'),
+                where('opportunityId', '==', opportunityDoc.id),
+              );
+              const oppLocationSnapShot = await getDocs(oppLocationQuery);
+              if (!oppLocationSnapShot.empty) {
+                oppLocationSnapShot.docs.forEach((doc: any) => {
+                  const location = doc.data();
+                  location.id = doc.id;
+                  oppLocation.push(location);
+                });
+              }
+            }
+            return {
+              ...opportunityData,
+              location: oppLocation,
+              isWishlist: userId
+                ? await getWishlistWithUser(opportunityDoc.id, userId)
+                : false,
+            };
+          }),
         );
 
         organizationData.id = organizationId;
