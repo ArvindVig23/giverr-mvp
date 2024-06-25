@@ -103,7 +103,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       );
       dispatch(updateOpportunityList(updatedOppList));
       dispatch(setLoader(false));
-      sweetAlertToast('success', response.message);
+      sweetAlertToast('success', response.message, 1000);
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
@@ -173,7 +173,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
             Showing {opportunityList.length} of {totalRecords}
           </div>
         ) : null}
-        {opportunityList.length !== totalRecords ? (
+        {opportunityList.length < totalRecords ? (
           <button
             onClick={() => setCurrentPage(currrentPage! + 1)}
             className="text-base  w-auto h-11 px-4 py-3 inline-flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"

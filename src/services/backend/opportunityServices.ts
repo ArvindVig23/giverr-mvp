@@ -184,10 +184,10 @@ export const getUserDetailsById = async (id: any) => {
   const docRef = doc(userRef, id);
   const docSnap = await getDoc(docRef);
   const orgData: any = docSnap.data();
-  orgData.id = docSnap.id;
   if (!orgData) {
     return null;
   } else {
+    orgData.id = docSnap.id;
     return orgData;
   }
 };

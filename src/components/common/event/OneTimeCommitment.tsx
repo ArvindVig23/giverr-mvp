@@ -185,7 +185,7 @@ const OneTimeCommitment = () => {
             <Controller
               name="endTime"
               control={control}
-              rules={{ required: 'Start time is required' }}
+              rules={{ required: 'End time is required' }}
               render={({ field }) => (
                 <DatePicker
                   className="block rounded-xl px-5 placeholder-[#24181B80]  py-4 h-[60px] w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
