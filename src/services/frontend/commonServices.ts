@@ -186,3 +186,26 @@ export const pickColor = (): string => {
   previousColor = selectedColor;
   return selectedColor;
 };
+
+//calculate end date on the basis of commitment
+export const calculateEndDate = (
+  selectedDate: string,
+  commitment: string,
+): moment.Moment | '' => {
+  const startDate = moment(selectedDate);
+  const date = startDate.clone();
+  switch (commitment) {
+    case '3months':
+      return date.add(3, 'months');
+    case '6months':
+      return date.add(6, 'months');
+    case '12months':
+      return date.add(1, 'year');
+    case '24months':
+      return date.add(2, 'years');
+    default:
+      return '';
+  }
+};
+
+export const currentUtcDateFrontend = moment().tz('UTC').toDate().toISOString();

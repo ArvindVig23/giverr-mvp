@@ -206,3 +206,24 @@ export const getFormattedLocalTimeBackend = (
     return formattedLocalTime;
   }
 };
+
+// get the members list with opp id
+export const getOppMembersList = async (oppId: string) => {
+  const oppVolunteersQuery = query(
+    collection(db, 'opportunityMembers'),
+    where('opportunityId', '==', oppId),
+  );
+  const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+  if (oppVolunteersSnapShot.size === 0) {
+    return [];
+  } else {
+    return oppVolunteersSnapShot.docs.map((doc) => doc.data());
+  }
+};
+
+//  convert utc string to local string
+export const formatUtcToReadable = (utcString: string) => {
+  const timezone = 'UTC';
+  const format = 'YYYY-MM-DD HH:mm:ss z';
+  return moment.utc(utcString).tz(timezone).format(format);
+};
