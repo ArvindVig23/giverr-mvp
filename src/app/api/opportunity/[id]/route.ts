@@ -568,9 +568,7 @@ export async function PUT(req: NextRequest, { params }: any) {
         );
       }
     });
-    await Promise.all(emailPromises).catch((error) => {
-      console.log('= eerror occurred while sending email==', error);
-    });
+    await Promise.all(emailPromises);
 
     const response = responseHandler(
       200,
