@@ -122,7 +122,9 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                   alt="thumbnail"
                 />
               </div>
-              {opportunity?.organization?.name}
+              {opportunity?.organization?.name.length > 22
+                ? opportunity?.organization?.name.slice(0, 22) + '...'
+                : opportunity?.organization?.name}
             </div>
           )}
           {pathname == '/activity' && (
