@@ -188,6 +188,7 @@ export async function PUT(req: NextRequest) {
       username,
       avatarLink,
       website,
+      nameLowerCase: name.toLowerCase(),
     });
     const response = responseHandler(
       200,
