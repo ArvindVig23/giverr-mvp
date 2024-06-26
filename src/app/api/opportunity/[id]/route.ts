@@ -347,7 +347,7 @@ export async function DELETE(request: NextRequest, { params }: any) {
         );
         emailPromises.push(
           sendEmail(
-            'amandeeptlgt@gmail.com',
+            volunteer.email,
             'Opportunity updated',
             'Opportunity updated',
             template,
@@ -560,7 +560,7 @@ export async function PUT(req: NextRequest, { params }: any) {
         );
         emailPromises.push(
           sendEmail(
-            'amandeeptlgt@gmail.com',
+            volunteer.email,
             'Opportunity updated',
             'Opportunity updated',
             template,
