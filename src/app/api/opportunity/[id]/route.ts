@@ -1,6 +1,11 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
-import { getUserDetailsCookie } from '@/services/backend/commonServices';
+import {
+  getNotificationSettingsById,
+  getUserDetailsCookie,
+} from '@/services/backend/commonServices';
+import { sendEmail } from '@/services/backend/emailService';
+import { compileEmailTemplate } from '@/services/backend/handlebars';
 import {
   currentUtcDate,
   getOppCommitmentByOppId,
@@ -11,6 +16,8 @@ import {
   getWishlistWithUser,
 } from '@/services/backend/opportunityServices';
 import { eventValidationSchema } from '@/utils/joiSchema';
+import { deleteOpportunityTemplate } from '@/utils/templates/deleteOpportunity';
+import { updateOpportunityTemplate } from '@/utils/templates/opportunityUpdates';
 import {
   collection,
   doc,
@@ -308,6 +315,47 @@ export async function DELETE(request: NextRequest, { params }: any) {
 
     // Commit the batch
     await batch.commit();
+    // sending emails to volunteers
+    const emailPromises: Promise<any>[] = [];
+    const oppVolunteersQuery = query(
+      collection(db, 'opportunityMembers'),
+      where('opportunityId', '==', id),
+    );
+    const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+    const volunteersData = await Promise.all(
+      oppVolunteersSnapShot.docs.map(async (volDoc) => {
+        const volunteer = volDoc.data();
+        const userDetails = await getUserDetailsById(volunteer.userId);
+        const notificationDetails = await getNotificationSettingsById(
+          volunteer.userId,
+        );
+        return {
+          ...userDetails,
+          notificationDetails,
+        };
+      }),
+    );
+    volunteersData.forEach((volunteer: any) => {
+      if (
+        volunteer?.notificationDetails &&
+        volunteer?.notificationDetails?.allowUpdates &&
+        volunteer?.notificationDetails?.allowVolunteeringUpdates
+      ) {
+        const template = compileEmailTemplate(
+          deleteOpportunityTemplate,
+          opportunityData,
+        );
+        emailPromises.push(
+          sendEmail(
+            volunteer.email,
+            'Opportunity updated',
+            'Opportunity updated',
+            template,
+          ),
+        );
+      }
+    });
+    await Promise.all(emailPromises);
 
     const response = responseHandler(
       200,
@@ -480,6 +528,48 @@ export async function PUT(req: NextRequest, { params }: any) {
 
     // Commit the batch
     await batch.commit();
+    // sending emails to volunteers
+    const emailPromises: Promise<any>[] = [];
+    const oppVolunteersQuery = query(
+      collection(db, 'opportunityMembers'),
+      where('opportunityId', '==', id),
+    );
+    const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+    const volunteersData = await Promise.all(
+      oppVolunteersSnapShot.docs.map(async (volDoc) => {
+        const volunteer = volDoc.data();
+        const userDetails = await getUserDetailsById(volunteer.userId);
+        const notificationDetails = await getNotificationSettingsById(
+          volunteer.userId,
+        );
+        return {
+          ...userDetails,
+          notificationDetails,
+        };
+      }),
+    );
+    volunteersData.forEach((volunteer: any) => {
+      if (
+        volunteer?.notificationDetails &&
+        volunteer?.notificationDetails?.allowUpdates &&
+        volunteer?.notificationDetails?.allowVolunteeringUpdates
+      ) {
+        const template = compileEmailTemplate(
+          updateOpportunityTemplate,
+          opportunityData,
+        );
+        emailPromises.push(
+          sendEmail(
+            volunteer.email,
+            'Opportunity updated',
+            'Opportunity updated',
+            template,
+          ),
+        );
+      }
+    });
+    await Promise.all(emailPromises);
+
     const response = responseHandler(
       200,
       false,
