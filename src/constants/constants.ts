@@ -26,3 +26,5 @@ export const TOKEN_SECRET = process.env.TOKEN_SECRET;
 export const DOMAIN_URL = process.env.NEXT_PUBLIC_DOMAIN_URL;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const CRON_SECRET = process.env.CRON_SECRET;
+export const NEXT_PUBLIC_GOOGLE_MAPS_API_KEY =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;

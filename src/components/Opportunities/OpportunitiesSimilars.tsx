@@ -69,7 +69,7 @@ const OpportunitiesSimilars: React.FC<SimilarInterest> = ({
       >
         {similarInterest && similarInterest.length > 0 ? (
           similarInterest.map((opportunity: any, index: number) => (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={index} className="!h-auto">
               <OpportunityCard opportunity={opportunity} />
             </SwiperSlide>
           ))

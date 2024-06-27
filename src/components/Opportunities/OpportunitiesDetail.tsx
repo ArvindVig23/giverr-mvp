@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Image from 'next/image'; // Import Image from next/image
-// import dog from '/public/images/dog-walking.jpg';
-import dummy from '/public/images/dummy.jpg';
+import Image from 'next/image';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 import volunteer from '/public/images/organizations.svg';
@@ -46,6 +44,7 @@ import CreateEventStep1 from '../common/event/CreateEventStep1';
 import CreateEventModal from '../common/modal/CreateEventModal';
 import { Location, SearchParam } from '@/interface/opportunity';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
+import { getInitialOfEmail } from '@/services/frontend/userService';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
@@ -227,12 +226,24 @@ const OpportunitiesDetail = ({
 
                 {opportunityDetail?.organizationDetails && (
                   <div className="flex gap-2 items-center">
-                    <div className="w-6 h-6 overflow-hidden rounded-full text-[#24181B]">
-                      <Image
-                        className="w-full h-full object-cover"
-                        src={dummy}
-                        alt="dummy"
-                      />
+                    <div
+                      className={`w-6 h-6 rounded-full overflow-hidden ${pickColor()} flex justify-center items-center text-xs overflow-hidden`}
+                    >
+                      {opportunityDetail?.organizationDetails?.avatarLink ? (
+                        <Image
+                          width={40}
+                          height={40}
+                          src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunityDetail?.organizationDetails?.avatarLink)}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        getInitialOfEmail(
+                          opportunityDetail?.organizationDetails?.name
+                            ? opportunityDetail?.organizationDetails?.name
+                            : 'O',
+                        )
+                      )}
                     </div>
                     {opportunityDetail?.organizationDetails?.name}
                   </div>
@@ -400,21 +411,23 @@ const OpportunitiesDetail = ({
                       />
                     </div>
                     <div className="flex">
-                      {opportunityDetail?.volunteer?.length &&
-                        opportunityDetail.volunteer.map((vol: any) => (
-                          <div
-                            key={vol.id}
-                            className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]`}
-                          >
-                            {displayVolunteerName(
-                              vol?.username?.length
-                                ? vol?.username
-                                : vol?.fullName?.length
-                                  ? vol?.fullName
-                                  : vol?.email,
-                            )}
-                          </div>
-                        ))}
+                      {opportunityDetail?.volunteer?.length > 0 &&
+                        opportunityDetail.volunteer.map(
+                          (vol: any, index: number) => (
+                            <div
+                              key={vol.id}
+                              className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF] ${index !== 0 ? '-ml-3' : ''}`}
+                            >
+                              {displayVolunteerName(
+                                vol?.username?.length
+                                  ? vol?.username
+                                  : vol?.fullName?.length
+                                    ? vol?.fullName
+                                    : vol?.email,
+                              )}
+                            </div>
+                          ),
+                        )}
                     </div>
                     {opportunityDetail?.volunteer?.length}/
                     {opportunityDetail?.spots ? opportunityDetail?.spots : 0}{' '}
@@ -580,11 +593,12 @@ const OpportunitiesDetail = ({
                       cookies?.userDetails
                         ? cookies?.userDetails?.id ===
                             opportunityDetail?.createdBy ||
+                          opportunityDetail?.createdBy === userOrgDetails.id ||
                           opportunityDetail?.alreadyJoined
                         : false
                     }
                     onClick={handleJoin}
-                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined || opportunityDetail?.createdBy === userOrgDetails.id) && 'cursor-not-allowed'}`}
                   >
                     {opportunityDetail?.alreadyJoined
                       ? 'Already Joined'

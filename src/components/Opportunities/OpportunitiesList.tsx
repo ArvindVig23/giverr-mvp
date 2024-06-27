@@ -88,7 +88,7 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     cookies.userDetails,
     currrentPage,
     searchParams,
-    opportunityTypeList.length,
+    // opportunityTypeList.length,
   ]);
   const cards = Array(5).fill(null);
 
