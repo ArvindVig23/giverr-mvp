@@ -1,5 +1,10 @@
 // import { db } from '@/firebase/config';
+import { CRON_SECRET } from '@/constants/constants';
 import responseHandler from '@/lib/responseHandler';
+import { sendEmail } from '@/services/backend/emailService';
+import { compileEmailTemplate } from '@/services/backend/handlebars';
+import { updateOpportunityTemplate } from '@/utils/templates/opportunityUpdates';
+import { NextRequest } from 'next/server';
 // import {
 //   formatUtcToReadable,
 //   getNotificationSettingsById,
@@ -18,9 +23,28 @@ import responseHandler from '@/lib/responseHandler';
 
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     console.log('Inside the cron job');
+    if (req.headers.get('Authorization') !== `Bearer ${CRON_SECRET}`) {
+      const response = responseHandler(
+        401,
+        false,
+        null,
+        'Unauthorized in running cron',
+      );
+      return response;
+    }
+    const emailData = {
+      name: 'test',
+    };
+    const template = compileEmailTemplate(updateOpportunityTemplate, emailData);
+    await sendEmail(
+      'giverr.platform@gmail.com',
+      'Opportunity updated',
+      'Opportunity updated',
+      template,
+    );
 
     // const oppCommitmentQuery = query(
     //   collection(db, 'opportunityCommitment'),
