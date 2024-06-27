@@ -41,8 +41,8 @@ export async function GET(req: NextRequest) {
     const template = compileEmailTemplate(updateOpportunityTemplate, emailData);
     await sendEmail(
       'giverr.platform@gmail.com',
-      'Opportunity updated',
-      'Opportunity updated',
+      'Cron Test Email',
+      'Cron Test Email',
       template,
     );
 
