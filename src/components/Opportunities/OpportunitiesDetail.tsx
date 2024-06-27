@@ -580,11 +580,12 @@ const OpportunitiesDetail = ({
                       cookies?.userDetails
                         ? cookies?.userDetails?.id ===
                             opportunityDetail?.createdBy ||
+                          opportunityDetail?.createdBy === userOrgDetails.id ||
                           opportunityDetail?.alreadyJoined
                         : false
                     }
                     onClick={handleJoin}
-                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined) && 'cursor-not-allowed'}`}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined || opportunityDetail?.createdBy === userOrgDetails.id) && 'cursor-not-allowed'}`}
                   >
                     {opportunityDetail?.alreadyJoined
                       ? 'Already Joined'
