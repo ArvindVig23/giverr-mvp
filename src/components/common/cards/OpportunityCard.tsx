@@ -15,6 +15,7 @@ import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { Tooltip } from '@material-tailwind/react';
 import { useCookies } from 'react-cookie';
 import { usePathname } from 'next/navigation';
+import { useSelector } from 'react-redux';
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
   addRemoveWishlist,
@@ -24,13 +25,15 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const displayVolunteerName = (name: string) => {
     return name[0].toUpperCase();
   };
-
   // const timeZoneCookie = cookies?.userDetails?.timeZoneSettings;
   const statusIsPending = opportunity.status === 'PENDING';
   const statusIsRejected = opportunity.status === 'REJECTED';
 
   const userNotFound = !cookies.userToken;
-  const sameUserOpp = cookies?.userDetails?.id === opportunity.createdBy;
+  const organizationDetails = useSelector((state: any) => state.userOrgReducer);
+  const sameUserOpp =
+    cookies?.userDetails?.id === opportunity.createdBy ||
+    opportunity?.createdBy === organizationDetails?.id;
   return (
     <>
       <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5 ">
@@ -131,7 +134,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             <div className="flex gap-2 items-center text-base text-[#24181B]">
               <div className="flex gap-2">
                 <div className="flex">
-                  {opportunity?.volunteers?.length &&
+                  {opportunity?.volunteers?.length > 0 &&
                     opportunity.volunteers.map((vol: any) => (
                       <div
                         key={vol.id}

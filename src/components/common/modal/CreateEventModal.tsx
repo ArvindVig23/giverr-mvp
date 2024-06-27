@@ -95,7 +95,7 @@ const CreateEventModal = ({
                       onClick={() => currentStep !== 1 && updateStep(-1)}
                       disabled={currentStep === 1}
                       type="button"
-                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]  ${currentStep === 1 ? 'cursor-not-allowed' : ''}`}
+                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]  ${currentStep === 1 ? 'cursor-not-allowed opacity-30' : ''}`}
                     >
                       <Image className="rotate-180" src={right} alt=""></Image>
                     </button>
@@ -103,7 +103,7 @@ const CreateEventModal = ({
                       disabled={currentStep === 4}
                       onClick={() => updateStep(1)}
                       type="button"
-                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3] ${currentStep === 4 ? 'cursor-not-allowed' : ''}`}
+                      className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3] ${currentStep === 4 ? 'cursor-not-allowed opacity-30' : ''}`}
                     >
                       <Image src={right} alt=""></Image>
                     </button>
