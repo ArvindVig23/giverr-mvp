@@ -91,11 +91,6 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
             <div
               className={`group border rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer hover:border-[#E60054] hover:text-[#E60054] ${opportunityFilter.length === 0 && 'border-[#E60054] text-[#E60054]'}`}
             >
-              {/* <Image
-                className={` group-hover:brightness-100 ${opportunityFilter.length === 0 ? 'brightness-100' : 'brightness-0'}`}
-                src={heartSearch}
-                alt="search"
-              /> */}
               All
             </div>
           </SwiperSlide>
