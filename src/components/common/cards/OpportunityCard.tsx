@@ -3,8 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import heart from '/public/images/heart.svg';
 import stateFill from '/public/images/state=filled.svg';
-// import dummy from '/public/images/dummy.jpg';
-import thumb from '/public/images/thumb.jpg';
 import { OpportunityCardProps } from '@/interface/opportunity';
 import {
   encodeUrl,
@@ -15,6 +13,8 @@ import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { Tooltip } from '@material-tailwind/react';
 import { useCookies } from 'react-cookie';
 import { usePathname } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { getInitialOfEmail } from '@/services/frontend/userService';
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
   addRemoveWishlist,
@@ -24,13 +24,15 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const displayVolunteerName = (name: string) => {
     return name[0].toUpperCase();
   };
-
   // const timeZoneCookie = cookies?.userDetails?.timeZoneSettings;
   const statusIsPending = opportunity.status === 'PENDING';
   const statusIsRejected = opportunity.status === 'REJECTED';
 
   const userNotFound = !cookies.userToken;
-  const sameUserOpp = cookies?.userDetails?.id === opportunity.createdBy;
+  const organizationDetails = useSelector((state: any) => state.userOrgReducer);
+  const sameUserOpp =
+    cookies?.userDetails?.id === opportunity.createdBy ||
+    opportunity?.createdBy === organizationDetails?.id;
   return (
     <>
       <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5 ">
@@ -115,12 +117,24 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
 
           {opportunity?.organization?.name && (
             <div className="flex items-center mt-5 gap-2 text-base">
-              <div className="w-6 h-6 rounded-full overflow-hidden ">
-                <Image
-                  src={thumb}
-                  className="object-cover w-full h-full"
-                  alt="thumbnail"
-                />
+              <div
+                className={`w-6 h-6 rounded-full overflow-hidden ${pickColor()} flex justify-center items-center text-xs overflow-hidden`}
+              >
+                {opportunity?.organization?.avatarLink ? (
+                  <Image
+                    width={40}
+                    height={40}
+                    src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(opportunity?.organization?.avatarLink)}`}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  getInitialOfEmail(
+                    opportunity?.organization?.name
+                      ? opportunity?.organization?.name
+                      : 'O',
+                  )
+                )}
               </div>
               {opportunity?.organization?.name.length > 22
                 ? opportunity?.organization?.name.slice(0, 22) + '...'
@@ -131,11 +145,11 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
             <div className="flex gap-2 items-center text-base text-[#24181B]">
               <div className="flex gap-2">
                 <div className="flex">
-                  {opportunity?.volunteers?.length &&
-                    opportunity.volunteers.map((vol: any) => (
+                  {opportunity?.volunteers?.length > 0 &&
+                    opportunity.volunteers.map((vol: any, index: number) => (
                       <div
                         key={vol.id}
-                        className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]`}
+                        className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF] ${index !== 0 ? '-ml-3' : ''}`}
                       >
                         {displayVolunteerName(
                           vol?.username?.length
