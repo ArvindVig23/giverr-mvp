@@ -34,7 +34,7 @@ const CreateEventStep1 = () => {
     eventDetails.thumbnailUrl || '',
   );
   const [cookies] = useCookies();
-
+  const organizationDetails = useSelector((state: any) => state.userOrgReducer);
   const {
     register,
     handleSubmit,
@@ -49,7 +49,11 @@ const CreateEventStep1 = () => {
       opportunityType: eventDetails.opportunityType,
       createdBy: eventDetails.organizationId
         ? eventDetails.organizationId
-        : eventDetails.createdBy || cookies.userDetails.id,
+        : eventDetails.createdBy === cookies.userDetails.id
+          ? eventDetails.createdBy || cookies.userDetails.id
+          : cookies.userDetails.loginAsOrg
+            ? organizationDetails.id
+            : eventDetails.createdBy || cookies.userDetails.id,
     },
   });
   const router = useRouter();
