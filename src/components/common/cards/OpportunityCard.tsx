@@ -135,10 +135,10 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               <div className="flex gap-2">
                 <div className="flex">
                   {opportunity?.volunteers?.length > 0 &&
-                    opportunity.volunteers.map((vol: any) => (
+                    opportunity.volunteers.map((vol: any, index: number) => (
                       <div
                         key={vol.id}
-                        className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF]`}
+                        className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF] ${index !== 0 ? '-ml-3' : ''}`}
                       >
                         {displayVolunteerName(
                           vol?.username?.length
