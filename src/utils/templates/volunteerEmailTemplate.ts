@@ -41,7 +41,7 @@ export const volunteerEmailTemplate = `<!DOCTYPE html>
             <p>Please find the event details below:</p>
             <p><strong>Event Name:</strong> {{name}}</p>
             <p><strong>Description:</strong> {{description}}</p>
-            <p><strong>Event Date:</strong> {{formatDate eventDate}}</p>
+            <p><strong>Event Date:</strong> {{eventDate}}</p>
         </div>
         <div class="footer">
             Thanks, <br />

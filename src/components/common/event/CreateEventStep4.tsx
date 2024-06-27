@@ -10,6 +10,7 @@ import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { websiteLinkRegex } from '@/utils/regex';
 import { uploadFile } from '@/services/frontend/opportunityService';
 import { CreateOppDetails } from '@/interface/opportunity';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const CreateEventStep4 = ({
   setThankYouModal,
@@ -17,7 +18,8 @@ const CreateEventStep4 = ({
   setThankYouModal?: Function;
 }) => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
-
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const dispatch = useDispatch();
   const [cookies] = useCookies();
   const {
@@ -162,6 +164,13 @@ const CreateEventStep4 = ({
       const { message } = response;
       sweetAlertToast('success', message);
       dispatch(setLoader(false));
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      current.delete('submit-event');
+      current.delete('step');
+      current.delete('commitment');
+      const search = current.toString();
+      const query = search ? `?${search}` : '';
+      router.push(`${window.location.pathname}${query}`);
       setThankYouModal && setThankYouModal(true);
     } catch (error: any) {
       dispatch(setLoader(false));

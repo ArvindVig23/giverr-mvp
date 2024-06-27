@@ -10,7 +10,11 @@ import {
 } from '@/utils/staticDropdown/dropdownOptions';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { SearchParam } from '@/interface/opportunity';
-import { updateSearchParams } from '@/services/frontend/commonServices';
+import {
+  calculateEndDate,
+  currentUtcDateFrontend,
+  updateSearchParams,
+} from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const OnGoingCommitment = () => {
@@ -29,10 +33,10 @@ const OnGoingCommitment = () => {
       minHour: data.minHour,
       maxHour: data.maxHour,
       commitment: data.commitment,
-      selectedDate: '',
+      selectedDate: currentUtcDateFrontend,
       endTime: '',
       startTime: '',
-      endtime: '',
+      endDate: calculateEndDate(currentUtcDateFrontend, data.commitment),
     };
     dispatch(updateSubmitOppDetails(updatedSubmitEventState));
     const params: SearchParam[] = [
