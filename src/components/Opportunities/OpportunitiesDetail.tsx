@@ -400,7 +400,7 @@ const OpportunitiesDetail = ({
                       />
                     </div>
                     <div className="flex">
-                      {opportunityDetail?.volunteer?.length &&
+                      {opportunityDetail?.volunteer?.length > 0 &&
                         opportunityDetail.volunteer.map((vol: any) => (
                           <div
                             key={vol.id}
