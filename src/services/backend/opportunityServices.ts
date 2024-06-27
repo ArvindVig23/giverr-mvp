@@ -19,6 +19,7 @@ import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
 import {
+  formatUtcToReadable,
   getFormattedLocalTimeBackend,
   getNotificationSettingsById,
   getUserDetailsCookie,
@@ -288,10 +289,12 @@ export const joinOpportunity = async (
     });
     const getNotificationSetting: any = await getNotificationSettingsById(id);
     if (getNotificationSetting && getNotificationSetting.allowUpdates) {
-      const template = compileEmailTemplate(
-        volunteerEmailTemplate,
-        getEventDetails,
-      );
+      const emailData = {
+        name: getEventDetails.name,
+        description: getEventDetails.description,
+        eventDate: formatUtcToReadable(getEventDetails.selectedDate),
+      };
+      const template = compileEmailTemplate(volunteerEmailTemplate, emailData);
       await sendEmail(
         email,
         'Welcome aboard, Volunteer!',

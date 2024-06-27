@@ -8,7 +8,7 @@ export function compileEmailTemplate(
     const template = Handlebars.compile(templateString);
     return template(data);
   } catch (error) {
-    console.log(error);
+    console.log(error, 'Error in handlebars');
     return ''; // Return an empty string in case of an error
   }
 }

@@ -30,6 +30,6 @@ export const sendEmail = async (
       html: html,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error, 'Error in sending email');
   }
 };
