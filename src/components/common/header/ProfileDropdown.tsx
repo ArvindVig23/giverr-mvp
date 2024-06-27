@@ -126,7 +126,7 @@ export default function ProfileDropdown() {
         <div className="fixed inset-0 bg-black opacity-50 z-20"></div>
       )}
       <Menu as="div" className="relative inline-block text-left">
-        <div>
+        <div className="flex">
           <Menu.Button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden "
