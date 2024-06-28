@@ -66,7 +66,7 @@ const OpportunitiesDetail = ({
     if (opportunityDetail?.volunteer?.length === +opportunityDetail?.spots) {
       sweetAlertToast(
         'warning',
-        'No more spots are availble for the opportunity.',
+        'No more spots are available for the opportunity.',
       );
 
       return;
