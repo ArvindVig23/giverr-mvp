@@ -141,6 +141,9 @@ export async function GET(request: NextRequest, { params }: any) {
 
     if (getSimilarInterests.size > 0) {
       opportunitiesPromises = getSimilarInterests.docs.map(async (docs) => {
+        if (docs.id === id) {
+          return null;
+        }
         const opportunityData = docs.data();
         opportunityData.id = docs.id;
         const organizationId = opportunityData.organizationId;
@@ -228,7 +231,8 @@ export async function GET(request: NextRequest, { params }: any) {
       });
     }
 
-    const filteredOpportunities = await Promise.all(opportunitiesPromises);
+    const similarOpportunities = await Promise.all(opportunitiesPromises);
+    const filteredOpportunities = similarOpportunities.filter((opp) => opp);
     //  check if user already joined the opportunity
     if (userDetailCookie) {
       const convertString = JSON.parse(userDetailCookie.value);

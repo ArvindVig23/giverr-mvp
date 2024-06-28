@@ -1,8 +1,8 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { FileUploader } from 'react-drag-drop-files';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import chevronDown from '/public/images/chevron-down.svg';
 import close from '/public/images/close.svg';
@@ -24,6 +24,7 @@ import {
 } from '@/services/frontend/commonServices';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { SearchParam } from '@/interface/opportunity';
+import { getInitialOfEmail } from '@/services/frontend/userService';
 
 const CreateEventStep1 = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ const CreateEventStep1 = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -155,7 +157,55 @@ const CreateEventStep1 = () => {
       setFileError('');
     }
   };
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
+
+  const options = [
+    {
+      id: cookies.userDetails.id,
+      label: cookies.userDetails.fullName
+        ? cookies.userDetails.fullName
+        : cookies.userDetails.email,
+      value: cookies.userDetails.id,
+      image: cookies.userDetails.profileUrl,
+    },
+    ...(userOrgDetails.id && userOrgDetails.status === 'APPROVED'
+      ? [
+          {
+            id: userOrgDetails.id,
+            label: userOrgDetails.name,
+            value: userOrgDetails.id,
+            image: userOrgDetails.avatarLink,
+          },
+        ]
+      : []),
+  ];
+  const findSelectedOption = (value: any, field: any) => {
+    const option = options.find((option) => option.id === value);
+    if (field === 'label') {
+      return option?.label;
+    }
+    if (field === 'image') {
+      return option?.image;
+    }
+
+    return option;
+  };
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex gap-5 w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -165,29 +215,81 @@ const CreateEventStep1 = () => {
             <div className="flex-shrink-0 px-5 pl-0 text-base text-[#24181B] border-r border-[#D1CFC7]">
               Publish as
             </div>
-            <div className="relative w-full">
-              <select
-                id="createdBy"
-                {...register('createdBy')}
-                className="block w-full px-5 text-base text-[#24181B] bg-[#EDEBE3] border-none rounded-2xl focus:outline-none focus:ring-0 focus:border-[#E60054] appearance-none peer"
-              >
-                <option value={cookies.userDetails.id}>
-                  {cookies.userDetails.fullName
-                    ? cookies.userDetails.fullName
-                    : cookies.userDetails.email}
-                </option>
-                {userOrgDetails.id && userOrgDetails.status === 'APPROVED' ? (
-                  <option value={userOrgDetails.id}>
-                    {userOrgDetails.name}
-                  </option>
-                ) : (
-                  <option disabled>No options to choose</option>
+            <div className="relative w-full" ref={dropdownRef}>
+              <Controller
+                name={'createdBy'}
+                control={control}
+                rules={{ required: 'Please select a member' }}
+                render={({ field: { onChange, value } }) => (
+                  <>
+                    <div
+                      className="bg-white border border-gray-300 rounded-md p-2 flex items-center cursor-pointer"
+                      onClick={toggleDropdown}
+                    >
+                      <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                        {value ? (
+                          <>
+                            {findSelectedOption(value, 'image') ? (
+                              <Image
+                                src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(findSelectedOption(value, 'image'))}`}
+                                alt={'avatar'}
+                                width={24}
+                                height={24}
+                                className="rounded-full mr-2"
+                              />
+                            ) : (
+                              getInitialOfEmail(
+                                findSelectedOption(value, 'label') || 'O',
+                              )
+                            )}
+                          </>
+                        ) : (
+                          <span>Select an option</span>
+                        )}
+                      </div>
+                      <span className="ms-3">
+                        {findSelectedOption(value, 'label')}
+                      </span>
+                    </div>
+                    {isOpen && (
+                      <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-auto">
+                        {options.map(
+                          (option) =>
+                            option.id !== value && (
+                              <li
+                                key={option.id}
+                                className="px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-pointer items-center text-[#24181B] text-base"
+                                onClick={() => {
+                                  onChange(option.id);
+                                  setIsOpen(false);
+                                }}
+                              >
+                                <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                                  {option.image ? (
+                                    <Image
+                                      src={option.image}
+                                      alt={option.label}
+                                      width={24}
+                                      height={24}
+                                      className="rounded-full mr-2"
+                                    />
+                                  ) : (
+                                    getInitialOfEmail(option.label)
+                                  )}
+                                </div>
+                                <span>{option.label}</span>
+                              </li>
+                            ),
+                        )}
+                        {options.length === 1 ? (
+                          <li className=" px-3 py-2.5 flex gap-2.5 hover:bg-[#F5F3EF] rounded-xl cursor-not-allowed items-center text-[#24181B] text-base">
+                            No More options
+                          </li>
+                        ) : null}
+                      </ul>
+                    )}
+                  </>
                 )}
-              </select>
-              <Image
-                src={chevronDown}
-                alt="arrow"
-                className="absolute top-0 right-0 pointer-events-none"
               />
             </div>
           </div>
