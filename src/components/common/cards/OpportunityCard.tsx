@@ -106,8 +106,6 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               {opportunity.name}
             </h4>
           )}
-
-          {console.log(opportunity, 'selected')}
           <span className="text-base">
             {eventCardDateTime(
               opportunity.commitment[0].selectedDate,
