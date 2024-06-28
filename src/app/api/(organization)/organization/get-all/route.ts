@@ -157,12 +157,27 @@ export async function GET(req: NextRequest) {
                 });
               }
             }
+            // fetching opportunity commitment
+            let oppCommitments: any = [];
+            const oppCommitmentQuery = query(
+              collection(db, 'opportunityCommitment'),
+              where('opportunityId', '==', opportunityDoc.id),
+            );
+            const oppCommitmentSnapShot = await getDocs(oppCommitmentQuery);
+            if (!oppCommitmentSnapShot.empty) {
+              oppCommitmentSnapShot.docs.forEach((doc: any) => {
+                const commitment = doc.data();
+                commitment.id = doc.id;
+                oppCommitments.push(commitment);
+              });
+            }
             return {
               ...opportunityData,
               location: oppLocation,
               isWishlist: userId
                 ? await getWishlistWithUser(opportunityDoc.id, userId)
                 : false,
+              commitment: oppCommitments,
             };
           }),
         );
