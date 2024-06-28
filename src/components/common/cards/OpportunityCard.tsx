@@ -6,7 +6,7 @@ import stateFill from '/public/images/state=filled.svg';
 import { OpportunityCardProps } from '@/interface/opportunity';
 import {
   encodeUrl,
-  getFormattedLocalTime,
+  eventCardDateTime,
   pickColor,
 } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
@@ -106,8 +106,14 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               {opportunity.name}
             </h4>
           )}
+
+          {console.log(opportunity, 'selected')}
           <span className="text-base">
-            {getFormattedLocalTime(opportunity.eventDate, cookies)}
+            {eventCardDateTime(
+              opportunity.commitment[0].selectedDate,
+              opportunity.commitment[0].startTime,
+              cookies,
+            )}
           </span>
           <div className="text-[#24181B80] truncate text-base">
             {opportunity?.location.length

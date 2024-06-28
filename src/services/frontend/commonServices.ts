@@ -209,3 +209,59 @@ export const calculateEndDate = (
 };
 
 export const currentUtcDateFrontend = moment().tz('UTC').toDate().toISOString();
+
+//  conver time & date format for the event card
+export const eventCardDateTime = (
+  utcDateString: string,
+  utcStartTimeString: string,
+  cookies: any,
+) => {
+  if (Object.keys(cookies).length > 0) {
+    const timeZoneSettings = cookies.userDetails.timeZoneSettings;
+    const dateFormat = timeZoneSettings.isDayMonthYearDateFormat
+      ? 'DD MMMM, YYYY'
+      : 'MMMM DD, YYYY';
+    const timeFormat = timeZoneSettings.istwentyFourHourTimeFormat
+      ? 'HH:mm'
+      : 'h:mm A';
+    const selectedTimeZone = timeZoneSettings.selectedTimeZone;
+
+    // Convert UTC time string to moment object
+    const utcDate = moment.utc(utcDateString);
+    const utcStartTime = moment.utc(utcStartTimeString);
+    let date = null;
+    let startTime = null;
+    if (selectedTimeZone) {
+      date = moment(utcDate).tz(selectedTimeZone).format(`${dateFormat}`);
+      startTime = moment(utcStartTime)
+        .tz(selectedTimeZone)
+        .format(`${timeFormat}`);
+      return `${date} at ${startTime}`;
+    } else {
+      const userLocalZone = moment.tz.guess();
+      const utcDate = moment.utc(utcDateString);
+      const startTime = moment.utc(utcStartTimeString);
+      const userLocalDate = utcDate
+        .clone()
+        .tz(userLocalZone)
+        .format(`${dateFormat}`);
+      const userLocalTime = startTime
+        .clone()
+        .tz(userLocalZone)
+        .format(`${timeFormat}`);
+
+      return `${userLocalDate} at ${userLocalTime}`;
+    }
+  } else {
+    const userLocalZone = moment.tz.guess();
+    const utcDate = moment.utc(utcDateString);
+    const startTime = moment.utc(utcStartTimeString);
+    const userLocalDate = utcDate
+      .clone()
+      .tz(userLocalZone)
+      .format(`MMM D, YYYY`);
+    const userLocalTime = startTime.clone().tz(userLocalZone).format(`HH:mm`);
+
+    return `${userLocalDate} at ${userLocalTime}`;
+  }
+};

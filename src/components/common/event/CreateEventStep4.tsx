@@ -11,6 +11,8 @@ import { websiteLinkRegex } from '@/utils/regex';
 import { uploadFile } from '@/services/frontend/opportunityService';
 import { CreateOppDetails } from '@/interface/opportunity';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
+import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 
 const CreateEventStep4 = ({
   setThankYouModal,
@@ -172,6 +174,7 @@ const CreateEventStep4 = ({
       const query = search ? `?${search}` : '';
       router.push(`${window.location.pathname}${query}`);
       setThankYouModal && setThankYouModal(true);
+      dispatch(updateSubmitOppDetails(submitEventState));
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error.data;
