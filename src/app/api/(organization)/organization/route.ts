@@ -18,7 +18,6 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
-
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
@@ -253,12 +252,11 @@ export async function DELETE(req: NextRequest) {
     const q = query(orgMemberRef, where('organizationId', '==', orgId));
     const existedOrgMembers = await getDocs(q);
 
+    const batch = writeBatch(db);
     if (!existedOrgMembers.empty) {
-      const batch = writeBatch(db);
       existedOrgMembers.forEach((doc) => {
         batch.delete(doc.ref);
       });
-      await batch.commit();
     }
 
     // delete records from the token table as well
@@ -270,12 +268,59 @@ export async function DELETE(req: NextRequest) {
     const membersWithToken = await getDocs(memQuery);
 
     if (!membersWithToken.empty) {
-      const batch = writeBatch(db);
       membersWithToken.forEach((doc) => {
         batch.delete(doc.ref);
       });
-      await batch.commit();
     }
+
+    // deleting events of organizations
+    const opportunitiesRef = collection(db, 'opportunities');
+    const opportunityQuery = query(
+      opportunitiesRef,
+      where('organizationId', '==', orgId),
+    );
+
+    const opportunitiesSnapshot = await getDocs(opportunityQuery);
+    await Promise.all(
+      opportunitiesSnapshot.docs.map(async (doc) => {
+        // deleting volunteers data
+        const oppVolunteersQuery = query(
+          collection(db, 'opportunityMembers'),
+          where('opportunityId', '==', doc.id),
+        );
+        const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+        if (!oppVolunteersSnapShot.empty) {
+          oppVolunteersSnapShot.docs.forEach((volData) => {
+            batch.delete(volData.ref);
+          });
+        }
+        // deleting location data
+        const locationsQuery = query(
+          collection(db, 'opportunityLocations'),
+          where('opportunityId', '==', doc.id),
+        );
+        const locationsSnapshot = await getDocs(locationsQuery);
+        if (!locationsSnapshot.empty) {
+          locationsSnapshot.forEach((locationDoc) => {
+            batch.delete(locationDoc.ref);
+          });
+        }
+        // deleting commitment data
+        const commitmentQuery = query(
+          collection(db, 'opportunityCommitment'),
+          where('opportunityId', '==', doc.id),
+        );
+        const commitmentSnapshot = await getDocs(commitmentQuery);
+        if (!commitmentSnapshot.empty) {
+          commitmentSnapshot.forEach((commitmentDoc) => {
+            batch.delete(commitmentDoc.ref);
+          });
+        }
+        batch.delete(doc.ref);
+        await batch.commit();
+      }),
+    );
+
     const response = responseHandler(
       200,
       true,
