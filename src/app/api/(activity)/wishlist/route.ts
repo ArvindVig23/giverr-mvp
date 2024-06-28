@@ -4,6 +4,7 @@ import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import {
   addToWishlist,
   getOrgDetailsById,
+  getUserDetailsById,
   getWishlistWithUser,
   removeFromWishlist,
 } from '@/services/backend/opportunityServices';
@@ -109,6 +110,69 @@ export async function GET(req: NextRequest) {
           opportunityData.organization = orgDetails;
         }
       }
+      let oppLocation: any = [];
+      // fetching opportunity location if virtual link is not present
+      if (!opportunityData.virtualLocationLink?.length) {
+        const oppLocationQuery = query(
+          collection(db, 'opportunityLocations'),
+          where('opportunityId', '==', docs.id),
+        );
+        const oppLocationSnapShot = await getDocs(oppLocationQuery);
+        if (!oppLocationSnapShot.empty) {
+          oppLocationSnapShot.docs.forEach((doc: any) => {
+            const location = doc.data();
+            location.id = doc.id;
+            oppLocation.push(location);
+          });
+        }
+      }
+
+      // fetching opportunity commitment
+      let oppCommitments: any = [];
+      const oppCommitmentQuery = query(
+        collection(db, 'opportunityCommitment'),
+        where('opportunityId', '==', wishlistData.opportunityId),
+      );
+      const oppCommitmentSnapShot = await getDocs(oppCommitmentQuery);
+      if (!oppCommitmentSnapShot.empty) {
+        oppCommitmentSnapShot.docs.forEach((doc: any) => {
+          const commitment = doc.data();
+          commitment.id = doc.id;
+          oppCommitments.push(commitment);
+        });
+      }
+
+      // fetching volunteer for opportunity only if registration type is GIVER_PLATFORM
+      let oppVolunteers = [];
+      if (opportunityData.registrationType === 'GIVER_PLATFORM') {
+        const oppVolunteersQuery = query(
+          collection(db, 'opportunityMembers'),
+          where('opportunityId', '==', wishlistData.opportunityId),
+        );
+        const oppVolunteersSnapShot = await getDocs(oppVolunteersQuery);
+        oppVolunteers = await Promise.all(
+          oppVolunteersSnapShot.docs.map(async (volDoc) => {
+            const volunteer = volDoc.data();
+            const userDetails = await getUserDetailsById(volunteer.userId);
+            return userDetails;
+          }),
+        );
+      }
+
+      // get the wishlist details
+      opportunityData.isWishlist = false;
+      if (userDetailCookie) {
+        const convertString = JSON.parse(userDetailCookie.value);
+        const { id } = convertString;
+        const checkIsWishlist = await getWishlistWithUser(
+          wishlistData.opportunityId,
+          id,
+        );
+        opportunityData.isWishlist = checkIsWishlist;
+      }
+      opportunityData.commitment = oppCommitments;
+      opportunityData.location = oppLocation;
+      opportunityData.volunteers = oppVolunteers;
       return opportunityData;
     });
     const opportunities = await Promise.all(opportunitiesPromises);
