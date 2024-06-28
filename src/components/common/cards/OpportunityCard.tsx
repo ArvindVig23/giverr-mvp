@@ -12,13 +12,15 @@ import {
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { Tooltip } from '@material-tailwind/react';
 import { useCookies } from 'react-cookie';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 const OpportunityCard: React.FC<OpportunityCardProps> = ({
   opportunity,
   addRemoveWishlist,
 }: any) => {
+  const searchParams = useSearchParams();
+  const eventsTab = searchParams.get('events');
   const [cookies] = useCookies();
   const pathname = usePathname();
   const displayVolunteerName = (name: string) => {
@@ -145,7 +147,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                 : opportunity?.organization?.name}
             </div>
           )}
-          {pathname == '/activity' && (
+          {pathname == '/activity' && eventsTab ? (
             <div className="flex gap-2 items-center text-base text-[#24181B]">
               <div className="flex gap-2">
                 <div className="flex">
@@ -168,7 +170,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                 {opportunity.volunteers.length}/{opportunity.spots} volunteers
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </Link>
     </>

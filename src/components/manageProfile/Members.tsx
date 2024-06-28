@@ -140,7 +140,7 @@ const Members = () => {
               {...register('searchMember')}
               type="text"
               className="w-full h-11 bg-[#EDEBE3] border border-[#E6E3D6] rounded-2xl focus:outline-none px-10"
-              placeholder="Search Members"
+              placeholder="Invite by name or username"
             />
             <Image
               className="absolute top-3 left-3 pointer-events-none"
