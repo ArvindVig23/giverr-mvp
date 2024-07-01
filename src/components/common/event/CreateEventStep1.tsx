@@ -178,7 +178,6 @@ const CreateEventStep1 = ({
   }, []);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-
   const options = [
     {
       id: cookies.userDetails.id,
@@ -278,10 +277,10 @@ const CreateEventStep1 = ({
                                   setIsOpen(false);
                                 }}
                               >
-                                <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium">
+                                <div className="w-6 min-w-6 h-6 overflow-hidden flex items-center justify-center bg-[#B0BA88] rounded-full uppercase text-[10px] font-medium ">
                                   {option.image ? (
                                     <Image
-                                      src={option.image}
+                                      src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(option.image)}`}
                                       alt={option.label}
                                       width={24}
                                       height={24}

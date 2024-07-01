@@ -53,11 +53,13 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
       return getFilterIds.join(',');
     }
   };
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+  const filterByOppType = searchParams.get('opportunity');
+
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
     setOpportunityIds(opportunityIds);
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
     (async () => {
       try {
         setLoading(true);
@@ -87,7 +89,10 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   }, [
     cookies.userDetails,
     currrentPage,
-    searchParams,
+    startDate,
+    endDate,
+    filterByOppType,
+    // searchParams,
     // opportunityTypeList.length,
   ]);
   const cards = Array(5).fill(null);
