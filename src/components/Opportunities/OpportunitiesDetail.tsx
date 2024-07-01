@@ -402,8 +402,8 @@ const OpportunitiesDetail = ({
               {(opportunityDetail?.createdBy === cookies.userDetails?.id ||
                 opportunityDetail?.createdBy === userOrgDetails.id) &&
               opportunityDetail?.registrationType === 'GIVER_PLATFORM' ? (
-                <div className="flex gap-2 items-center text-base text-[#24181B]">
-                  <div className="flex gap-2">
+                <div className="flex gap-2  text-base text-[#24181B]">
+                  <div className="flex gap-2 items-center">
                     <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                       <Image
                         width={20}
@@ -412,25 +412,27 @@ const OpportunitiesDetail = ({
                         alt="location"
                       />
                     </div>
-                    <div className="flex">
-                      {opportunityDetail?.volunteer?.length > 0 &&
-                        opportunityDetail.volunteer.map(
-                          (vol: any, index: number) => (
-                            <div
-                              key={vol.id}
-                              className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF] ${index !== 0 ? '-ml-3' : ''}`}
-                            >
-                              {displayVolunteerName(
-                                vol?.username?.length
-                                  ? vol?.username
-                                  : vol?.fullName?.length
-                                    ? vol?.fullName
-                                    : vol?.email,
-                              )}
-                            </div>
-                          ),
-                        )}
-                    </div>
+                    {opportunityDetail?.volunteer?.length > 0 ? (
+                      <div className="flex">
+                        {opportunityDetail?.volunteer?.length > 0 &&
+                          opportunityDetail.volunteer.map(
+                            (vol: any, index: number) => (
+                              <div
+                                key={vol.id}
+                                className={`w-[26px] h-[26px] min-w-[26px] flex items-center justify-center ${pickColor()} rounded-full text-[10px] text-[#24181B] font-medium border-2 border-[#FFFFFF] ${index !== 0 ? '-ml-3' : ''}`}
+                              >
+                                {displayVolunteerName(
+                                  vol?.username?.length
+                                    ? vol?.username
+                                    : vol?.fullName?.length
+                                      ? vol?.fullName
+                                      : vol?.email,
+                                )}
+                              </div>
+                            ),
+                          )}
+                      </div>
+                    ) : null}
                     {opportunityDetail?.volunteer?.length}/
                     {opportunityDetail?.spots ? opportunityDetail?.spots : 0}{' '}
                     volunteers

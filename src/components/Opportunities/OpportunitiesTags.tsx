@@ -69,7 +69,7 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
   }, []);
   const skeleton = Array(7).fill(null);
   return (
-    <div className="px-5 relative opportunities-swiper  py-5 ">
+    <div className="px-5 relative opportunities-swiper  py-5">
       {opportunityTypeList.length === 0 ? (
         <div className="grid grid-cols-7">
           {skeleton.map((_, index) => (
@@ -87,13 +87,16 @@ const OpportunitiesTags: React.FC<CurrentPage> = ({ setCurrentPage }) => {
             prevEl: '.swiper-button-prev',
           }}
         >
-          <SwiperSlide onClick={() => filterClick('all')}>
+          <div
+            className="absolute top-0 z-10 bg-[#f5f3ef]"
+            onClick={() => filterClick('all')}
+          >
             <div
               className={`group border rounded-[500px] gap-[5px] px-3.5 py-2 inline-flex items-center justify-center cursor-pointer hover:border-[#E60054] hover:text-[#E60054] ${opportunityFilter.length === 0 && 'border-[#E60054] text-[#E60054]'}`}
             >
               All
             </div>
-          </SwiperSlide>
+          </div>
           {opportunityTypeList &&
             opportunityTypeList.length > 0 &&
             opportunityTypeList.map((type: any, index: number) => (

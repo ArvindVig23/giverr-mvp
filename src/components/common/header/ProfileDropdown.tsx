@@ -21,6 +21,7 @@ import {
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
+import { Tooltip } from '@material-tailwind/react';
 
 export default function ProfileDropdown() {
   const [highlightActivity, setHighlightActivity] = useState<boolean>(false);
@@ -194,7 +195,7 @@ export default function ProfileDropdown() {
                       getInitialOfEmail(fullNameOrEmail())
                     )}
                   </div>{' '}
-                  {displayName}
+                  <Tooltip content={fullNameOrEmail()}>{displayName}</Tooltip>
                   {!cookies.userDetails.loginAsOrg && (
                     <div className="ml-auto">
                       <Image src={check} alt="check" />
@@ -228,7 +229,9 @@ export default function ProfileDropdown() {
                         )
                       )}
                     </div>{' '}
-                    {displayOrgName}
+                    <Tooltip content={nameOrUserName()}>
+                      {displayOrgName}
+                    </Tooltip>
                     {cookies.userDetails.loginAsOrg && (
                       <div className="ml-auto">
                         <Image src={check} alt="check" />
