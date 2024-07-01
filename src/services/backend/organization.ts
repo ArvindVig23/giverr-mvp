@@ -165,8 +165,6 @@ export const createTokenForInvitation = async (
   userId: string,
 ) => {
   try {
-    console.log(userId, 'userId');
-
     const token = jwt.sign({ memId: id, userId, orgId }, TOKEN_SECRET!);
     await addDoc(collection(db, 'organizationMemberInviteToken'), {
       memberId: id,

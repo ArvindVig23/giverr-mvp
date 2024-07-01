@@ -53,8 +53,7 @@ const SignUpStep2: React.FC = () => {
     dispatch(setLoader(true));
     // check userName exist or not
     try {
-      const user = await checkUsernameAndEmail({ username });
-      console.log(user, ' ');
+      await checkUsernameAndEmail({ username });
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error;

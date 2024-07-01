@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
 import { useForm } from 'react-hook-form';
@@ -17,7 +17,11 @@ import {
 } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-const OnGoingCommitment = () => {
+const OnGoingCommitment = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const dispatch = useDispatch();
 
@@ -63,6 +67,15 @@ const OnGoingCommitment = () => {
       commitment: eventDetails.commitment,
     },
   });
+  // to check  the form validation on click of the navigation buttons
+  useEffect(() => {
+    if (stepValidationShouldCheck === 3) {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+      setStepValidationShouldCheck('');
+    } //eslint-disable-next-line
+  }, [stepValidationShouldCheck]);
   return (
     <form
       className="flex flex-col gap-5 h-full"

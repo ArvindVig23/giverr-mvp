@@ -26,7 +26,11 @@ import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { SearchParam } from '@/interface/opportunity';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 
-const CreateEventStep1 = () => {
+const CreateEventStep1 = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const dispatch = useDispatch();
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
@@ -206,6 +210,16 @@ const CreateEventStep1 = () => {
 
     return option;
   };
+
+  // to check  the form validation on click of the navigation buttons
+  useEffect(() => {
+    if (stepValidationShouldCheck === 1) {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+      setStepValidationShouldCheck('');
+    } //eslint-disable-next-line
+  }, [stepValidationShouldCheck]);
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex gap-5 w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -468,6 +482,7 @@ const CreateEventStep1 = () => {
       </div>
       <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
+          ref={submitButtonRef}
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >

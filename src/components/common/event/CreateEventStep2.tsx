@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
 import Image from 'next/image';
@@ -10,7 +10,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 
-const CreateEventStep2 = () => {
+const CreateEventStep2 = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const {
     register,
@@ -29,7 +32,7 @@ const CreateEventStep2 = () => {
       physicalLocations: eventDetails.physicalLocations,
     },
   });
-
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const { fields, append } = useFieldArray({
     control,
     name: 'physicalLocations',
@@ -106,6 +109,16 @@ const CreateEventStep2 = () => {
       append({ address: '', city: '', province: '', postalCode: '' });
     }
   };
+
+  // to check  the form validation on click of the navigation buttons
+  useEffect(() => {
+    if (stepValidationShouldCheck === 2) {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+      setStepValidationShouldCheck('');
+    } //eslint-disable-next-line
+  }, [stepValidationShouldCheck]);
 
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
@@ -295,6 +308,7 @@ const CreateEventStep2 = () => {
       </div>
       <div className="flex items-center justify-end p-6 border-t border-solid border-[#1E1E1E0D] rounded-b">
         <button
+          ref={submitButtonRef}
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >

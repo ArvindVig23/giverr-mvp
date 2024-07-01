@@ -6,7 +6,10 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import DatesCommitment from './DatesCommitment';
 import OnGoingCommitment from './OnGoingCommitment';
-const CreateEventStep3 = () => {
+const CreateEventStep3 = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
   const searchParams = useSearchParams();
   const commitment = searchParams.get('commitment');
   return (
@@ -67,13 +70,19 @@ const CreateEventStep3 = () => {
                   }
                   id="link1"
                 >
-                  <OneTimeCommitment />
+                  <OneTimeCommitment
+                    stepValidationShouldCheck={stepValidationShouldCheck}
+                    setStepValidationShouldCheck={setStepValidationShouldCheck}
+                  />
                 </div>
                 <div
                   className={commitment === 'DATES' ? 'block h-full' : 'hidden'}
                   id="link2"
                 >
-                  <DatesCommitment />
+                  <DatesCommitment
+                    stepValidationShouldCheck={stepValidationShouldCheck}
+                    setStepValidationShouldCheck={setStepValidationShouldCheck}
+                  />
                 </div>
 
                 <div
@@ -82,7 +91,10 @@ const CreateEventStep3 = () => {
                   }
                   id="link3"
                 >
-                  <OnGoingCommitment />
+                  <OnGoingCommitment
+                    stepValidationShouldCheck={stepValidationShouldCheck}
+                    setStepValidationShouldCheck={setStepValidationShouldCheck}
+                  />
                 </div>
               </div>
             </div>

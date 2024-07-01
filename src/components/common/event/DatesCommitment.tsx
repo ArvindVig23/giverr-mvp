@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import chevronDown from '/public/images/chevron-down.svg';
 import longarrow from '/public/images/arrow-right.svg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,14 +13,17 @@ import { SearchParam } from '@/interface/opportunity';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-const DatesCommitment = () => {
+const DatesCommitment = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const dispatch = useDispatch();
   const handleFormSubmit = async (data: any) => {
-    console.log(data, 'data');
     const updatedStateEvent = {
       ...eventDetails,
       type: 'DATES',
@@ -72,6 +75,15 @@ const DatesCommitment = () => {
       endTime: eventDetails.endTime ? new Date(eventDetails.endTime) : null,
     },
   });
+  // to check  the form validation on click of the navigation buttons
+  useEffect(() => {
+    if (stepValidationShouldCheck === 3) {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+      setStepValidationShouldCheck('');
+    } //eslint-disable-next-line
+  }, [stepValidationShouldCheck]);
   return (
     <form
       className="flex flex-col gap-5 h-full"

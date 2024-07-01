@@ -54,6 +54,8 @@ const OpportunitiesDetail = ({
   setShowEditModal,
   setUpdateSuccess,
 }: any) => {
+  const [stepValidationShouldCheck, setStepValidationShouldCheck] =
+    useState<number>(0);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
@@ -660,13 +662,23 @@ const OpportunitiesDetail = ({
           heading={'Update event'}
           showModal={showEditModal}
           setShowModal={setShowEditModal}
+          setStepValidationShouldCheck={setStepValidationShouldCheck}
         >
           {step === '1' ? (
-            <CreateEventStep1 />
+            <CreateEventStep1
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '2' ? (
-            <CreateEventStep2 />
+            <CreateEventStep2
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '3' ? (
-            <CreateEventStep3 />
+            <CreateEventStep3
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '4' ? (
             <CreateEventStep4 setThankYouModal={setUpdateSuccess} />
           ) : null}
