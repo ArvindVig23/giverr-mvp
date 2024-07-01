@@ -195,7 +195,12 @@ export default function ProfileDropdown() {
                       getInitialOfEmail(fullNameOrEmail())
                     )}
                   </div>{' '}
-                  <Tooltip content={fullNameOrEmail()}>{displayName}</Tooltip>
+                  <Tooltip
+                    className="absolute left-0 w-64 min-w-[250px] p-2 text-sm text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    content={fullNameOrEmail()}
+                  >
+                    {displayName}
+                  </Tooltip>
                   {!cookies.userDetails.loginAsOrg && (
                     <div className="ml-auto">
                       <Image src={check} alt="check" />
@@ -229,9 +234,16 @@ export default function ProfileDropdown() {
                         )
                       )}
                     </div>{' '}
-                    <Tooltip content={nameOrUserName()}>
-                      {displayOrgName}
-                    </Tooltip>
+                    {nameOrUserName().length > 16 ? (
+                      <Tooltip
+                        className="absolute left-0 w-64 min-w-[250px] p-2 text-sm text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        content={nameOrUserName()}
+                      >
+                        {displayOrgName}
+                      </Tooltip>
+                    ) : (
+                      displayOrgName
+                    )}
                     {cookies.userDetails.loginAsOrg && (
                       <div className="ml-auto">
                         <Image src={check} alt="check" />
