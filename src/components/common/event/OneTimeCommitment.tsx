@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,15 +11,17 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { SearchParam } from '@/interface/opportunity';
 
-const OneTimeCommitment = () => {
+const OneTimeCommitment = ({
+  stepValidationShouldCheck,
+  setStepValidationShouldCheck,
+}: any) => {
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dispatch = useDispatch();
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const handleFormSubmit = async (data: any) => {
-    console.log(data, 'data');
-
     const updatedStateEvent = {
       ...eventDetails,
       type: 'ONETIME',
@@ -62,6 +64,15 @@ const OneTimeCommitment = () => {
       endTime: eventDetails.endTime ? new Date(eventDetails.endTime) : null,
     },
   });
+  // to check  the form validation on click of the navigation buttons
+  useEffect(() => {
+    if (stepValidationShouldCheck === 3) {
+      if (submitButtonRef.current) {
+        submitButtonRef.current.click();
+      }
+      setStepValidationShouldCheck('');
+    } //eslint-disable-next-line
+  }, [stepValidationShouldCheck]);
   return (
     <form
       className="flex flex-col gap-5 h-full"
@@ -215,6 +226,7 @@ const OneTimeCommitment = () => {
       </div>
       <div className="border-t border-[[#1E1E1E0D] pt-5 px-5 -mx-5">
         <button
+          ref={submitButtonRef}
           className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
           type="submit"
         >

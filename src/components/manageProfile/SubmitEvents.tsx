@@ -20,6 +20,8 @@ import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
 
 const SubmitEvents = () => {
+  const [stepValidationShouldCheck, setStepValidationShouldCheck] =
+    useState<number>(0);
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [thankYouModal, setThankYouModal] = useState<boolean>(false);
@@ -50,6 +52,13 @@ const SubmitEvents = () => {
 
   const dispatch = useDispatch();
   const closeThankYouModal = () => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.delete('submit-event');
+    current.delete('step');
+    current.delete('commitment');
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    router.push(`${window.location.pathname}${query}`);
     dispatch(updateSubmitOppDetails(submitEventState));
     setThankYouModal(false);
   };
@@ -75,13 +84,23 @@ const SubmitEvents = () => {
           heading={'Submit event'}
           showModal={showModal}
           setShowModal={setShowModal}
+          setStepValidationShouldCheck={setStepValidationShouldCheck}
         >
           {step === '1' ? (
-            <CreateEventStep1 />
+            <CreateEventStep1
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '2' ? (
-            <CreateEventStep2 />
+            <CreateEventStep2
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '3' ? (
-            <CreateEventStep3 />
+            <CreateEventStep3
+              stepValidationShouldCheck={stepValidationShouldCheck}
+              setStepValidationShouldCheck={setStepValidationShouldCheck}
+            />
           ) : step === '4' ? (
             <CreateEventStep4 setThankYouModal={setThankYouModal} />
           ) : null}

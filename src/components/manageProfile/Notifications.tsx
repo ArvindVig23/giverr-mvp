@@ -82,15 +82,12 @@ const Notifications: React.FC = () => {
         }
       });
 
-      console.log(needToCreateRecord, 'needToCreate');
-      console.log(needToDelete, 'needToDelete');
       if (needToCreateRecord.length > 0) {
         const data = {
           opportunityTypeId: needToCreateRecord[0],
         };
         try {
-          const response = await createSubscribeCat(data);
-          console.log(response, 'response');
+          await createSubscribeCat(data);
           dispatch(setLoader(false));
         } catch (error: any) {
           dispatch(setLoader(false));
@@ -101,8 +98,7 @@ const Notifications: React.FC = () => {
       }
       if (needToDelete.length > 0) {
         try {
-          const response = await deleteSubscribeCat(needToDelete[0]);
-          console.log(response, 'response');
+          await deleteSubscribeCat(needToDelete[0]);
           dispatch(setLoader(false));
         } catch (error: any) {
           dispatch(setLoader(false));

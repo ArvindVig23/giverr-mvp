@@ -13,6 +13,7 @@ const CreateEventModal = ({
   showModal,
   setShowModal,
   children,
+  setStepValidationShouldCheck,
 }: any) => {
   const eventDetails = useSelector((state: any) => state.submitOppReducer);
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
@@ -58,7 +59,10 @@ const CreateEventModal = ({
     } // eslint-disable-next-line
   }, [isEscPressed, showModal]);
 
-  const updateStep = (increment: number) => {
+  const nextStep = () => {
+    setStepValidationShouldCheck(currentStep);
+  };
+  const previousStep = (increment: number) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     const newStep = Math.min(Math.max(1, currentStep + increment), 4);
     current.set('step', newStep.toString());
@@ -92,7 +96,7 @@ const CreateEventModal = ({
                 <div className="gap-5 flex items-center ">
                   <div className="flex gap-2.5">
                     <button
-                      onClick={() => currentStep !== 1 && updateStep(-1)}
+                      onClick={() => currentStep !== 1 && previousStep(-1)}
                       disabled={currentStep === 1}
                       type="button"
                       className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3]  ${currentStep === 1 ? 'cursor-not-allowed opacity-30' : ''}`}
@@ -101,7 +105,7 @@ const CreateEventModal = ({
                     </button>
                     <button
                       disabled={currentStep === 4}
-                      onClick={() => updateStep(1)}
+                      onClick={() => nextStep()}
                       type="button"
                       className={`w-[30px] h-[30px] min-w-[30px] flex justify-center items-center rounded-xl border border-[#E6E3D6] hover:bg-[#edebe3] ${currentStep === 4 ? 'cursor-not-allowed opacity-30' : ''}`}
                     >
