@@ -142,9 +142,16 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
                   )
                 )}
               </div>
-              {opportunity?.organization?.name.length > 22
-                ? opportunity?.organization?.name.slice(0, 22) + '...'
-                : opportunity?.organization?.name}
+              {opportunity?.organization?.name.length > 22 ? (
+                <Tooltip
+                  className="absolute left-0 w-64 min-w-[250px] p-2 text-sm text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  content={opportunity?.organization?.name}
+                >
+                  {opportunity?.organization?.name.slice(0, 22) + '...'}
+                </Tooltip>
+              ) : (
+                opportunity?.organization?.name
+              )}
             </div>
           )}
           {pathname == '/activity' && eventsTab ? (
