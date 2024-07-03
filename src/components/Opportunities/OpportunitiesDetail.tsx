@@ -615,12 +615,12 @@ const OpportunitiesDetail = ({
         </div>
 
         <Image
-          className="absolute left-0 bottom-0"
+          className="absolute left-0 bottom-0 h-[120px] lg:h-[229px] !w-auto"
           src={opportunityDetail?.virtualLocationLink ? virutalLeft : leftSHape}
           alt=""
         ></Image>
         <Image
-          className="absolute right-0 bottom-0"
+          className="absolute right-0 bottom-0 h-[120px] lg:h-[229px] !w-auto"
           src={
             opportunityDetail?.virtualLocationLink ? virutalRight : RightSHape
           }
