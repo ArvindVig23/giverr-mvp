@@ -9,7 +9,7 @@ import mobleftshape from '/public/images/left-mob-shape1.svg';
 import mobrightshape from '/public/images/right-mob-shape1.svg';
 import leftshape from '/public/images/login-left-shape-1.svg';
 import rightshape from '/public/images/login-right-shape-1.svg';
-import { handleGoogleSignUp } from '@/utils/signUpEvent';
+import { handleAppleSignUp, handleGoogleSignUp } from '@/utils/signUpEvent';
 import { useForm } from 'react-hook-form';
 import { emailregex } from '@/utils/regex';
 import { useRouter } from 'next/navigation';
@@ -59,7 +59,10 @@ const CommonStep1: React.FC = () => {
 
       <div className="max-w-[270px] sm:max-w-[484px] w-full py-2">
         <div className="flex flex-col gap-4">
-          <button className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black">
+          <button
+            onClick={() => handleAppleSignUp()}
+            className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
+          >
             <Image src={apple} alt="Logo" /> Continue with Apple
           </button>
           <button

@@ -1,6 +1,10 @@
 import { auth } from '@/firebase/config';
 import { userDetail } from '@/interface/user';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
 import React from 'react';
 import { resetGlobalState } from './initialStates/userInitialStates';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
@@ -48,3 +52,23 @@ export const tooglePassword = (
 ) => {
   setShowPassword(!showPassword);
 };
+
+export const handleAppleSignUp = async () =>
+  // userDetails: userDetail,
+  // router: any,
+  // dispatch: any,
+  {
+    try {
+      const provider = new OAuthProvider('apple.com');
+      const result = await signInWithPopup(auth, provider);
+      console.log(result, 'Result from the signup popup');
+
+      const user = result.user;
+      console.log(user, 'user after sign up');
+    } catch (error: any) {
+      console.log('Error in sign up with apple', error);
+      // const { message } = error.data;
+      // sweetAlertToast('error', message);
+      // dispatch(setLoader(false));
+    }
+  };
