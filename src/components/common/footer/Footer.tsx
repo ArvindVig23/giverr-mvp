@@ -22,10 +22,16 @@ const Footer: React.FC = () => {
 
       <div className="flex flex-col gap-2.5">
         <h4 className="text-[#FFF3D680]">Legal</h4>
-        <Link href="#" className="text-[#FFF3D6] hover:underline">
+        <Link
+          href="/terms-conditions"
+          className="text-[#FFF3D6] hover:underline"
+        >
           Terms & Conditions
         </Link>
-        <Link href="#" className="text-[#FFF3D6]  hover:underline">
+        <Link
+          href="/privacy-policy"
+          className="text-[#FFF3D6]  hover:underline"
+        >
           Privacy Policy
         </Link>
       </div>
