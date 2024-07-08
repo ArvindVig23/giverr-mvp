@@ -475,11 +475,6 @@ const OpportunitiesDetail = ({
                     organization&apos;s website for more details and to get
                     involved.
                   </p>
-                  <p className="text-base text-[#24181B80]">
-                    Simply click the link below to be directed to the
-                    organization&apos;s website for more details and to get
-                    involved.
-                  </p>
                 </div>
                 {opportunityDetail?.registrationWebsiteLink && (
                   <Link

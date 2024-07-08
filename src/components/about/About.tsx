@@ -42,14 +42,14 @@ const About: React.FC = () => {
           </p>
 
           <Link
-            href="#"
+            href="#scroll"
             className="font-Boris  text-base text-[#FFF3D6] border border-[#FFF3D6] flex items-center justify-center pt-1.5 px-2.5 rounded-full w-[85px] h-[33px] text-center absolute bottom-[30px] .lg:bottom-[88px]"
           >
             SCROLL
           </Link>
         </div>
       </div>
-      <div className="py-14 md:py-24 pb-0 px-5">
+      <div id={'scroll'} className="py-14 md:py-24 pb-0 px-5">
         <div className="max-w-[484px] w-full m-auto text-center ">
           <label className="font-medium text-base text-[#24181B] border border-[#24181B] rounded-full px-2.5 py-1 ">
             FOR WHO
@@ -111,7 +111,7 @@ const About: React.FC = () => {
 
         <div className="max-w-[484px] w-full m-auto text-center py-24 pt-16 md:py-24">
           <label className="font-medium text-base text-[#24181B] border border-[#24181B] rounded-full px-2.5 py-1 ">
-            Faq
+            FAQ
           </label>
           <h1 className="text-[#24181B] text-[32px] md:text-[48px] font-medium leading-[32px] leading-[57px] mt-5 mb-[60px]">
             Frequently asked questions
