@@ -1,0 +1,184 @@
+[
+  {
+    "heading": "Introduction",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "Giverr ('we,' 'our,' or 'us') is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website giveer.vercel.app, use our services, or interact with us."
+      }
+    ]
+  },
+  {
+    "heading": "Information We Collect",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We may collect and process the following types of information:",
+        "subItems": [
+          {
+            "subItemHeading": "Personal Information",
+            "subItemDescription": [
+              {
+                "descriptionHeading": "Contact Information",
+                "content": "Name, email address, phone number, postal address"
+              },
+              {
+                "descriptionHeading": "Account Information",
+                "content": "Username, password, and other registration details"
+              },
+              {
+                "descriptionHeading": "Profile Information",
+                "content": "Profile picture and other details you choose to provide"
+              }
+            ]
+          },
+          {
+            "subItemHeading": "Non-Personal Information",
+            "subItemDescription": [
+              {
+                "descriptionHeading": "Usage Data",
+                "content": "Information about how you use our website and services, including your IP address, browser type, access times, and referring website addresses."
+              },
+              {
+                "descriptionHeading": "Device Information",
+                "content": "Information about the device you use to access our services, such as the hardware model, operating system, and unique device identifiers"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "heading": "How We Use Your Information",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We may use the information we collect for various purposes, including:"
+      },
+      {
+        "itemName": "To Provide and Manage Services",
+        "itemDescription": "To create and manage your account, process transactions, and provide you with our services."
+      },
+      {
+        "itemName": "To Communicate with You",
+        "itemDescription": "To send you updates, notifications, and information related to your use of our services."
+      },
+      {
+        "itemName": "To Improve Our Services",
+        "itemDescription": "To understand how our users interact with our website and services and to improve and customize our offerings."
+      },
+      {
+        "itemName": "To Ensure Security",
+        "itemDescription": "To protect our users and services from fraudulent, malicious, or unauthorized activities."
+      },
+      {
+        "itemName": "To Comply with Legal Obligations",
+        "itemDescription": "To comply with applicable laws, regulations, and legal processes."
+      }
+    ]
+  },
+  {
+    "heading": "Sharing Your Information",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We do not sell or rent your personal information to third parties. We may share your information in the following circumstances:"
+      },
+      {
+        "itemName": "With Service Providers",
+        "itemDescription": "We may share information with third-party service providers who perform services on our behalf, such as payment processing, data analysis, and email delivery."
+      },
+      {
+        "itemName": "For Legal Reasons",
+        "itemDescription": "We may release information if required to do so by law or in response to valid requests by public authorities."
+      },
+      {
+        "itemName": "With Your Consent",
+        "itemDescription": "We may share your information with third parties if you provide us with your explicit consent to do so."
+      }
+    ]
+  },
+  {
+    "heading": "Data Security",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We use appropriate technical and organizational measures to protect your personal information from unauthorized access, use, disclosure, alteration, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee the absolute security of your information."
+      }
+    ]
+  },
+  {
+    "heading": "Data Retention",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We will retain your personal information for as long as necessary to fulfill the purposes for which it was collected and to comply with legal, regulatory, or internal policy requirements."
+      }
+    ]
+  },
+  {
+    "heading": "Your Rights",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "Depending on your location, you may have the following rights regarding your personal information:"
+      },
+      {
+        "itemName": "Access",
+        "itemDescription": "The right to request access to your personal information."
+      },
+      {
+        "itemName": "Correction",
+        "itemDescription": "The right to request correction of inaccurate or incomplete personal information."
+      },
+      {
+        "itemName": "Deletion",
+        "itemDescription": "The right to request deletion of your personal information."
+      },
+      {
+        "itemName": "Restriction",
+        "itemDescription": "The right to request restriction of processing of your personal information."
+      },
+      {
+        "itemName": "Portability",
+        "itemDescription": "The right to request the transfer of your personal information to another party."
+      },
+      {
+        "itemName": "Objection",
+        "itemDescription": "The right to object to the processing of your personal information."
+      },
+      {
+        "itemName": "",
+        "itemDescription": "To exercise any of these rights, please contact us at giverr.platform@gmail.com"
+      }
+    ]
+  },
+  {
+    "heading": "Third-Party Links",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "Our website may contain links to third-party websites. We are not responsible for the privacy practices or the content of such websites. Please review the privacy policies of any third-party sites you visit."
+      }
+    ]
+  },
+  {
+    "heading": "Changes to This Privacy Policy",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. Your continued use of our services after any changes are posted constitutes your acceptance of the new Privacy Policy."
+      }
+    ]
+  },
+  {
+    "heading": "Contact Us",
+    "description": [
+      {
+        "itemName": "",
+        "itemDescription": "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at giverr.platform@gmail.com."
+      }
+    ]
+  }
+]
