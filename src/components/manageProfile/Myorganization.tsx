@@ -2,8 +2,6 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
-import CommonModal from '../common/modal/CommonModal';
-import OrganizationForm from '../common/organization/OrganizationForm';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { getInitialOfEmail } from '@/services/frontend/userService';
@@ -14,8 +12,14 @@ import DeleteModalContent from '../common/organization/DeleteModalContent';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import Members from './Members';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-const Myorganization: React.FC = () => {
-  const [showModal, setShowModal] = React.useState(false);
+import { MyorganizationProps } from '@/interface/organization';
+
+const Myorganization: React.FC<MyorganizationProps> = ({
+  showModal,
+  setShowModal,
+  inviteMembersModal,
+  setInviteMembersModal,
+}: any) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
@@ -54,6 +58,14 @@ const Myorganization: React.FC = () => {
       document.body.classList.remove('delete-modal-open');
     }
   }, [showDeleteModal]);
+
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add('settings-modal-open');
+    } else {
+      document.body.classList.remove('settings-modal-open');
+    }
+  }, [showModal]);
   return (
     <div className="w-full">
       <h3 className="text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left  border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -139,13 +151,16 @@ const Myorganization: React.FC = () => {
           <>
             <hr className="my-[40px] md:my-[60px] border-[#E6E3D6]"></hr>
             <div className="organization-member">
-              <Members />
+              <Members
+                inviteMembersModal={inviteMembersModal}
+                setInviteMembersModal={setInviteMembersModal}
+              />
             </div>
           </>
         ) : null}
         <hr className="my-[40px] md:my-[60px] "></hr>
         {showOrganization ? (
-          <div className="inline-flex w-full items-center gap-4 justify-between">
+          <div className="inline-flex w-full items-center gap-4 justify-between mb-8">
             <div className="inline-flex w-full items-center gap-4">
               <h2 className="flex-grow font-medium md:text-2xl">Danger Zone</h2>{' '}
               <button
@@ -159,19 +174,6 @@ const Myorganization: React.FC = () => {
           </div>
         ) : null}
       </div>
-      {showModal && (
-        <CommonModal
-          heading={
-            userOrgDetails.id && userOrgDetails.status !== 'PENDING'
-              ? 'Update organization'
-              : 'Create organization'
-          }
-          showModal={showModal}
-          setShowModal={setShowModal}
-        >
-          <OrganizationForm setShowModal={setShowModal} />
-        </CommonModal>
-      )}
       {showDeleteModal && (
         <CommonDeleteModal
           heading={'Permanently delete organization'}

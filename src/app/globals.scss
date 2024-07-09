@@ -17,7 +17,7 @@ body {
   font-family: 'Rethink Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  color: #24181B;
+  color: #24181b;
   background-color: #f5f3ef;
 }
 
@@ -56,10 +56,8 @@ body {
 .max-h-modal {
   height: calc(100vh - 230px);
 }
-.max-h-modal-new
-{
+.max-h-modal-new {
   height: calc(100vh - 119px);
-
 }
 /* width */
 ::-webkit-scrollbar {
@@ -269,69 +267,59 @@ body {
 .basic-multi-select .select__clear-indicator {
   display: none;
 }
-.select__menu
-{
+.select__menu {
   left: 0;
 }
-.select__option--is-focused 
-{
+.select__option--is-focused {
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }
-.select__option--is-selected
-{
+.select__option--is-selected {
   color: #e60054 !important;
   background-color: rgba(230, 0, 84, 0.0509803922) !important;
 }
-.datePicker input 
-{
-  background-color: #EDEBE3 !important;
-  border: 1px solid #E6E3D6 !important ;
+.datePicker input {
+  background-color: #edebe3 !important;
+  border: 1px solid #e6e3d6 !important ;
   height: 60px !important;
   border-radius: 16px !important;
   outline: none !important;
 }
-.organization-member .member-heading 
-{
+.organization-member .member-heading {
   display: none;
 }
-.organization-member .member-box
-{
+.organization-member .member-box {
   padding: 0;
 }
-.organization-member  .invite-button 
-{
+.organization-member .invite-button {
   right: 0;
 }
 
-.materialDatepicker input
-{
+.materialDatepicker input {
   background: #edebe3;
   border: 1px solid #e6e3d6;
   height: 60px;
   border-radius: 16px;
   box-shadow: none !important;
-  color: #24181B;
+  color: #24181b;
   outline: none;
   font-size: 16px;
 
-  &::-ms-input-placeholder { /* Edge 12-18 */
-  color: #24181B80;
-  font-size: 16px;
-
+  &::-ms-input-placeholder {
+    /* Edge 12-18 */
+    color: #24181b80;
+    font-size: 16px;
   }
 
   &::placeholder {
-    color: #24181B80;
+    color: #24181b80;
     font-size: 16px;
   }
 }
-.materialDatepicker input:focus 
-{
+.materialDatepicker input:focus {
   border-color: #e60054;
 }
-.materialDatepicker
-{
+.materialDatepicker {
   z-index: 99;
 }
 /* Hide the arrows for number input */
@@ -345,42 +333,33 @@ body {
   -moz-appearance: textfield;
 }
 
-@media screen and (max-width: 1420px)
-{
-  .search-bar
-  {
+@media screen and (max-width: 1420px) {
+  .search-bar {
     max-width: 450px;
   }
 }
 
-@media screen and (max-width: 1200px)
-{
-  .search-bar
-  {
+@media screen and (max-width: 1200px) {
+  .search-bar {
     position: relative;
     max-width: 310px;
   }
 }
-@media screen and (max-width: 1023px)
-{
+@media screen and (max-width: 1023px) {
   .search-bar {
-      max-width: 230px;
+    max-width: 230px;
   }
 }
-@media screen and (min-width: 767px)
-{
-  .profile-dropdown
-  {
+@media screen and (min-width: 767px) {
+  .profile-dropdown {
     bottom: inherit !important;
   }
 }
-@media screen and (max-width: 767px)
-{
+@media screen and (max-width: 767px) {
   .search-bar {
-      max-width: 100%;
+    max-width: 100%;
   }
-  .tab-close
-  {
+  .tab-close {
     position: fixed;
     transform: translateX(100%);
     transition: all 0.3s ease-in-out 0s;
@@ -389,49 +368,45 @@ body {
     top: 0;
     overflow: auto;
     overflow-x: hidden;
-    background-color: #F5F3EF;
+    background-color: #f5f3ef;
   }
-  .show-tab
-  {
+  .show-tab {
     transform: translateX(0);
   }
-  .delete-modal-open .show-tab
-  {
+  .settings-modal-open .show-tab {
+    overflow: hidden;
+  }
+  .delete-modal-open .show-tab {
     transform: inherit;
     position: relative;
   }
-  .mobile-overflow
-  {
+  .mobile-overflow {
     overflow: hidden !important;
   }
   .fit-screen {
-      height: calc(100vh - 90px);
-      flex-direction: column;
-      justify-content: center;
-      width: 100%;
-      display: inline-flex;
-      align-items: center;
-      gap: 24px;
+    height: calc(100vh - 90px);
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
   }
-  .tab-open 
-  {
+  .tab-open {
     overflow: hidden;
   }
 
-  .max-h-modal ,.submit-events {
-      height: calc(100vh - 180px);
+  .max-h-modal,
+  .submit-events {
+    height: calc(100vh - 180px);
   }
-  .max-h-modal-new
-  {
+  .max-h-modal-new {
     height: calc(100vh - 68px);
-
   }
-  .delete-modal-open .show-tab 
-  {
+  .delete-modal-open .show-tab {
     overflow: hidden;
   }
-  .desktop-submit .mobile-btn
-  {
+  .desktop-submit .mobile-btn {
     display: none;
   }
 }

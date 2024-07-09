@@ -10,7 +10,7 @@ const TermsConditions = () => {
           <h2 className="text-[#24181B] font-medium text-2xl md:text-[32px] leading-[36px] mb-2">
             Terms & Conditions
           </h2>
-          <p className="text-xs md:text-sm text-[#857E7E] mb-6">
+          <p className="text-xs md:text-sm text-[#857E7E] mb-[50px]">
             Effective Date: July 1, 2024
           </p>
         </div>
@@ -23,10 +23,12 @@ const TermsConditions = () => {
               </h3>
               <div className="mb-[50px]">
                 {section.description.map((item, itemIndex) => (
-                  <div key={itemIndex}>
+                  <div key={itemIndex} className="mb-5">
                     {item.headerName ? (
-                      <p className="text-base mb-1">
-                        <strong>{item.headerName}:</strong>
+                      <p className="text-base">
+                        <strong className="font-medium text-[#24181B]">
+                          {item.headerName}:
+                        </strong>
                       </p>
                     ) : null}
                     <p className="text-sm mb-2">{item.termDescription}</p>

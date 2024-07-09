@@ -18,13 +18,15 @@ import { sweetAlertToast } from '@/services/frontend/toastServices';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { Tooltip } from '@material-tailwind/react';
 import { DOMAIN_URL } from '@/constants/constants';
-import CommonModal from '../common/modal/CommonModal';
-import ModalInvite from '../common/organization/ModalInvite';
 import { useForm } from 'react-hook-form';
-const Members = () => {
+import { MemberProps } from '@/interface/organization';
+
+const Members: React.FC<MemberProps> = ({
+  inviteMembersModal,
+  setInviteMembersModal,
+}) => {
   const { register, watch } = useForm();
   const searchMember = watch('searchMember');
-  const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
   const [showCopiedTooltip, setShowCopiedTooltip] = useState<boolean>(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [isRevokeInvite, setIsRevokeInvite] = useState<boolean>(false);
@@ -123,6 +125,14 @@ const Members = () => {
       setFilteredMembers(filtered);
     }
   }, [searchMember, userOrgDetails]);
+
+  useEffect(() => {
+    if (inviteMembersModal) {
+      document.body.classList.add('settings-modal-open');
+    } else {
+      document.body.classList.remove('settings-modal-open');
+    }
+  }, [inviteMembersModal]);
   return (
     <>
       <h3 className="member-heading text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left md:hidden block border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -319,16 +329,6 @@ const Members = () => {
               </div>
             </div>
           </CommonDeleteModal>
-        ) : null}
-        {inviteMembersModal ? (
-          <CommonModal
-            heading={'Invite Members'}
-            subHeading={'Send Invite to'}
-            showModal={inviteMembersModal}
-            setShowModal={setInviteMembersModal}
-          >
-            <ModalInvite setShowModal={setInviteMembersModal} />
-          </CommonModal>
         ) : null}
       </div>
     </>

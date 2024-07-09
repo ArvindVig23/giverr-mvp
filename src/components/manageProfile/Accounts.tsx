@@ -254,7 +254,7 @@ const OpportunitiesBanner: React.FC = () => {
           </button>
         </form>
         <hr className="my-[40px] md:my-[60px]"></hr>
-        <div className="inline-flex w-full items-center gap-4 justify-between">
+        <div className="inline-flex w-full items-center gap-4 justify-between mb-8">
           <div className="inline-flex w-full items-center gap-4">
             <h2 className="flex-grow font-medium md:text-2xl">Danger Zone</h2>{' '}
             <button

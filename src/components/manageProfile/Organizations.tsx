@@ -98,7 +98,9 @@ const Organizations: React.FC = () => {
             ))}
           </>
         ) : (
-          <div className="flex w-full justify-center md:justify-between gap-3 items-center text-center md:text-left fit-screen">
+          <div
+            className={`flex w-full justify-center md:justify-between gap-3 items-center text-center md:text-left ${pendingRequests.length ? 'mb-5' : 'fit-screen'} `}
+          >
             <div>
               <span className="text-[#24181B] text-base">
                 There are no organizations to display

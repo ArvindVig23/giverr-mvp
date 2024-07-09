@@ -16,3 +16,16 @@ export type OptionType = {
   value: string;
   label: string;
 };
+
+//
+export interface MyorganizationProps {
+  showModal: boolean;
+  setShowModal: Function;
+  inviteMembersModal: boolean;
+  setInviteMembersModal: Function;
+}
+
+export interface MemberProps {
+  inviteMembersModal: boolean;
+  setInviteMembersModal: Function;
+}

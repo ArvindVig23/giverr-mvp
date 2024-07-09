@@ -19,8 +19,16 @@ import chevronRight from '/public/images/chevron-right-black.svg';
 import { compose } from '@reduxjs/toolkit';
 import { hocUserGuard } from '../hoc/HOCUserGuard';
 import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
+import CommonModal from '../common/modal/CommonModal';
+import { useSelector } from 'react-redux';
+import OrganizationForm from '../common/organization/OrganizationForm';
+import ModalInvite from '../common/organization/ModalInvite';
 
 const ManageProfile: React.FC = () => {
+  //  Moved these modals here to adjust the design on mobile
+  const [showModal, setShowModal] = React.useState(false);
+  const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
+  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [tabSlideClass, setTabSlideClass] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const eventsTab = searchParams.get('tab');
@@ -271,7 +279,12 @@ const ManageProfile: React.FC = () => {
                   </div>
                   <div id="link2">
                     {eventsTab === 'my-organizations' ? (
-                      <Myorganization />
+                      <Myorganization
+                        showModal={showModal}
+                        setShowModal={setShowModal}
+                        inviteMembersModal={inviteMembersModal}
+                        setInviteMembersModal={setInviteMembersModal}
+                      />
                     ) : null}
                   </div>
                   <div id="link3">
@@ -294,6 +307,30 @@ const ManageProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <CommonModal
+          heading={
+            userOrgDetails.id && userOrgDetails.status !== 'PENDING'
+              ? 'Update organization'
+              : 'Create organization'
+          }
+          showModal={showModal}
+          setShowModal={setShowModal}
+        >
+          <OrganizationForm setShowModal={setShowModal} />
+        </CommonModal>
+      )}
+
+      {inviteMembersModal ? (
+        <CommonModal
+          heading={'Invite Members'}
+          subHeading={'Send Invite to'}
+          showModal={inviteMembersModal}
+          setShowModal={setInviteMembersModal}
+        >
+          <ModalInvite setShowModal={setInviteMembersModal} />
+        </CommonModal>
+      ) : null}
     </div>
   );
 };
