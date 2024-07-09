@@ -299,7 +299,12 @@ const ManageProfile: React.FC = () => {
                     {eventsTab === 'timezone-settings' ? <Settings /> : null}
                   </div>
                   <div id="link6">
-                    {eventsTab === 'members' ? <ManageOrgMemebers /> : null}
+                    {eventsTab === 'members' ? (
+                      <ManageOrgMemebers
+                        inviteMembersModal={inviteMembersModal}
+                        setInviteMembersModal={setInviteMembersModal}
+                      />
+                    ) : null}
                   </div>
                 </div>
               </div>
