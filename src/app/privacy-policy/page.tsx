@@ -30,7 +30,9 @@ const PrivactPolicy = () => {
                       <div>
                         {item.subItems.map((subItem: any, subIndex: number) => (
                           <div key={subIndex} className="mb-[50px]">
-                            <p className="text-base font-medium mb-2">
+                            <p
+                              className={`text-base font-medium ${subIndex === 0 ? 'mt-[50px]' : ''}`}
+                            >
                               {`${index + 1}.${subIndex + 1}`}{' '}
                               {subItem.subItemHeading}
                             </p>
