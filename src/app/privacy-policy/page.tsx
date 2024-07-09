@@ -9,29 +9,27 @@ const PrivactPolicy = () => {
           <h2 className="text-[#24181B] font-medium text-2xl md:text-[32px] leading-[36px] mb-2">
             Privacy Policy
           </h2>
-          <p className="text-xs md:text-sm text-[#857E7E] mb-6">
+          <p className="text-xs md:text-sm text-[#857E7E] mb-[50px]">
             Effective Date: July 1, 2024
           </p>
         </div>
         <div className="mt-6">
           {privacyPolicies.map((section: any, index: number) => (
-            <div key={index} className="mb-6">
-              <h3 className="font-2xl text-base font-medium text-xl mb-3">
+            <div key={index} className="mb-[50px]">
+              <h3 className="font-2xl text-base font-medium text-xl mb-1">
                 {index + 1}. {section.heading}
               </h3>
               <div className="mb-[50px]">
                 {section.description.map((item: any, itemIndex: number) => (
-                  <div key={itemIndex} className="mb-4">
+                  <div key={itemIndex} className="mb-2">
                     {item.itemName && (
-                      <p className="text-base font-medium mb-1">
-                        {item.itemName}:
-                      </p>
+                      <p className="text-base font-medium">{item.itemName}:</p>
                     )}
                     <p className="text-sm mb-2">{item.itemDescription}</p>
                     {item.subItems && (
                       <div>
                         {item.subItems.map((subItem: any, subIndex: number) => (
-                          <div key={subIndex} className="mb-3">
+                          <div key={subIndex} className="mb-[50px]">
                             <p className="text-base font-medium mb-2">
                               {`${index + 1}.${subIndex + 1}`}{' '}
                               {subItem.subItemHeading}
