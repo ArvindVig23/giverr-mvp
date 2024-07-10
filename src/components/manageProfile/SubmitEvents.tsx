@@ -69,7 +69,7 @@ const SubmitEvents = () => {
         type="button"
         onClick={openModal}
       >
-        Submit event
+        Submit Event
       </button>
 
       <button
@@ -81,7 +81,7 @@ const SubmitEvents = () => {
       </button>
       {showModal && (
         <CreateEventModal
-          heading={'Submit event'}
+          heading={'Submit Event'}
           showModal={showModal}
           setShowModal={setShowModal}
           setStepValidationShouldCheck={setStepValidationShouldCheck}

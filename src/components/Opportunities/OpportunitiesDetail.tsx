@@ -172,7 +172,7 @@ const OpportunitiesDetail = ({
                   className={` w-2 h-2 rounded-full ${opportunityDetail?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'}`}
                 ></span>{' '}
                 {opportunityDetail?.registrationType === 'SHOW_UP'
-                  ? 'Show up'
+                  ? 'Show Up'
                   : 'Pre-Entry'}
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
@@ -656,7 +656,7 @@ const OpportunitiesDetail = ({
       )}
       {showEditModal && (
         <CreateEventModal
-          heading={'Update event'}
+          heading={'Update Event'}
           showModal={showEditModal}
           setShowModal={setShowEditModal}
           setStepValidationShouldCheck={setStepValidationShouldCheck}

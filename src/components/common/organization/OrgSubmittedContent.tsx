@@ -14,8 +14,8 @@ const OrgSubmittedContent = ({ orgName, setShowModal }: any) => {
           <Image className="w-full" src={submittedImage} alt="success" />
         </div>
         <p>
-          Your submission for the event &apos;{orgName}&apos; has been received.
-          Our team is currently reviewing your submission.
+          Your submission for the organization &apos;{orgName}&apos; has been
+          received. Our team is currently reviewing your submission.
         </p>
         <p>You can expect to hear back from us within 1 to 2 days.</p>
       </div>
