@@ -23,6 +23,7 @@ export interface MyorganizationProps {
   setShowModal: Function;
   inviteMembersModal: boolean;
   setInviteMembersModal: Function;
+  editClick: Function;
 }
 
 export interface MemberProps {

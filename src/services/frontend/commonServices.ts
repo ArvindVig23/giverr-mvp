@@ -246,7 +246,6 @@ export const eventCardDateTime = (
       const startTime = utcStartTimeString
         ? moment.utc(utcStartTimeString)
         : moment.utc();
-      console.log(startTime, 'startTime');
 
       const userLocalDate = utcDate
         .clone()

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
-import { encodeUrl } from '@/services/frontend/commonServices';
+import { encodeUrl, pickColor } from '@/services/frontend/commonServices';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 import { getOrgDetail } from '@/services/frontend/organization';
@@ -12,13 +12,16 @@ import DeleteModalContent from '../common/organization/DeleteModalContent';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import Members from './Members';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
-import { MyorganizationProps } from '@/interface/organization';
+import { MyorganizationProps, OrgDetails } from '@/interface/organization';
+import deleteIcon from '/public/images/delete.svg';
+import editIcon from '/public/images/edit-icon.svg';
 
 const Myorganization: React.FC<MyorganizationProps> = ({
   showModal,
   setShowModal,
   inviteMembersModal,
   setInviteMembersModal,
+  editClick,
 }: any) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
@@ -48,8 +51,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
     })();
     // eslint-disable-next-line
   }, []);
-  const showOrganization =
-    userOrgDetails.id && userOrgDetails.status === 'APPROVED';
+  const showOrganization = userOrgDetails.length;
 
   useEffect(() => {
     if (showDeleteModal) {
@@ -66,49 +68,83 @@ const Myorganization: React.FC<MyorganizationProps> = ({
       document.body.classList.remove('settings-modal-open');
     }
   }, [showModal]);
+
   return (
     <div className="w-full">
-      <h3 className="text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left  border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
-        My Organization
-      </h3>
+      <div className="flex justify-between items-center border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
+        <h3 className="text-[20px] md:text-[32px] font-medium leading-[36px] text-left">
+          My Organization
+        </h3>
+        <button
+          className="cursor-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
+          type="button"
+          onClick={() => setShowModal(true)}
+        >
+          New
+        </button>
+      </div>
       <div className="px-4 md:p-0">
-        <div className="flex w-full justify-between gap-3 items-center">
+        <div className=" w-full justify-between gap-3 items-center mt-5">
           {showOrganization ? (
             <>
-              <div className="inline-flex w-full items-center gap-4 justify-between">
-                <div className="inline-flex gap-4 items-center">
-                  <div className="w-11 h-11 min-w-11 flex items-center justify-center font-medium overflow-hidden rounded-full bg-[#88AEBA] text-[#24181B]">
-                    {userOrgDetails.avatarLink ? (
-                      <Image
-                        width={40}
-                        height={40}
-                        src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails.avatarLink)}`}
-                        alt="avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      getInitialOfEmail(
-                        userOrgDetails.name ? userOrgDetails.name : 'O',
-                      )
-                    )}
+              {userOrgDetails.map((org: OrgDetails, index: number) => (
+                <div
+                  key={org.id}
+                  className="flex w-full items-center gap-4 justify-between mb-3"
+                >
+                  <div className="flex gap-4 items-center flex-grow">
+                    <div
+                      className={`w-11 h-11 min-w-11 flex items-center justify-center font-medium overflow-hidden rounded-full ${pickColor()} text-[#24181B]`}
+                    >
+                      {org.avatarLink ? (
+                        <Image
+                          width={40}
+                          height={40}
+                          src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(org.avatarLink)}`}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        getInitialOfEmail(org.name ? org.name : 'O')
+                      )}
+                    </div>
+                    <div>
+                      <p className="m-0 text-[#24181B80]">
+                        You are the owner of this organization
+                      </p>
+                      {typeof org?.status === 'string' &&
+                        org.status === 'PENDING' && (
+                          <span className="text-[#e40054] text-sm">
+                            Pending for approval
+                          </span>
+                        )}
+                    </div>
                   </div>
-                  <div>
-                    {/* <span className="text-[#24181B] w-full">
-                    {userOrgDetails.name}
-                  </span> */}
-                    <p className="m-0 text-[#24181B80]">
-                      You are the owner of this organization
-                    </p>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      onClick={() => editClick(index)}
+                      className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    >
+                      <Image
+                        className="brightness-0 group-hover:brightness-0 "
+                        src={editIcon}
+                        alt="delete"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    >
+                      <Image
+                        className="brightness-0 group-hover:brightness-0 "
+                        src={deleteIcon}
+                        alt="delete"
+                      />
+                    </button>
                   </div>
                 </div>
-              </div>
-              <button
-                onClick={() => setShowModal(true)}
-                type="button"
-                className="text-base  h-11 px-4 py-3 flex justify-center items-center bg-inherit rounded-2xl font-medium text-[#E60054]  border border-[#ff000040] hover:bg-[#ff000017]"
-              >
-                Edit
-              </button>
+              ))}
             </>
           ) : userOrgDetails.status === 'PENDING' ? (
             <>
@@ -123,27 +159,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
                 </div>
               </div>
             </>
-          ) : (
-            <>
-              <div className="fit-screen flex w-full justify-between gap-3 items-center">
-                <div className="">
-                  <span className="text-[#24181B] text-base">
-                    No organizations
-                  </span>
-                  <p className="text-[#24181B80] text-base m-0">
-                    You are the owner.
-                  </p>
-                </div>
-                <button
-                  className="cursro-pointer text-base h-11 px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054]  hover:bg-[#ff000017]"
-                  type="button"
-                  onClick={() => setShowModal(true)}
-                >
-                  New
-                </button>
-              </div>
-            </>
-          )}
+          ) : null}
         </div>
         {/* No organization section end */}
 

@@ -1,4 +1,5 @@
 import { db } from '@/firebase/config';
+import { OrgDetails } from '@/interface/organization';
 import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import {
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
     const { id, fullName, email } = convertString;
     //  check organization with existing username
     const organizationRef = collection(db, 'organizations');
+    // to check the username should be unique gloablly
     const orgQuery = query(
       organizationRef,
       where('createdBy', '!=', id),
@@ -91,18 +93,25 @@ export async function GET() {
     const queryWhereCondition = query(
       organizationsRef,
       where('createdBy', '==', id),
+      where('status', '!=', 'REJECTED'),
     );
     const querySnapshot = await getDocs(queryWhereCondition);
 
-    let data = null;
+    let data: OrgDetails[] = [];
     if (!querySnapshot.empty) {
-      const organizationData = querySnapshot.docs[0].data();
-      const orgId = querySnapshot.docs[0].id;
-      organizationData.id = orgId;
-      data = organizationData;
-      //  get members that are invitied for the organization or members of the organization
-      const memberList = await getMembersForOrganization(orgId);
-      data.members = memberList;
+      data = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const organizationData = doc.data();
+          const orgId = doc.id;
+          organizationData.id = orgId;
+
+          // Get members for this organization
+          const memberList = await getMembersForOrganization(orgId);
+          organizationData.members = memberList;
+
+          return organizationData;
+        }),
+      );
     }
 
     const response = responseHandler(

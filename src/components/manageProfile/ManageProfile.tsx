@@ -21,8 +21,9 @@ import { hocUserGuard } from '../hoc/HOCUserGuard';
 import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
 import CommonModal from '../common/modal/CommonModal';
 import { useSelector } from 'react-redux';
-import OrganizationForm from '../common/organization/OrganizationForm';
+// import OrganizationForm from '../common/organization/OrganizationForm';
 import ModalInvite from '../common/organization/ModalInvite';
+import OrganizationForm2 from '../common/organization/OrganizationForm2';
 
 const ManageProfile: React.FC = () => {
   //  Moved these modals here to adjust the design on mobile
@@ -49,6 +50,16 @@ const ManageProfile: React.FC = () => {
   const toogleBodyOverFlow = () => {
     document.body.classList.remove('mobile-overflow');
     setTabSlideClass(false);
+  };
+
+  // state to keep the index of the selected organization
+  const [selectedOrganization, setSelectedOrganization] = useState<
+    number | null
+  >(null);
+
+  const editClick = (index: number) => {
+    setSelectedOrganization(index);
+    setShowModal(true);
   };
   return (
     <div className="md:border-t border-[#E6E3D6]">
@@ -284,6 +295,7 @@ const ManageProfile: React.FC = () => {
                         setShowModal={setShowModal}
                         inviteMembersModal={inviteMembersModal}
                         setInviteMembersModal={setInviteMembersModal}
+                        editClick={editClick}
                       />
                     ) : null}
                   </div>
@@ -321,8 +333,13 @@ const ManageProfile: React.FC = () => {
           }
           showModal={showModal}
           setShowModal={setShowModal}
+          setSelectedOrganization={setSelectedOrganization}
         >
-          <OrganizationForm setShowModal={setShowModal} />
+          {/* <OrganizationForm setShowModal={setShowModal} /> */}
+          <OrganizationForm2
+            setShowModal={setShowModal}
+            index={selectedOrganization}
+          />
         </CommonModal>
       )}
 
