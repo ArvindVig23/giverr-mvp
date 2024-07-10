@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import chevronDown from '/public/images/chevron-down.svg';
 import Image from 'next/image';
@@ -9,6 +9,8 @@ import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { useLoadScript, Autocomplete } from '@react-google-maps/api';
+import { NEXT_PUBLIC_GOOGLE_MAPS_API_KEY } from '@/constants/constants';
 
 const CreateEventStep2 = ({
   stepValidationShouldCheck,
@@ -107,6 +109,7 @@ const CreateEventStep2 = ({
 
     if (!hasError) {
       append({ address: '', city: '', province: '', postalCode: '' });
+      setAutocompletes([...autocompletes, null]);
     }
   };
 
@@ -120,6 +123,35 @@ const CreateEventStep2 = ({
     } //eslint-disable-next-line
   }, [stepValidationShouldCheck]);
 
+  //  google api
+  const [autocompletes, setAutocompletes] = useState<any>([]);
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries: ['places'],
+  });
+  const handlePlaceSelect = (index: number) => {
+    const place = autocompletes[index].getPlace();
+    if (place.address_components) {
+      let city = '';
+      let postalCode = '';
+
+      place.address_components.forEach((component: any) => {
+        if (component.types.includes('locality')) {
+          city = component.long_name;
+        }
+        if (component.types.includes('postal_code')) {
+          postalCode = component.long_name;
+        }
+      });
+
+      setValue(
+        `physicalLocations.${index}.address`,
+        place.formatted_address || '',
+      );
+      setValue(`physicalLocations.${index}.city`, city);
+      setValue(`physicalLocations.${index}.postalCode`, postalCode);
+    }
+  };
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -150,7 +182,7 @@ const CreateEventStep2 = ({
                 className="physical-location-group flex flex-col gap-5"
               >
                 <div className="relative w-full">
-                  <input
+                  {/* <input
                     {...register(`physicalLocations.${index}.address`, {
                       required:
                         locationType === 'PHYSICAL'
@@ -169,7 +201,47 @@ const CreateEventStep2 = ({
                     className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
                   >
                     Address
-                  </label>
+                  </label> */}
+                  {isLoaded ? (
+                    <Autocomplete
+                      onLoad={(autocomplete) => {
+                        const newAutocompletes = [...autocompletes];
+                        newAutocompletes[index] = autocomplete;
+                        setAutocompletes(newAutocompletes);
+                      }}
+                      onPlaceChanged={() => handlePlaceSelect(index)}
+                    >
+                      <input
+                        {...register(`physicalLocations.${index}.address`, {
+                          required:
+                            locationType === 'PHYSICAL'
+                              ? 'Address is required'
+                              : false,
+                          onChange: () =>
+                            trigger(`physicalLocations.${index}.address`),
+                        })}
+                        type="text"
+                        id={`address-${index}`}
+                        className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                        placeholder=" "
+                      />
+                    </Autocomplete>
+                  ) : (
+                    <input
+                      {...register(`physicalLocations.${index}.address`, {
+                        required:
+                          locationType === 'PHYSICAL'
+                            ? 'Address is required'
+                            : false,
+                        onChange: () =>
+                          trigger(`physicalLocations.${index}.address`),
+                      })}
+                      type="text"
+                      id={`address-${index}`}
+                      className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                      placeholder=" "
+                    />
+                  )}
                   {errors.physicalLocations?.[index]?.address && (
                     <span className="error-message text-red-500">
                       {errors.physicalLocations[index]?.address?.message}
