@@ -50,7 +50,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               className={`${opportunity?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'} w-2 h-2 rounded-full`}
             ></span>{' '}
             {opportunity?.registrationType === 'SHOW_UP'
-              ? 'Show up'
+              ? 'Show Up'
               : 'Pre-Entry'}
           </div>
         )}

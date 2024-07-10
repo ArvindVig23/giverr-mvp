@@ -228,7 +228,10 @@ export const eventCardDateTime = (
 
     // Convert UTC time string to moment object
     const utcDate = moment.utc(utcDateString);
-    const utcStartTime = moment.utc(utcStartTimeString);
+
+    const utcStartTime = utcStartTimeString
+      ? moment.utc(utcStartTimeString)
+      : moment.utc().toISOString();
     let date = null;
     let startTime = null;
     if (selectedTimeZone) {
@@ -240,7 +243,11 @@ export const eventCardDateTime = (
     } else {
       const userLocalZone = moment.tz.guess();
       const utcDate = moment.utc(utcDateString);
-      const startTime = moment.utc(utcStartTimeString);
+      const startTime = utcStartTimeString
+        ? moment.utc(utcStartTimeString)
+        : moment.utc();
+      console.log(startTime, 'startTime');
+
       const userLocalDate = utcDate
         .clone()
         .tz(userLocalZone)

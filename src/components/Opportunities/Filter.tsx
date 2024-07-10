@@ -100,7 +100,7 @@ const Filter = (props: {
               <Image src={check} alt="check" />
             </span>
             <span className="mt-px font-light text-[#24181B] cursor-pointer select-none">
-              Show up
+              Show Up
             </span>
           </label>
 
