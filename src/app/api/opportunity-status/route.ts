@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
             (email) => email !== null,
           );
           const emailsString = filteredUserEmails.join();
-          console.log(emailsString, 'emailStrin');
+          console.log(emailsString, 'emailString');
           await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
         }
       }

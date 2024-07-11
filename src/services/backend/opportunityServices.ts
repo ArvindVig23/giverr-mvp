@@ -434,7 +434,7 @@ export const sendEmailsForSubscribeCatUser = async (
       template,
     );
   } catch (error) {
-    console.log('Error in sending email to subscribed users');
+    console.log(error, 'Error in sending email to subscribed users');
   }
 };
 
