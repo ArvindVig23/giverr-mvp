@@ -95,10 +95,10 @@ export default function ProfileDropdown() {
       ? fullNameOrEmail().slice(0, 16) + '...'
       : fullNameOrEmail();
 
-  const handleLoginAsOrg = async (loginAsOrg: boolean) => {
+  const handleLoginAsOrg = async (loginAsOrg: boolean, orgId: string) => {
     try {
       dispatch(setLoader(true));
-      const response = await switchToOrganisation(loginAsOrg);
+      const response = await switchToOrganisation(loginAsOrg, orgId);
       const { message } = response;
       sweetAlertToast('success', message, 1000);
     } catch (error) {
@@ -122,6 +122,17 @@ export default function ProfileDropdown() {
       : nameOrUserName(org);
   };
 
+  const [currentLoggedInOrg, setCurrentLoggedInOrg] = useState<any>();
+  useEffect(() => {
+    if (cookies.userDetails.loginAsOrg) {
+      const loggedInOrg = userOrgDetails.find(
+        (org: any) => org.id === cookies.userDetails.orgId,
+      );
+      setCurrentLoggedInOrg(loggedInOrg);
+    } else {
+      setCurrentLoggedInOrg(null);
+    } // eslint-disable-next-line
+  }, [cookies.userDetails.orgId, userOrgDetails.length]);
   return (
     <>
       {dropdownOpen && (
@@ -133,19 +144,19 @@ export default function ProfileDropdown() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="inline-flex justify-center gap-x-1.5 rounded-full bg-[#BAA388] min-w-10 w-10 h-10 items-center text-base font-medium overflow-hidden "
           >
-            {/* {cookies.userDetails.loginAsOrg ? (
-              userOrgDetails?.avatarLink ? (
+            {cookies.userDetails.loginAsOrg && currentLoggedInOrg ? (
+              currentLoggedInOrg?.avatarLink ? (
                 <Image
                   width={40}
                   height={40}
-                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`}
+                  src={`${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(currentLoggedInOrg?.avatarLink)}`}
                   alt="profile"
                   className="w-full h-full object-cover"
                 />
               ) : (
-                getInitialOfEmail(nameOrUserName())
+                getInitialOfEmail(nameOrUserName(currentLoggedInOrg))
               )
-            ) : null} */}
+            ) : null}
             {!cookies.userDetails.loginAsOrg ? (
               cookies.userDetails.profileUrl ? (
                 <Image
@@ -178,7 +189,7 @@ export default function ProfileDropdown() {
                 <div
                   onClick={() =>
                     cookies.userDetails.loginAsOrg
-                      ? handleLoginAsOrg(false)
+                      ? handleLoginAsOrg(false, '')
                       : null
                   }
                   className="flex items-center gap-2 text-base px-3 py-[11px]	md:py-[7px] hover:bg-[#F5F3EF] rounded-lg cursor-pointer"
@@ -220,8 +231,8 @@ export default function ProfileDropdown() {
                       <Menu.Item key={org.id}>
                         <div
                           onClick={() =>
-                            !cookies.userDetails.loginAsOrg
-                              ? handleLoginAsOrg(true)
+                            cookies.userDetails.orgId !== org.id
+                              ? handleLoginAsOrg(true, org.id)
                               : null
                           }
                           className="flex items-center gap-2 text-base px-3 py-[11px] md:py-[7px] hover:bg-[#F5F3EF] rounded-lg mb-1 cursor-pointer"
@@ -249,11 +260,12 @@ export default function ProfileDropdown() {
                           ) : (
                             displayOrgName(org)
                           )}
-                          {cookies.userDetails.loginAsOrg && (
+                          {cookies.userDetails.loginAsOrg &&
+                          cookies.userDetails.orgId === org.id ? (
                             <div className="ml-auto">
                               <Image src={check} alt="check" />
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </Menu.Item>
                     ) : null,
