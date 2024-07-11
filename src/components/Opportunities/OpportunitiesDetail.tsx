@@ -146,6 +146,11 @@ const OpportunitiesDetail = ({
       sweetAlertToast('error', message);
     }
   };
+
+  const isCreatedByUserOrOrg =
+    cookies?.userDetails?.id === opportunityDetail?.createdBy ||
+    opportunityDetail?.alreadyJoined ||
+    userOrgDetails.some((org: any) => org.id === opportunityDetail?.createdBy);
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
@@ -176,7 +181,9 @@ const OpportunitiesDetail = ({
                   : 'Pre-Entry'}
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
-              opportunityDetail?.createdBy === userOrgDetails.id ? (
+              userOrgDetails.some(
+                (org: any) => org.id === opportunityDetail?.createdBy,
+              ) ? (
                 <div className="relative cursor-pointer ml-auto">
                   <button
                     onClick={openEditOppModal}
@@ -597,7 +604,7 @@ const OpportunitiesDetail = ({
                         : false
                     }
                     onClick={handleJoin}
-                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined || opportunityDetail?.createdBy === userOrgDetails.id) && 'cursor-not-allowed'}`}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${isCreatedByUserOrOrg && 'cursor-not-allowed'}`}
                   >
                     {opportunityDetail?.alreadyJoined
                       ? 'Already Joined'

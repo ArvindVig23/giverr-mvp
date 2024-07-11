@@ -187,16 +187,15 @@ const CreateEventStep1 = ({
       value: cookies.userDetails.id,
       image: cookies.userDetails.profileUrl,
     },
-    ...(userOrgDetails.id && userOrgDetails.status === 'APPROVED'
-      ? [
-          {
-            id: userOrgDetails.id,
-            label: userOrgDetails.name,
-            value: userOrgDetails.id,
-            image: userOrgDetails.avatarLink,
-          },
-        ]
-      : []),
+    ...userOrgDetails
+      .map((org: any) => ({
+        id: org.id,
+        label: org.name,
+        value: org.id,
+        image: org.avatarLink,
+        status: org.status,
+      }))
+      .filter((org: any) => org.status === 'APPROVED'),
   ];
   const findSelectedOption = (value: any, field: any) => {
     const option = options.find((option) => option.id === value);

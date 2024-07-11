@@ -22,6 +22,7 @@ import { compileEmailTemplate } from './handlebars';
 import { sendEmail } from './emailService';
 import { approveOrgTemplate } from '@/utils/templates/approveOrgTemplate';
 import { inviteEmail } from '@/utils/templates/inviteTemplate';
+import { OrgDetails } from '@/interface/organization';
 
 export const createOrganization = async (
   id: string,
@@ -45,7 +46,6 @@ export const createOrganization = async (
       updatedAt: currentUtcDate,
     });
     const createdOrgDoc = await getDoc(createOrg);
-    const createdOrgData = createdOrgDoc.data();
     const orgId = createdOrgDoc.id;
 
     // create the members
@@ -81,10 +81,35 @@ export const createOrganization = async (
       'Organization Approval Required',
       template,
     );
+
+    const organizationsRef = collection(db, 'organizations');
+    const queryWhereCondition = query(
+      organizationsRef,
+      where('createdBy', '==', id),
+      where('status', '!=', 'REJECTED'),
+    );
+    const querySnapshot = await getDocs(queryWhereCondition);
+
+    let data: OrgDetails[] = [];
+    if (!querySnapshot.empty) {
+      data = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const organizationData = doc.data();
+          const orgId = doc.id;
+          organizationData.id = orgId;
+
+          // Get members for this organization
+          const memberList = await getMembersForOrganization(orgId);
+          organizationData.members = memberList;
+
+          return organizationData;
+        }),
+      );
+    }
     const response = responseHandler(
       200,
       true,
-      { ...createdOrgData, id: createdOrgDoc.id },
+      data,
       'Organization submitted Successfully and sent for approval',
     );
     return response;

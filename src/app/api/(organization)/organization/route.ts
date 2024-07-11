@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const userDetails = getUserDetailsCookie();
     const convertString = JSON.parse(userDetails.value);
     const { id, fullName, email } = convertString;
-    //  check organization with existing username
+    //  check organization with existing username globally
     const organizationRef = collection(db, 'organizations');
     // to check the username should be unique gloablly
     const orgQuery = query(
@@ -57,6 +57,39 @@ export async function POST(req: NextRequest) {
         false,
         null,
         'Organization with this username already exists',
+      );
+      return response;
+    }
+    // Firebse does not support OR operator that is the reason we are quering the in different query
+    // Query for existing organization by username under loggedin user
+    const usernameQuery = query(
+      organizationRef,
+      where('createdBy', '==', id),
+      where('username', '==', username.trim().toLowerCase()),
+      where('status', '!=', 'REJECTED'),
+    );
+
+    // Query for existing organization by name under loggedin user
+    const nameQuery = query(
+      organizationRef,
+      where('createdBy', '==', id),
+      where('nameLowerCase', '==', name.trim().toLowerCase()),
+      where('status', '!=', 'REJECTED'),
+    );
+
+    // Execute both queries
+    const [usernameSnapshot, nameSnapshot] = await Promise.all([
+      getDocs(usernameQuery),
+      getDocs(nameQuery),
+    ]);
+
+    // Check if any organization exists
+    if (!usernameSnapshot.empty || !nameSnapshot.empty) {
+      const response = responseHandler(
+        409,
+        false,
+        null,
+        'Organization with this username/fullname already exists under your account.',
       );
       return response;
     }
@@ -158,7 +191,7 @@ export async function PUT(req: NextRequest) {
     const orgRef = doc(db, 'organizations', orgId);
     const organizationDoc = await getDoc(orgRef);
     const orgData = organizationDoc.data();
-    if (!orgData || orgData.status !== 'APPROVED') {
+    if (!orgData) {
       const response = responseHandler(
         404,
         false,
@@ -190,6 +223,48 @@ export async function PUT(req: NextRequest) {
       );
       return response;
     }
+
+    // Firebse does not support OR operator that is the reason we are quering the in different query
+    // Query for existing organization by username under loggedin user
+    const usernameQuery = query(
+      organizationRef,
+      where('createdBy', '==', id),
+      where('username', '==', username.trim().toLowerCase()),
+      where('status', '!=', 'REJECTED'),
+      // where('__name__', '!=', orgId),
+    );
+
+    // Query for existing organization by name under loggedin user
+    const nameQuery = query(
+      organizationRef,
+      where('createdBy', '==', id),
+      where('nameLowerCase', '==', name.trim().toLowerCase()),
+      where('status', '!=', 'REJECTED'),
+      // where('__name__', '!=', orgId),
+    );
+
+    // Execute both queries
+    const [usernameSnapshot, nameSnapshot] = await Promise.all([
+      getDocs(usernameQuery),
+      getDocs(nameQuery),
+    ]);
+
+    const usernameExists = usernameSnapshot.docs.some(
+      (doc) => doc.id !== orgId,
+    );
+    const nameExists = nameSnapshot.docs.some((doc) => doc.id !== orgId);
+
+    // Check if any organization exists
+    if (usernameExists || nameExists) {
+      const response = responseHandler(
+        409,
+        false,
+        null,
+        'Organization with this username/fullname already exists under your account.',
+      );
+      return response;
+    }
+
     // update details
     await updateDoc(doc(db, 'organizations', orgId), {
       name,
@@ -243,7 +318,7 @@ export async function DELETE(req: NextRequest) {
     const docRef = doc(orgRef, orgId);
     const docSnap = await getDoc(docRef);
     const orgData: any = docSnap.data();
-    if (!orgData || orgData.status !== 'APPROVED') {
+    if (!orgData) {
       const response = responseHandler(
         404,
         false,

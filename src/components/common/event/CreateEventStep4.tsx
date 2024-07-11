@@ -246,7 +246,7 @@ const CreateEventStep4 = ({
 
             <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex p-4 d-flex items-center gap-5 cursor-pointer">
               <div>
-                <span className="text-[#24181B]">Just show up</span>
+                <span className="text-[#24181B]">Just Show Up</span>
                 <p className="text-[#24181B80]">There’s no limited space</p>
               </div>
               <input

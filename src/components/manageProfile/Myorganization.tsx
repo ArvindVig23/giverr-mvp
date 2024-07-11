@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { encodeUrl, pickColor } from '@/services/frontend/commonServices';
@@ -23,6 +23,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
   setInviteMembersModal,
   editClick,
 }: any) => {
+  const [deleteOrgIndex, setDeleteOrgIndex] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const dispatch = useDispatch();
@@ -69,6 +70,10 @@ const Myorganization: React.FC<MyorganizationProps> = ({
     }
   }, [showModal]);
 
+  const handleDeleteOrg = (index: number) => {
+    setShowDeleteModal(true);
+    setDeleteOrgIndex(index);
+  };
   return (
     <div className="w-full">
       <div className="flex justify-between items-center border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -94,7 +99,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
                 >
                   <div className="flex gap-4 items-center flex-grow">
                     <div
-                      className={`w-11 h-11 min-w-11 flex items-center justify-center font-medium overflow-hidden rounded-full ${pickColor()} text-[#24181B]`}
+                      className={`w-11 h-11 min-w-11 flex items-center justify-center font-medium overflow-hidden rounded-full ${!org.avatarLink ? pickColor() : ''} text-[#24181B]`}
                     >
                       {org.avatarLink ? (
                         <Image
@@ -133,6 +138,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
                       />
                     </button>
                     <button
+                      onClick={() => handleDeleteOrg(index)}
                       type="button"
                       className=" w-[20px] h-[20px] ml-auto border-0 text-white rounded-full flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                     >
@@ -175,20 +181,6 @@ const Myorganization: React.FC<MyorganizationProps> = ({
           </>
         ) : null}
         <hr className="my-[40px] md:my-[60px] "></hr>
-        {showOrganization ? (
-          <div className="inline-flex w-full items-center gap-4 justify-between mb-8">
-            <div className="inline-flex w-full items-center gap-4">
-              <h2 className="flex-grow font-medium md:text-2xl">Danger Zone</h2>{' '}
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                type="button"
-                className="text-base  h-11   px-3 md:px-4 py-3 justify-end flex items-center bg-inherit rounded-xl font-medium text-[#E60054]  border border-[#E6005433] hover:bg-[#E600540D]"
-              >
-                Delete Organization
-              </button>
-            </div>
-          </div>
-        ) : null}
       </div>
       {showDeleteModal && (
         <CommonDeleteModal
@@ -196,7 +188,10 @@ const Myorganization: React.FC<MyorganizationProps> = ({
           showModal={showDeleteModal}
           setShowModal={setShowDeleteModal}
         >
-          <DeleteModalContent setShowModal={setShowDeleteModal} />
+          <DeleteModalContent
+            setShowModal={setShowDeleteModal}
+            index={deleteOrgIndex}
+          />
         </CommonDeleteModal>
       )}
     </div>

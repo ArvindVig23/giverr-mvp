@@ -20,16 +20,14 @@ import { compose } from '@reduxjs/toolkit';
 import { hocUserGuard } from '../hoc/HOCUserGuard';
 import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
 import CommonModal from '../common/modal/CommonModal';
-import { useSelector } from 'react-redux';
-// import OrganizationForm from '../common/organization/OrganizationForm';
+import OrganizationForm from '../common/organization/OrganizationForm';
 import ModalInvite from '../common/organization/ModalInvite';
-import OrganizationForm2 from '../common/organization/OrganizationForm2';
 
 const ManageProfile: React.FC = () => {
   //  Moved these modals here to adjust the design on mobile
   const [showModal, setShowModal] = React.useState(false);
   const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
-  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  // const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [tabSlideClass, setTabSlideClass] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const eventsTab = searchParams.get('tab');
@@ -327,19 +325,20 @@ const ManageProfile: React.FC = () => {
       {showModal && (
         <CommonModal
           heading={
-            userOrgDetails.id && userOrgDetails.status !== 'PENDING'
-              ? 'Update organization'
-              : 'Create organization'
+            selectedOrganization ? 'Update organization' : 'Create organization'
           }
           showModal={showModal}
           setShowModal={setShowModal}
           setSelectedOrganization={setSelectedOrganization}
         >
-          {/* <OrganizationForm setShowModal={setShowModal} /> */}
-          <OrganizationForm2
+          <OrganizationForm
             setShowModal={setShowModal}
             index={selectedOrganization}
           />
+          {/* <OrganizationForm2
+            setShowModal={setShowModal}
+            index={selectedOrganization}
+          /> */}
         </CommonModal>
       )}
 
