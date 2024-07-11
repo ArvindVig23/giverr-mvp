@@ -20,10 +20,12 @@ import { Tooltip } from '@material-tailwind/react';
 import { DOMAIN_URL } from '@/constants/constants';
 import { useForm } from 'react-hook-form';
 import { MemberProps } from '@/interface/organization';
+import { getLoggedInOrgFromCookies } from '@/services/frontend/commonServices';
 
 const Members: React.FC<MemberProps> = ({
   inviteMembersModal,
   setInviteMembersModal,
+  orgIdWhoseMembersShouldVisible,
 }) => {
   const { register, watch } = useForm();
   const searchMember = watch('searchMember');
@@ -133,6 +135,21 @@ const Members: React.FC<MemberProps> = ({
       document.body.classList.remove('settings-modal-open');
     }
   }, [inviteMembersModal]);
+
+  // state in which we will set the memeber list on the basis of the org id whose members needs to be visible
+  const [currentVisibleMembers, setCurrentVisibleMember] = useState<any>();
+  useEffect(() => {
+    const findOrg = getLoggedInOrgFromCookies(
+      orgIdWhoseMembersShouldVisible,
+      userOrgDetails,
+    );
+    if (findOrg) {
+      setCurrentVisibleMember(findOrg.members);
+    } // eslint-disable-next-line
+  }, [orgIdWhoseMembersShouldVisible]);
+
+  console.log(currentVisibleMembers, 'currentVisibleMembers');
+
   return (
     <>
       <h3 className="member-heading text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left md:hidden block border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">

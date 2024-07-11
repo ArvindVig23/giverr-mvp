@@ -1,4 +1,5 @@
 import { SearchParam } from '@/interface/opportunity';
+import { OrgDetails } from '@/interface/organization';
 import { commitmentOptions } from '@/utils/staticDropdown/dropdownOptions';
 import moment from 'moment-timezone';
 export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
@@ -269,5 +270,23 @@ export const eventCardDateTime = (
     const userLocalTime = startTime.clone().tz(userLocalZone).format(`HH:mm`);
 
     return `${userLocalDate} at ${userLocalTime}`;
+  }
+};
+
+// Common server that will return the org details if user logged in with the organization
+
+export const getLoggedInOrgFromCookies = (
+  orgIdFromCookies: string,
+  userOrgList: OrgDetails[],
+) => {
+  if (orgIdFromCookies) {
+    const orgDetails = userOrgList.find(
+      (org: any) => org.id === orgIdFromCookies,
+    );
+    console.log(orgDetails, 'orgDetails');
+
+    return orgDetails;
+  } else {
+    return null;
   }
 };

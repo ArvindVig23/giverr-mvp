@@ -12,7 +12,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
-import { encodeUrl } from '@/services/frontend/commonServices';
+import {
+  encodeUrl,
+  getLoggedInOrgFromCookies,
+} from '@/services/frontend/commonServices';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import {
   getOrgDetail,
@@ -125,8 +128,9 @@ export default function ProfileDropdown() {
   const [currentLoggedInOrg, setCurrentLoggedInOrg] = useState<any>();
   useEffect(() => {
     if (cookies.userDetails.loginAsOrg) {
-      const loggedInOrg = userOrgDetails.find(
-        (org: any) => org.id === cookies.userDetails.orgId,
+      const loggedInOrg = getLoggedInOrgFromCookies(
+        cookies.userDetails.orgId,
+        userOrgDetails,
       );
       setCurrentLoggedInOrg(loggedInOrg);
     } else {

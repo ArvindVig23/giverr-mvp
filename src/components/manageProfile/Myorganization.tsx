@@ -23,6 +23,8 @@ const Myorganization: React.FC<MyorganizationProps> = ({
   setInviteMembersModal,
   editClick,
 }: any) => {
+  const [orgIdWhoseMembersShouldVisible, setOrgIdWhoseMembersShouldVisible] =
+    useState<any>('');
   const [deleteOrgIndex, setDeleteOrgIndex] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
@@ -94,6 +96,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
             <>
               {userOrgDetails.map((org: OrgDetails, index: number) => (
                 <div
+                  onClick={() => setOrgIdWhoseMembersShouldVisible(org.id)}
                   key={org.id}
                   className="flex w-full items-center gap-4 justify-between mb-3"
                 >
@@ -174,6 +177,7 @@ const Myorganization: React.FC<MyorganizationProps> = ({
             <hr className="my-[40px] md:my-[60px] border-[#E6E3D6]"></hr>
             <div className="organization-member">
               <Members
+                orgIdWhoseMembersShouldVisible={orgIdWhoseMembersShouldVisible}
                 inviteMembersModal={inviteMembersModal}
                 setInviteMembersModal={setInviteMembersModal}
               />
