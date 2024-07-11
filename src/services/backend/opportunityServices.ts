@@ -396,8 +396,7 @@ export const sendEmailsForSubscribeCatUser = async (
 ) => {
   try {
     const userDetail = await getUserDetailsCookie();
-    const convertString = JSON.parse(userDetail.value);
-
+    const convertString = userDetail ? JSON.parse(userDetail.value) : null;
     const time = getFormattedLocalTimeBackend(data.eventDate, convertString);
     let org = '';
     if (data.organizationId) {
