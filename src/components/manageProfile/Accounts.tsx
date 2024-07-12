@@ -224,7 +224,7 @@ const OpportunitiesBanner: React.FC = () => {
             />
             <label
               htmlFor="password"
-              className="absolute text-[12px] text-[#1E1E1E80] duration-300  top-[2px] z-10 origin-[0] start-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 translate-x-1/4 left-[8px]"
+              className="absolute text-[12px] text-[#1E1E1E80] duration-300  top-[2px] z-10 origin-[0] start-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 translate-x-1/4 !left-[9px]"
             >
               Password
             </label>
