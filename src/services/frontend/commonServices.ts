@@ -232,7 +232,7 @@ export const eventCardDateTime = (
 
     const utcStartTime = utcStartTimeString
       ? moment.utc(utcStartTimeString)
-      : moment.utc().toISOString();
+      : moment.utc(utcDateString);
     let date = null;
     let startTime = null;
     if (selectedTimeZone) {
@@ -246,7 +246,7 @@ export const eventCardDateTime = (
       const utcDate = moment.utc(utcDateString);
       const startTime = utcStartTimeString
         ? moment.utc(utcStartTimeString)
-        : moment.utc();
+        : moment.utc(utcDateString);
 
       const userLocalDate = utcDate
         .clone()

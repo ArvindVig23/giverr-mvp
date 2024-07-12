@@ -145,7 +145,7 @@ const Members: React.FC<MemberProps> = ({
         );
       });
       setFilteredMembers(filtered);
-    }
+    } // eslint-disable-next-line
   }, [searchMember, userOrgDetails]);
 
   useEffect(() => {
