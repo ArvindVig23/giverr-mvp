@@ -3,14 +3,21 @@ import responseHandler from '@/lib/responseHandler';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import { currentUtcDate } from '@/services/backend/opportunityServices';
 import { fullNameSchema } from '@/utils/joiSchema';
-import { doc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 export async function PUT(req: NextRequest) {
   try {
     const reqbody = await req.json();
-    const { profileUrl, fullName } = reqbody;
+    const { profileUrl, fullName, username } = reqbody;
     const { error } = fullNameSchema.validate(
       { fullName },
       { abortEarly: false },
@@ -27,9 +34,28 @@ export async function PUT(req: NextRequest) {
     const convertString = JSON.parse(userDetails.value);
     const { id } = convertString;
 
+    if (username) {
+      const usersRef = collection(db, 'users');
+      const userWithUsername = await getDocs(
+        query(usersRef, where('username', '==', username.toLowerCase().trim())),
+      );
+      const filteredDocs = userWithUsername.docs.filter((doc) => doc.id !== id);
+
+      if (filteredDocs.length > 0) {
+        const response = responseHandler(
+          409,
+          false,
+          null,
+          'Username is not available, please try again.',
+        );
+        return response;
+      }
+    }
+
     await updateDoc(doc(db, 'users', id), {
       profileUrl,
       fullName,
+      username,
       updatedAt: currentUtcDate,
     });
 
@@ -38,6 +64,7 @@ export async function PUT(req: NextRequest) {
       ...convertString,
       profileUrl,
       fullName,
+      username,
     };
     cookies().set({
       name: 'userDetails',
