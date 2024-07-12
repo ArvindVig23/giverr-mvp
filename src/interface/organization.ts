@@ -29,5 +29,4 @@ export interface MyorganizationProps {
 export interface MemberProps {
   inviteMembersModal: boolean;
   setInviteMembersModal: Function;
-  orgIdWhoseMembersShouldVisible: string;
 }

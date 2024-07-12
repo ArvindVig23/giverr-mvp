@@ -335,10 +335,6 @@ const ManageProfile: React.FC = () => {
             setShowModal={setShowModal}
             index={selectedOrganization}
           />
-          {/* <OrganizationForm2
-            setShowModal={setShowModal}
-            index={selectedOrganization}
-          /> */}
         </CommonModal>
       )}
 

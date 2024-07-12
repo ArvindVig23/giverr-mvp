@@ -283,10 +283,15 @@ export const getLoggedInOrgFromCookies = (
     const orgDetails = userOrgList.find(
       (org: any) => org.id === orgIdFromCookies,
     );
-    console.log(orgDetails, 'orgDetails');
 
     return orgDetails;
   } else {
     return null;
   }
+};
+
+//  find the index of the organizations from the global state
+export const getTheIndexOfOrg = (id: string, userOrgList: OrgDetails[]) => {
+  const index = userOrgList.findIndex((org: any) => org.id === id);
+  return index;
 };

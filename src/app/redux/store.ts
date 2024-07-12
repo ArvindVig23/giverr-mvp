@@ -6,6 +6,7 @@ import loaderReducer from './slices/loaderSlice';
 import userOrgReducer from './slices/userOrgDetails';
 import opportunityReducer from './slices/opportunitySlice';
 import submitOppReducer from './slices/submitOpportunity';
+import selectedOrgIdReducer from './slices/selectedOrgIdForMembers';
 export const store = configureStore({
   reducer: {
     userDetailReducer,
@@ -15,5 +16,6 @@ export const store = configureStore({
     userOrgReducer,
     opportunityReducer,
     submitOppReducer,
+    selectedOrgIdReducer,
   },
 });

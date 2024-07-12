@@ -9,12 +9,12 @@ import { getOrgDetail } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import DeleteModalContent from '../common/organization/DeleteModalContent';
-import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import Members from './Members';
 import { setLoader } from '@/app/redux/slices/loaderSlice';
 import { MyorganizationProps, OrgDetails } from '@/interface/organization';
 import deleteIcon from '/public/images/delete.svg';
 import editIcon from '/public/images/edit-icon.svg';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 
 const Myorganization: React.FC<MyorganizationProps> = ({
   showModal,
@@ -23,8 +23,9 @@ const Myorganization: React.FC<MyorganizationProps> = ({
   setInviteMembersModal,
   editClick,
 }: any) => {
-  const [orgIdWhoseMembersShouldVisible, setOrgIdWhoseMembersShouldVisible] =
-    useState<any>('');
+  const orgIdWhoseMembersShouldVisible = useSelector(
+    (state: any) => state.selectedOrgIdReducer,
+  );
   const [deleteOrgIndex, setDeleteOrgIndex] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
@@ -34,19 +35,11 @@ const Myorganization: React.FC<MyorganizationProps> = ({
       try {
         dispatch(setLoader(true));
         const getDetails = await getOrgDetail();
-        if (getDetails) {
-          if (getDetails.status === 'REJECTED') {
-            const user = {
-              ...defaultUserOrgDetail,
-              status: getDetails.status,
-            };
-            dispatch(updateOrgDetails(user));
-            dispatch(setLoader(false));
-            return;
-          }
-          dispatch(updateOrgDetails(getDetails));
-        }
+        dispatch(updateOrgDetails(getDetails));
         dispatch(setLoader(false));
+        if (getDetails.length) {
+          dispatch(updateSelectedOrgIdForMembers(getDetails[0].id));
+        }
       } catch (error: any) {
         dispatch(setLoader(false));
         console.log(error, 'error in getting the org');
@@ -76,6 +69,10 @@ const Myorganization: React.FC<MyorganizationProps> = ({
     setShowDeleteModal(true);
     setDeleteOrgIndex(index);
   };
+
+  const handleOrgClick = (id?: string) => {
+    dispatch(updateSelectedOrgIdForMembers(id));
+  };
   return (
     <div className="w-full">
       <div className="flex justify-between items-center border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -96,9 +93,9 @@ const Myorganization: React.FC<MyorganizationProps> = ({
             <>
               {userOrgDetails.map((org: OrgDetails, index: number) => (
                 <div
-                  onClick={() => setOrgIdWhoseMembersShouldVisible(org.id)}
+                  onClick={() => handleOrgClick(org.id)}
                   key={org.id}
-                  className="flex w-full items-center gap-4 justify-between mb-3"
+                  className={`flex w-full items-center gap-4 justify-between mb-3 cursor-pointer ${orgIdWhoseMembersShouldVisible === org.id ? 'bg-[#EDEBE3]' : ''}`}
                 >
                   <div className="flex gap-4 items-center flex-grow">
                     <div
@@ -155,36 +152,31 @@ const Myorganization: React.FC<MyorganizationProps> = ({
                 </div>
               ))}
             </>
-          ) : userOrgDetails.status === 'PENDING' ? (
-            <>
-              <div className="fit-screen flex w-full justify-between gap-3 items-center md:text-left text-center">
-                <div>
-                  <span className="text-[#24181B] text-base">
-                    Your request for organization is being reviewed by admin.
-                  </span>
-                  <p className="text-[#24181B80] text-base m-0">
-                    It&apos;ll be soon approved, if everything went okay.
-                  </p>
-                </div>
+          ) : (
+            <div className="fit-screen flex w-full justify-between gap-3 items-center">
+              <div className="">
+                <span className="text-[#24181B] text-base">
+                  No organizations
+                </span>
+                <p className="text-[#24181B80] text-base m-0">
+                  You are the owner.
+                </p>
               </div>
-            </>
-          ) : null}
+            </div>
+          )}
         </div>
         {/* No organization section end */}
-
         {showOrganization ? (
           <>
             <hr className="my-[40px] md:my-[60px] border-[#E6E3D6]"></hr>
             <div className="organization-member">
               <Members
-                orgIdWhoseMembersShouldVisible={orgIdWhoseMembersShouldVisible}
                 inviteMembersModal={inviteMembersModal}
                 setInviteMembersModal={setInviteMembersModal}
               />
             </div>
           </>
         ) : null}
-        <hr className="my-[40px] md:my-[60px] "></hr>
       </div>
       {showDeleteModal && (
         <CommonDeleteModal
