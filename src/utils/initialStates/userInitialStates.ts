@@ -12,13 +12,4 @@ export const resetGlobalState: userDetail = {
   status: true,
 };
 
-export const defaultUserOrgDetail: OrgDetails = {
-  id: '',
-  createdBy: '',
-  status: false,
-  avatarLink: '',
-  name: '',
-  username: '',
-  website: '',
-  members: [],
-};
+export const defaultUserOrgDetail: OrgDetails[] = [];

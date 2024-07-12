@@ -1,4 +1,5 @@
 import { SearchParam } from '@/interface/opportunity';
+import { OrgDetails } from '@/interface/organization';
 import { commitmentOptions } from '@/utils/staticDropdown/dropdownOptions';
 import moment from 'moment-timezone';
 export const getFormattedLocalTime = (utcTimeString: string, cookies: any) => {
@@ -231,7 +232,7 @@ export const eventCardDateTime = (
 
     const utcStartTime = utcStartTimeString
       ? moment.utc(utcStartTimeString)
-      : moment.utc().toISOString();
+      : moment.utc(utcDateString);
     let date = null;
     let startTime = null;
     if (selectedTimeZone) {
@@ -245,8 +246,7 @@ export const eventCardDateTime = (
       const utcDate = moment.utc(utcDateString);
       const startTime = utcStartTimeString
         ? moment.utc(utcStartTimeString)
-        : moment.utc();
-      console.log(startTime, 'startTime');
+        : moment.utc(utcDateString);
 
       const userLocalDate = utcDate
         .clone()
@@ -271,4 +271,27 @@ export const eventCardDateTime = (
 
     return `${userLocalDate} at ${userLocalTime}`;
   }
+};
+
+// Common server that will return the org details if user logged in with the organization
+
+export const getLoggedInOrgFromCookies = (
+  orgIdFromCookies: string,
+  userOrgList: OrgDetails[],
+) => {
+  if (orgIdFromCookies) {
+    const orgDetails = userOrgList.find(
+      (org: any) => org.id === orgIdFromCookies,
+    );
+
+    return orgDetails;
+  } else {
+    return null;
+  }
+};
+
+//  find the index of the organizations from the global state
+export const getTheIndexOfOrg = (id: string, userOrgList: OrgDetails[]) => {
+  const index = userOrgList.findIndex((org: any) => org.id === id);
+  return index;
 };

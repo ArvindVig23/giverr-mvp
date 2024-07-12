@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import OpportunityCard from '../common/cards/OpportunityCard';
 import CardSkeleton from '../common/loader/CardSkeleton';
-import { useSelector } from 'react-redux';
 
 const UserBasedOpportunityList: React.FC = () => {
   const [opportunityList, setOpportunityList] = useState<any>([]);
@@ -12,14 +11,13 @@ const UserBasedOpportunityList: React.FC = () => {
   const [currrentPage, setCurrentPage] = useState<number>(1);
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const [cookies] = useCookies();
-  const orgDetails = useSelector((state: any) => state.userOrgReducer);
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         const getList = await getUserOpportunityList(
           !cookies.userDetails.loginAsOrg ? cookies?.userDetails?.id : '',
-          cookies.userDetails.loginAsOrg ? orgDetails.id : '',
+          cookies.userDetails.loginAsOrg ? cookies.userDetails.orgId : '',
           currrentPage,
         );
         const { opportunities, page, totalRecords } = getList;
@@ -37,32 +35,33 @@ const UserBasedOpportunityList: React.FC = () => {
         sweetAlertToast('error', message);
       }
     })(); //eslint-disable-next-line
-  }, [currrentPage, cookies.userDetails.loginAsOrg]);
+  }, [currrentPage, cookies.userDetails.loginAsOrg, cookies.userDetails.orgId]);
   const cards = Array(5).fill(null);
 
   return (
     <div className="pb-16">
-      <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
-        {opportunityList && opportunityList.length > 0 ? (
-          opportunityList.map((opportunity: any, index: number) => {
-            return (
-              <div
-                key={index}
-                className={`relative group ${(opportunity.status === 'PENDING' || opportunity.status === 'REJECTED') && 'opacity-60'}`}
-              >
-                <OpportunityCard opportunity={opportunity} />
-              </div>
-            );
-          })
-        ) : (
-          <span>No Opportunitites</span>
-        )}
-      </div>
-      {loading && (
+      {loading ? (
         <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
           {cards.map((_, index) => (
             <CardSkeleton key={index} />
           ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
+          {opportunityList && opportunityList.length > 0 ? (
+            opportunityList.map((opportunity: any, index: number) => {
+              return (
+                <div
+                  key={index}
+                  className={`relative group ${(opportunity.status === 'PENDING' || opportunity.status === 'REJECTED') && 'opacity-60'}`}
+                >
+                  <OpportunityCard opportunity={opportunity} />
+                </div>
+              );
+            })
+          ) : (
+            <span>No Opportunitites</span>
+          )}
         </div>
       )}
       <div className="w-full text-center mt-14 inline-flex flex-wrap justify-center gap-5">

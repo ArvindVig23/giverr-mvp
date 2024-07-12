@@ -8,6 +8,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const loginAsOrg = searchParams.get('loginAsOrg');
+    const orgId = searchParams.get('orgId');
+
     let userDetailCookie = getUserDetailsCookie();
     if (!userDetailCookie) {
       const response = responseHandler(
@@ -22,6 +24,7 @@ export async function GET(req: NextRequest) {
     const updatedCookies: UserDetailsCookies = {
       ...userDetailCookie,
       loginAsOrg: loginAsOrg === 'true' ? true : false,
+      orgId,
     };
     cookies().set({
       name: 'userDetails',
