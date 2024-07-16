@@ -19,6 +19,7 @@ import { compileEmailTemplate } from './handlebars';
 import { approveEvent } from '@/utils/templates/approveEvent';
 import { volunteerEmailTemplate } from '@/utils/templates/volunteerEmailTemplate';
 import {
+  combineDateAndTime,
   formatUtcToReadable,
   getFormattedLocalTimeBackend,
   getNotificationSettingsById,
@@ -26,6 +27,7 @@ import {
 } from './commonServices';
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 import { Location } from '@/interface/opportunity';
+import { getIcalObjectInstance } from '@/utils/calendar/icallObject';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -280,26 +282,46 @@ export const joinOpportunity = async (
   oppId: string,
   id: string,
   email: string,
+  timeZoneSettings: any,
 ) => {
   try {
-    const getEventDetails = await getOpportunityById(oppId);
+    const getEventDetails = await getOppWithCommitments(oppId);
     await addDoc(collection(db, 'opportunityMembers'), {
       userId: id,
       opportunityId: oppId,
     });
     const getNotificationSetting: any = await getNotificationSettingsById(id);
     if (getNotificationSetting && getNotificationSetting.allowUpdates) {
+      const timezone = timeZoneSettings?.selectedTimeZone || moment.tz.guess();
+      const dateTime = combineDateAndTime(
+        getEventDetails.commitment.selectedDate,
+        getEventDetails.commitment.startTime,
+        timezone,
+      );
       const emailData = {
         name: getEventDetails.name,
         description: getEventDetails.description,
-        eventDate: formatUtcToReadable(getEventDetails.selectedDate),
+        eventDate: formatUtcToReadable(dateTime),
       };
       const template = compileEmailTemplate(volunteerEmailTemplate, emailData);
+
+      const calendarObject = getIcalObjectInstance({
+        name: getEventDetails.name,
+        startDate: getEventDetails.commitment.selectedDate,
+        startTime: getEventDetails.commitment.startTime,
+        maxHour: getEventDetails.commitment.maxHour,
+        description: getEventDetails.description,
+        summary: getEventDetails.description,
+        timeZoneSettings,
+      });
+      console.log(calendarObject, 'calendarObject');
+
       await sendEmail(
         email,
         'Welcome aboard, Volunteer!',
         'Welcome aboard, Volunteer!',
         template,
+        calendarObject,
       );
     }
 
@@ -311,7 +333,7 @@ export const joinOpportunity = async (
     );
     return response;
   } catch (error) {
-    console.log(error, 'Error in fetching the opportunity details');
+    console.log(error, 'Error in join Opp function');
     const response = responseHandler(
       500,
       false,
@@ -487,4 +509,12 @@ export const getOppCommitmentByOppId = async (oppId: string) => {
       ...commitment.data(),
     };
   }
+};
+
+export const getOppWithCommitments = async (id: string) => {
+  const opportunity = await getOpportunityById(id);
+  if (opportunity) {
+    opportunity.commitment = await getOppCommitmentByOppId(id);
+  }
+  return opportunity;
 };

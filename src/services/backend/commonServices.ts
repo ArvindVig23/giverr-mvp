@@ -227,3 +227,17 @@ export const formatUtcToReadable = (utcString: string) => {
   const format = 'YYYY-MM-DD HH:mm:ss z';
   return moment.utc(utcString).tz(timezone).format(format);
 };
+
+export const combineDateAndTime = (
+  startDate: any,
+  startTime: any,
+  timezone: any,
+) => {
+  const date = moment(startDate).format('YYYY-MM-DD');
+  const time = moment(startTime ? startTime : startDate)
+    .tz(timezone)
+    .format('HH:mm:ss');
+
+  const finaldate = `${date}T${time}`;
+  return moment.tz(finaldate, timezone).utc().format();
+};

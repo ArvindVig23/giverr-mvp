@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       return response;
     }
     const convertString = JSON.parse(userDetailCookie.value);
-    const { id, email } = convertString;
+    const { id, email, timeZoneSettings } = convertString;
 
     //  check if opportunity exists
     const getEventDetails = await getOpportunityById(oppId);
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       );
       return response;
     }
-    const response = await joinOpportunity(oppId, id, email);
+    const response = await joinOpportunity(oppId, id, email, timeZoneSettings);
     return response;
   } catch (error) {
     console.log(error, 'Error in fetching the opportunity details');
