@@ -4,14 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import eye from '/public/images/eye.svg';
-import mobleftshape from '/public/images/left-mob-shape.svg';
-import mobrightshape from '/public/images/right-mob-shape.svg';
-import leftshape from '/public/images/left-shapes.svg';
-import leftCloseShape from '/public/images/show-pass-left.svg';
-import rightshape from '/public/images/right-shapes.svg';
-import rightCloseShape from '/public/images/show-pass-right.svg';
-import mobCloseRight from '/public/images/mobile-close-right.svg';
-import mobCloseLeft from '/public/images/mobile-close-left.svg';
+import mobleftshape from '/public/images/left-mob-shape1.svg';
+import mobrightshape from '/public/images/right-mob-shape1.svg';
+import leftshape from '/public/images/login-left-shape-1.svg';
+import rightshape from '/public/images/login-right-shape-1.svg';
 import back from '/public/images/arrow-left.svg';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -183,33 +179,19 @@ const ResetPasswordForm: React.FC = () => {
       <div className="absolute left-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={showPassword || showConfirmPassword ? leftshape : leftCloseShape}
+          src={leftshape}
           alt="shapes"
         />
-        <Image
-          className="block md:hidden"
-          src={
-            showPassword || showConfirmPassword ? mobleftshape : mobCloseLeft
-          }
-          alt="shapes"
-        />
+        <Image className="block md:hidden" src={mobleftshape} alt="shapes" />
       </div>
 
       <div className="absolute right-0 bottom-0">
         <Image
           className="hidden md:block h-40 lg:h-auto w-auto"
-          src={
-            showPassword || showConfirmPassword ? rightshape : rightCloseShape
-          }
+          src={rightshape}
           alt="shapes"
         />
-        <Image
-          className="block md:hidden"
-          src={
-            showPassword || showConfirmPassword ? mobrightshape : mobCloseRight
-          }
-          alt="shapes"
-        />
+        <Image className="block md:hidden" src={mobrightshape} alt="shapes" />
       </div>
     </div>
   );

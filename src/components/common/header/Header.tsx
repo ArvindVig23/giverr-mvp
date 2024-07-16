@@ -62,7 +62,7 @@ const Header: React.FC = () => {
 
           {['/', '/organizations'].includes(pathName) && (
             <div className="flex w-full max-w-[654px] absolute left-0 right-0 m-auto search-bar ">
-              <form className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
+              <div className="relative items-center flex border border-[#E6E3D6] bg-[#EDEBE3] rounded-xl h-11 w-full">
                 {pathName === '/organizations' && (
                   <input
                     onChange={(e) =>
@@ -87,7 +87,7 @@ const Header: React.FC = () => {
                   src={lightSearch}
                   alt="search"
                 />
-              </form>
+              </div>
             </div>
           )}
           <div className="flex items-center gap-2.5 desktop-submit">

@@ -232,7 +232,7 @@ const Members: React.FC<MemberProps> = ({
                         </Tooltip>
                       ) : member.status === 'PENDING' ? (
                         <div className="ml-auto flex gap-2 items-center">
-                          <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[109px]">
+                          <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[110px]">
                             Invite pending
                           </span>
                           <Menu
