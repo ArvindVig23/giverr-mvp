@@ -146,6 +146,14 @@ const Notifications: React.FC = () => {
     } //eslint-disable-next-line
   }, [existingSubscribeCat]);
 
+  const isOptionDisabled = () => {
+    if (selectedOptions.length && selectedOptions[0].value === '0') {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="w-full">
       <h3 className="text-[20px] md:text-[32px] font-medium md:mb-5 mt-0 leading-[36px] text-center md:text-left border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -251,6 +259,7 @@ const Notifications: React.FC = () => {
             isDisabled={!notificationValues.allowUpdates}
             className="basic-multi-select block rounded-xl px-5 pb-2 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
             isMulti
+            isOptionDisabled={isOptionDisabled}
             value={selectedOptions}
             onChange={handleChange}
             options={options}

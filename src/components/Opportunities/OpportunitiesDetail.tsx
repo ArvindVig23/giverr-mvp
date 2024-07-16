@@ -154,8 +154,8 @@ const OpportunitiesDetail = ({
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
-        <Link
-          href="/"
+        <button
+          onClick={() => router.back()}
           className="absolute top-5 z-10 left-5 w-[30px] h-[30px] md:w-11 md:h-11 md:min-w-11 border border-[#24181B] md:border-[#E6E3D6] rounded-xl flex justify-center items-center hover:!bg-[#24181B] bg-[#24181B] md:bg-transparent md:hover:!bg-[#EDEBE3]"
         >
           <Image
@@ -168,7 +168,7 @@ const OpportunitiesDetail = ({
             src={arrow}
             alt="arrow"
           ></Image>
-        </Link>
+        </button>
         <div className="w-full md:max-w-[652px] m-auto">
           <div className="w-full md:bg-white md:rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">

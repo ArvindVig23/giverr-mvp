@@ -75,8 +75,12 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
-          where('nameLowerCase', '>=', searchText),
-          where('nameLowerCase', '<=', searchText + '\uf8ff'),
+          where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
+          where(
+            'nameLowerCase',
+            '<=',
+            searchText.toLocaleLowerCase() + '\uf8ff',
+          ),
         ),
       );
     }
@@ -86,8 +90,12 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
-          where('nameLowerCase', '>=', searchText),
-          where('nameLowerCase', '<=', searchText + '\uf8ff'),
+          where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
+          where(
+            'nameLowerCase',
+            '<=',
+            searchText.toLocaleLowerCase() + '\uf8ff',
+          ),
           firestoreLimit(limit),
         ),
       );
@@ -96,8 +104,12 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
-          where('nameLowerCase', '>=', searchText),
-          where('nameLowerCase', '<=', searchText + '\uf8ff'),
+          where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
+          where(
+            'nameLowerCase',
+            '<=',
+            searchText.toLocaleLowerCase() + '\uf8ff',
+          ),
           firestoreLimit((page - 1) * limit),
         ),
       );
@@ -107,8 +119,12 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
-          where('nameLowerCase', '>=', searchText),
-          where('nameLowerCase', '<=', searchText + '\uf8ff'),
+          where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
+          where(
+            'nameLowerCase',
+            '<=',
+            searchText.toLocaleLowerCase() + '\uf8ff',
+          ),
           startAfter(lastVisible),
           firestoreLimit(limit),
         ),
