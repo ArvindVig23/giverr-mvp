@@ -228,16 +228,9 @@ export const formatUtcToReadable = (utcString: string) => {
   return moment.utc(utcString).tz(timezone).format(format);
 };
 
-export const combineDateAndTime = (
-  startDate: any,
-  startTime: any,
-  timezone: any,
-) => {
-  const date = moment(startDate).format('YYYY-MM-DD');
-  const time = moment(startTime ? startTime : startDate)
-    .tz(timezone)
-    .format('HH:mm:ss');
-
-  const finaldate = `${date}T${time}`;
-  return moment.tz(finaldate, timezone).utc().format();
+export const combineDateAndTime = (startDate: any, startTime: any) => {
+  const date = moment.utc(startDate).format('YYYY-MM-DD');
+  const time = moment.utc(startTime || startDate).format('HH:mm:ss');
+  const finalDate = `${date}T${time}Z`;
+  return finalDate;
 };

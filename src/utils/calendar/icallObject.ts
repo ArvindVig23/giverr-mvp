@@ -17,27 +17,22 @@ export function getIcalObjectInstance({
   startTime,
   description,
   summary,
-  timeZoneSettings,
   maxHour,
 }: EventDetails): any {
   try {
     const cal = new ICalCalendar();
-
-    const timezone = timeZoneSettings?.selectedTimeZone || moment.tz.guess();
-    const dateTime: any = combineDateAndTime(startDate, startTime, timezone);
+    const dateTime: any = combineDateAndTime(startDate, startTime);
     console.log(dateTime, 'time');
 
     let endDateTime;
-    const dateTimeMomentObject = moment.tz(
-      combineDateAndTime(startDate, startTime, timezone),
-      timezone,
+    const dateTimeMomentObject = moment.utc(
+      combineDateAndTime(startDate, startTime),
     );
     if (maxHour) {
       endDateTime = dateTimeMomentObject.clone().add(maxHour, 'hours');
     } else {
       endDateTime = dateTimeMomentObject.clone().add(1, 'hour');
     }
-    console.log(dateTime, 'dateTime');
 
     const eventData: ICalEventData = {
       start: dateTime,

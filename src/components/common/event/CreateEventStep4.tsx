@@ -13,6 +13,7 @@ import { CreateOppDetails } from '@/interface/opportunity';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import moment from 'moment-timezone';
 
 const CreateEventStep4 = ({
   setThankYouModal,
@@ -65,7 +66,11 @@ const CreateEventStep4 = ({
         physicalLocations: removeExtraPhysicalLocation(
           eventDetails.physicalLocations,
         ),
-        selectedDate: eventDetails.selectedDate,
+        selectedDate: moment
+          .utc(eventDetails.selectedDate)
+          .startOf('day')
+          .toDate()
+          .toISOString(),
         minHour: eventDetails.minHour,
         maxHour: eventDetails.maxHour,
         startTime: eventDetails.startTime,
