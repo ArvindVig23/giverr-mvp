@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 
 import physical from '/public/images/physical.svg';
@@ -35,12 +35,15 @@ const Filter = (props: {
   const [page, setPage] = useState<number>(0);
   const loading = useSelector((state: any) => state.loaderReducer);
   const [firstTime, setFirstTime] = useState(true); // Flag to check whether we are loading filter for the first time to avoid unnecessary API call.
+  const [locationType, setLocationType] = useState<string[]>([]);
+  const [eventType, setEventType] = useState<string[]>([]);
+
   const handleRangeChange = (range: any) => {
     setFirstTime(false);
     setDateRange(range);
   };
   useEffect(() => {
-    if (!firstTime && dateRange.startDate && dateRange.endDate) {
+    if (!firstTime) {
       (async () => {
         try {
           dispatch(setLoader(true));
@@ -49,6 +52,8 @@ const Filter = (props: {
             1,
             dateRange?.startDate?.length ? dateRange.startDate : undefined,
             dateRange?.endDate?.length ? dateRange.endDate : undefined,
+            locationType.length ? locationType.join(',') : undefined,
+            eventType.length ? eventType.join(',') : undefined,
           );
           const { opportunities, page, totalRecords } = getList;
           setOpportunities(opportunities);
@@ -64,7 +69,7 @@ const Filter = (props: {
       })();
     }
     //eslint-disable-next-line
-  }, [dateRange.startDate, dateRange.endDate]);
+  }, [dateRange.startDate, dateRange.endDate, locationType, eventType]);
 
   const handleShowRecords = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -75,12 +80,72 @@ const Filter = (props: {
       if (params.has('startDate')) params.set('startDate', '');
       if (params.has('endDate')) params.set('endDate', '');
     }
+    if (locationType.length > 0) {
+      params.set('location', locationType.join(','));
+    } else {
+      params.delete('location');
+    }
+    if (eventType.length > 0) {
+      params.set('event', eventType.join(','));
+    } else {
+      params.delete('event');
+    }
     router.push(pathname + '?' + params.toString());
     dispatch(updateOpportunityList(opportunities));
     setCurrentPage(page);
     setTotalRecords(totalCount);
     setShowModal(false);
   };
+
+  const handleLocationClick = (value: string) => {
+    setLocationType((prevLocationType: any) => {
+      let newLocationType: string[];
+      if (prevLocationType.includes(value)) {
+        // Remove the value if it already exists
+        newLocationType = prevLocationType.filter(
+          (type: string) => type !== value,
+        );
+      } else {
+        // Add the value if it doesn't exist
+        newLocationType = [...prevLocationType, value];
+      }
+      return newLocationType;
+    });
+    setFirstTime(false);
+  };
+
+  const handleCheckboxChange = (event: any, value: string) => {
+    setEventType((prevLocationType) => {
+      let newLocationType: string[];
+      if (event.target.checked) {
+        // Add 'SHOWUP' if it doesn't exist
+        newLocationType = prevLocationType.includes(value)
+          ? prevLocationType
+          : [...prevLocationType, value];
+      } else {
+        // Remove 'SHOWUP' if it exists
+        newLocationType = prevLocationType.filter((type) => type !== value);
+      }
+      return newLocationType;
+    });
+    setFirstTime(false);
+  };
+
+  useEffect(() => {
+    const locationParam = searchParams.get('location');
+    if (locationParam) {
+      console.log('inside locationparm');
+
+      setLocationType(locationParam.split(','));
+    }
+
+    const eventTypeParam = searchParams.get('event');
+    if (eventTypeParam) {
+      console.log('inside eventtpy');
+
+      setEventType(eventTypeParam.split(','));
+    }
+  }, []);
   return (
     <div>
       <div className="flex gap-10 md:gap-[60px] w-full p-4 md:p-5 flex-col relative  max-h-modal overflow-auto">
@@ -92,6 +157,8 @@ const Filter = (props: {
             htmlFor="check"
           >
             <input
+              onChange={(e) => handleCheckboxChange(e, 'SHOW_UP')}
+              checked={eventType.includes('SHOW_UP')}
               type="checkbox"
               className="before:content[''] bg-white peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-[#E6E3D6] transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-[#E60054] checked:bg-[#E60054] checked:before:bg-gray-900 before:w-5 before:h-5"
               id="check"
@@ -109,6 +176,8 @@ const Filter = (props: {
             htmlFor="check1"
           >
             <input
+              checked={eventType.includes('PRE_ENTERY')}
+              onChange={(e) => handleCheckboxChange(e, 'PRE_ENTERY')}
               type="checkbox"
               className="before:content[''] bg-white peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-[#E6E3D6] transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-[#E60054] checked:bg-[#E60054] checked:before:bg-gray-900 before:w-5 before:h-5"
               id="check1"
@@ -121,7 +190,6 @@ const Filter = (props: {
             </span>
           </label>
         </div>
-
         <div className="w-full flex flex-col gap-5">
           <h4 className="text-[#24181B] text-2xl font-medium">Date</h4>
           <div className="relative w-full datePicker">
@@ -138,14 +206,20 @@ const Filter = (props: {
           <h4 className="text-[#24181B] text-2xl font-medium">Location</h4>
 
           <div className="flex gap-4 md:gap-5">
-            <div className="w-40 p-4 rounded-2xl border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
+            <div
+              className={`w-40 p-4 rounded-2xl border ${locationType.includes('PHYSICAL') ? 'border-[#000000]' : 'border-[#E6E3D6]'}   h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer`}
+              onClick={() => handleLocationClick('PHYSICAL')}
+            >
               <Image src={physical} alt="physical" />
               <h3 className="m-0 text-base text-[#24181B]">
                 Physical location
               </h3>
             </div>
 
-            <div className="w-40 p-4 rounded-2xl border border-[#E6E3D6]  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer">
+            <div
+              className={`w-40 p-4 rounded-2xl border ${locationType.includes('VIRTUAL') ? 'border-[#000000]' : 'border-[#E6E3D6]'}  h-[120px] flex flex-col justify-between hover:bg-[#EDEBE3] cursor-pointer`}
+              onClick={() => handleLocationClick('VIRTUAL')}
+            >
               <Image src={virtual} alt="physical" />
               <h3 className="m-0 text-base text-[#24181B]">Virtual</h3>
             </div>
