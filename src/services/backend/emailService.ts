@@ -35,13 +35,13 @@ export const sendEmail = async (
       let alternatives = {
         'Content-Type': 'text/calendar',
         method: 'REQUEST',
-        content: new Buffer(calendarObject.toString()),
+        content: Buffer.from(calendarObject.toString()),
         component: 'VEVENT',
         'Content-Class': 'urn:content-classes:calendarmessage',
       };
       mailOptions['alternatives'] = alternatives;
       mailOptions['alternatives']['contentType'] = 'text/calendar';
-      mailOptions['alternatives']['content'] = new Buffer(
+      mailOptions['alternatives']['content'] = Buffer.from(
         calendarObject.toString(),
       );
     }
