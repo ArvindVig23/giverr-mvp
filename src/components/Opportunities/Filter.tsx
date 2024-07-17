@@ -144,7 +144,7 @@ const Filter = (props: {
       console.log('inside eventtpy');
 
       setEventType(eventTypeParam.split(','));
-    }
+    } // eslint-disable-next-line
   }, []);
   return (
     <div>

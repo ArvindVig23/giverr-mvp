@@ -282,7 +282,6 @@ export const joinOpportunity = async (
   oppId: string,
   id: string,
   email: string,
-  timeZoneSettings: any,
 ) => {
   try {
     const getEventDetails = await getOppWithCommitments(oppId);
@@ -292,11 +291,9 @@ export const joinOpportunity = async (
     });
     const getNotificationSetting: any = await getNotificationSettingsById(id);
     if (getNotificationSetting && getNotificationSetting.allowUpdates) {
-      const timezone = timeZoneSettings?.selectedTimeZone || moment.tz.guess();
       const dateTime = combineDateAndTime(
         getEventDetails.commitment.selectedDate,
         getEventDetails.commitment.startTime,
-        timezone,
       );
       const emailData = {
         name: getEventDetails.name,
@@ -312,7 +309,6 @@ export const joinOpportunity = async (
         maxHour: getEventDetails.commitment.maxHour,
         description: getEventDetails.description,
         summary: getEventDetails.description,
-        timeZoneSettings,
       });
       console.log(calendarObject, 'calendarObject');
 

@@ -96,6 +96,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     startDate,
     endDate,
     filterByOppType,
+    locationType,
+    eventType,
     // searchParams,
     // opportunityTypeList.length,
   ]);
