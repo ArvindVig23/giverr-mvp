@@ -175,6 +175,8 @@ export async function GET(req: NextRequest) {
     const orgIdRecordsShouldFetch = searchParams.get('orgId');
     const startDate = searchParams.get('startDate') || 'undefined';
     const endDate = searchParams.get('endDate') || 'undefined';
+    const locationType = searchParams.get('locationType') || 'undefined';
+    const eventType = searchParams.get('eventType') || 'undefined';
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
       orderBy('createdAt', 'desc'),
@@ -190,6 +192,46 @@ export async function GET(req: NextRequest) {
         ),
       );
     }
+
+    if (eventType != 'undefined') {
+      const eventTypes = eventType.split(',');
+
+      if (eventTypes.includes('SHOW_UP') && eventTypes.includes('PRE_ENTERY')) {
+        // If both types are present, we don't need to add any filter
+      } else if (eventTypes.includes('SHOW_UP')) {
+        opportunitiesQuery = query(
+          opportunitiesQuery,
+          where('registrationType', '==', 'SHOW_UP'),
+        );
+      } else if (eventTypes.includes('PRE_ENTERY')) {
+        opportunitiesQuery = query(
+          opportunitiesQuery,
+          where('registrationType', '!=', 'SHOW_UP'),
+        );
+      }
+    }
+
+    if (locationType !== 'undefined') {
+      const locationTypes = locationType.split(',');
+
+      if (
+        locationTypes.includes('VIRTUAL') &&
+        locationTypes.includes('PHYSICAL')
+      ) {
+        // If both types are present, we don't need to add any filter
+      } else if (locationTypes.includes('VIRTUAL')) {
+        opportunitiesQuery = query(
+          opportunitiesQuery,
+          where('registrationWebsiteLink', '>', ''),
+        );
+      } else if (locationTypes.includes('PHYSICAL')) {
+        opportunitiesQuery = query(
+          opportunitiesQuery,
+          where('registrationWebsiteLink', 'in', ['', null]),
+        );
+      }
+    }
+
     if (opportunityId) {
       const arrayOfOpportunityFilter = opportunityId?.split(',');
       opportunitiesQuery = query(

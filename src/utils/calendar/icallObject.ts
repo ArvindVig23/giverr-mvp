@@ -37,12 +37,14 @@ export function getIcalObjectInstance({
     } else {
       endDateTime = dateTimeMomentObject.clone().add(1, 'hour');
     }
+    console.log(dateTime, 'dateTime');
+
     const eventData: ICalEventData = {
       start: dateTime,
       end: endDateTime.toDate(),
       description: description,
       summary: summary,
-      timezone: timezone,
+      // timezone: timezone,
     };
 
     cal.createEvent(eventData);
