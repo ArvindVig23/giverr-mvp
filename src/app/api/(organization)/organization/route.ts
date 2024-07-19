@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         409,
         false,
         null,
-        'Organization with this username/fullname already exists under your account.',
+        'Organization with this username/organization name already exists under your account.',
       );
       return response;
     }
@@ -260,7 +260,7 @@ export async function PUT(req: NextRequest) {
         409,
         false,
         null,
-        'Organization with this username/fullname already exists under your account.',
+        'Organization with this username/organization name already exists under your account.',
       );
       return response;
     }
