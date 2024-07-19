@@ -1,4 +1,5 @@
 import { setLoader } from '@/app/redux/slices/loaderSlice';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { deleteOrg } from '@/services/frontend/organization';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
@@ -21,6 +22,10 @@ const DeleteModalContent = ({ setShowModal, index }: any) => {
       // Remove the item at the specified index
       updatedUserOrgDetails.splice(index, 1);
       // Dispatch the updated array
+      const id = updatedUserOrgDetails.length
+        ? updatedUserOrgDetails[0].id
+        : '';
+      dispatch(updateSelectedOrgIdForMembers(id));
       dispatch(updateOrgDetails(updatedUserOrgDetails));
       dispatch(setLoader(false));
       setShowModal(false);
@@ -30,6 +35,7 @@ const DeleteModalContent = ({ setShowModal, index }: any) => {
       sweetAlertToast('error', message);
     }
   };
+
   return (
     <div>
       <div className="relative p-5 pt-2.5 flex-auto flex flex-col gap-5 overflow-auto">

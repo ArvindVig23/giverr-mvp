@@ -19,6 +19,7 @@ import { createOrg, updateOrg } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { useCookies } from 'react-cookie';
 import OrgSubmittedContent from './OrgSubmittedContent';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 
 const OrganizationForm2: React.FC<any> = ({ setShowModal, index }) => {
   const [defaultOrgDetail, setDefaultOrgDetails] = useState<any>(null);
@@ -55,6 +56,9 @@ const OrganizationForm2: React.FC<any> = ({ setShowModal, index }) => {
       dispatch(setLoader(false));
       setShowOrgSubmitted(true);
       dispatch(updateOrgDetails(data));
+      if (data.length) {
+        dispatch(updateSelectedOrgIdForMembers(data[0].id));
+      }
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error;
