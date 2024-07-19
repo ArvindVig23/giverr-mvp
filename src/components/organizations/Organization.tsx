@@ -91,10 +91,15 @@ const Organization: React.FC<{
       const orgToUpdate = organisationsData.organizations.find(
         (org: any) => org.id == organizationId,
       );
-      const copyOfOrg = { ...orgToUpdate, isWishlist };
-      copyOfOrg.opportunities = orgToUpdate.opportunities.filter(
-        (opp: any) => opp.id !== oppId,
-      );
+      const copyOfOrg = { ...orgToUpdate };
+
+      // Update the specific opportunity's isWishlist field
+      copyOfOrg.opportunities = orgToUpdate.opportunities.map((opp: any) => {
+        if (opp.id === oppId) {
+          return { ...opp, isWishlist };
+        }
+        return opp;
+      });
 
       const updatedOrgs = organisationsData.organizations.map((org: any) => {
         if (org.id == organizationId) {
