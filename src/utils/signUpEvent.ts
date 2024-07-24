@@ -53,22 +53,37 @@ export const tooglePassword = (
   setShowPassword(!showPassword);
 };
 
-export const handleAppleSignUp = async () =>
-  // userDetails: userDetail,
-  // router: any,
-  // dispatch: any,
-  {
-    try {
-      const provider = new OAuthProvider('apple.com');
-      const result = await signInWithPopup(auth, provider);
-      console.log(result, 'Result from the signup popup');
+export const handleAppleSignUp = async (
+  userDetails: userDetail,
+  router: any,
+  dispatch: any,
+) => {
+  try {
+    const provider = new OAuthProvider('apple.com');
+    const result = await signInWithPopup(auth, provider);
+    console.log(result, 'Result from the signup popup');
 
-      const user = result.user;
-      console.log(user, 'user after sign up');
-    } catch (error: any) {
-      console.log('Error in sign up with apple', error);
-      // const { message } = error.data;
-      // sweetAlertToast('error', message);
-      // dispatch(setLoader(false));
-    }
-  };
+    const user: any = result.user;
+    const { email, accessToken } = user;
+    const userData = {
+      ...userDetails,
+      email,
+      isAppleAuth: true,
+    };
+    dispatch(setLoader(true));
+    const formData = new FormData();
+    formData.append('userDetails', JSON.stringify(userData));
+    formData.append('token', accessToken);
+    await callApi('sign-up', 'post', formData);
+    sweetAlertToast('success', 'Login Successfull', 1000);
+    router.push('/');
+    dispatch(updateUserDetails(resetGlobalState));
+    dispatch(setLoader(false));
+  } catch (error: any) {
+    console.log('Error in sign up with apple', error);
+    // const { message } = error.data;
+    sweetAlertToast('error', 'Error in sign up with apple');
+    dispatch(setLoader(false));
+    return;
+  }
+};

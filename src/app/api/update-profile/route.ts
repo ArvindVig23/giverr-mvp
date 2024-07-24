@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
     }
 
     await updateDoc(doc(db, 'users', id), {
-      profileUrl,
+      profileUrl: profileUrl ? profileUrl : '',
       fullName,
       username,
       updatedAt: currentUtcDate,
