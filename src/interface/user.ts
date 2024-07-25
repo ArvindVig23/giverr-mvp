@@ -19,6 +19,9 @@ export interface UserDetailsCookies {
   categorySubscribe?: any;
   timeZoneSettings?: any;
   loginAsOrg: boolean;
+  locationName: string;
+  lat: null | number;
+  long: null | number;
 }
 
 export interface TimezoneOptions {

@@ -138,6 +138,9 @@ export async function POST(req: NextRequest) {
           categorySubscribe,
           timeZoneSettings,
           loginAsOrg: false,
+          locationName: userDocData.locationName,
+          lat: userDocData.lat,
+          long: userDocData.long,
         };
         cookies().set('userDetails', JSON.stringify(userCookies));
         cookies().set('userToken', token);
@@ -208,6 +211,9 @@ export async function POST(req: NextRequest) {
           categorySubscribe,
           timeZoneSettings,
           loginAsOrg: false,
+          locationName: userDocData.locationName,
+          lat: userDocData.lat,
+          long: userDocData.long,
         };
         cookies().set('userDetails', JSON.stringify(userCookies));
         cookies().set('userToken', token);

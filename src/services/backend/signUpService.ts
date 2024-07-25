@@ -35,6 +35,9 @@ export const createUserService = async (userData: any, token?: any) => {
       isEmailAuth,
       status,
       profileUrl: '',
+      locationName: '',
+      lat: null,
+      long: null,
       createdAt: currentUtcDate,
       updatedAt: currentUtcDate,
     });
@@ -75,6 +78,9 @@ export const createUserService = async (userData: any, token?: any) => {
         categorySubscribe: [],
         timeZoneSettings,
         loginAsOrg: false,
+        locationName: '',
+        lat: null,
+        long: null,
       };
       cookies().set('userToken', token);
       cookies().set('userDetails', JSON.stringify(userCookies));

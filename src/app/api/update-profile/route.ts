@@ -17,7 +17,7 @@ import { NextRequest } from 'next/server';
 export async function PUT(req: NextRequest) {
   try {
     const reqbody = await req.json();
-    const { profileUrl, fullName, username } = reqbody;
+    const { profileUrl, fullName, username, locationName, lat, long } = reqbody;
     const { error } = fullNameSchema.validate(
       { fullName },
       { abortEarly: false },
@@ -56,6 +56,9 @@ export async function PUT(req: NextRequest) {
       profileUrl: profileUrl ? profileUrl : '',
       fullName,
       username,
+      locationName,
+      lat,
+      long,
       updatedAt: currentUtcDate,
     });
 
@@ -65,6 +68,9 @@ export async function PUT(req: NextRequest) {
       profileUrl,
       fullName,
       username,
+      locationName,
+      lat,
+      long,
     };
     cookies().set({
       name: 'userDetails',

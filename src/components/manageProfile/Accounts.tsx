@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import chevronDown from '/public/images/chevron-down.svg';
 import { useForm } from 'react-hook-form';
@@ -8,7 +8,10 @@ import {
   userNameRegex,
 } from '@/utils/regex';
 import { useCookies } from 'react-cookie';
-import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import {
+  FIRESTORE_IMG_BASE_START_URL,
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+} from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
 import { getInitialOfEmail } from '@/services/frontend/userService';
 import { uploadFile } from '@/services/frontend/opportunityService';
@@ -20,18 +23,39 @@ import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import DeleteAcoountModalContent from '../common/settings/DeleteAcoountModalContent';
 import { auth } from '@/firebase/config';
 import { updatePassword } from 'firebase/auth';
+import { Autocomplete, Libraries, useLoadScript } from '@react-google-maps/api';
 
 const OpportunitiesBanner: React.FC = () => {
+  // google api load and autocomplete state
+  const [autocompletes, setAutocompletes] = useState<any>([]);
+
+  // to resolve the warning from console useMemo to memoize both the libraries array and the options object
+  const libraries = useMemo<Libraries>(() => ['places'], []);
+
+  const { isLoaded } = useLoadScript(
+    useMemo(
+      () => ({
+        googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: libraries,
+      }),
+      [libraries],
+    ),
+  );
+
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [profileFile, setProfileFile] = useState<any>();
   const [profileFileUrl, setProfileFileUrl] = useState<string>();
   const [fileError, setFileError] = useState<string>('');
 
   const [cookies] = useCookies();
-  const { email, profileUrl, fullName, username } = cookies.userDetails;
+  const { email, profileUrl, fullName, username, locationName } =
+    cookies.userDetails;
   const {
     register,
     handleSubmit,
+    trigger,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
@@ -109,6 +133,25 @@ const OpportunitiesBanner: React.FC = () => {
       document.body.classList.remove('delete-modal-open');
     }
   }, [showDeleteModal]);
+
+  const locationWatch = watch('locationName');
+  const onPlaceChanged = () => {
+    const place = autocompletes.getPlace();
+    if (place.geometry && place.geometry.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      setValue('locationName', place.formatted_address);
+      setValue('lat', lat);
+      setValue('long', lng);
+    }
+  };
+
+  useEffect(() => {
+    if (!locationWatch) {
+      setValue('lat', null);
+      setValue('long', null);
+    }
+  }, [locationWatch]);
   return (
     <div className="w-full">
       <h3 className="text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -268,17 +311,38 @@ const OpportunitiesBanner: React.FC = () => {
           </div>
 
           <div className="relative w-full">
-            <select className="block rounded-2xl px-5 pb-4 pt-4 w-full text-base text-[#24181B80] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
-              <option>Select location (optional)</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-            </select>
-            <Image
-              src={chevronDown}
-              alt="arrow"
-              className="absolute top-[17px] right-4 pointer-events-none"
-            />
+            {isLoaded ? (
+              <Autocomplete
+                onLoad={(autocomplete) => {
+                  let newAutocompletes: any = [...autocompletes];
+                  newAutocompletes = autocomplete;
+                  setAutocompletes(newAutocompletes);
+                }}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <input
+                  defaultValue={locationName}
+                  {...register(`locationName`, {
+                    onChange: () => trigger(`locationName`),
+                  })}
+                  type="text"
+                  id={`locationName`}
+                  className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  placeholder="Select location (optional)"
+                />
+              </Autocomplete>
+            ) : (
+              <>
+                <select className="block rounded-2xl px-5 pb-4 pt-4 w-full text-base text-[#24181B80] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer">
+                  <option>Select location (optional)</option>
+                </select>
+                <Image
+                  src={chevronDown}
+                  alt="arrow"
+                  className="absolute top-[17px] right-4 pointer-events-none"
+                />
+              </>
+            )}
           </div>
           <button
             type="submit"
