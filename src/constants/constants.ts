@@ -28,3 +28,5 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const CRON_SECRET = process.env.CRON_SECRET;
 export const NEXT_PUBLIC_GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+export const NEXT_PUBLIC_MAP_MARKER_ICON =
+  process.env.NEXT_PUBLIC_MAP_MARKER_ICON;
