@@ -180,23 +180,37 @@ export const getFormattedLocalTimeBackend = (
   utcTimeString: string,
   timeZoneCookie: any,
 ) => {
-  const dateFormat = timeZoneCookie.isDayMonthYearDateFormat
-    ? 'DD MMMM, YYYY'
-    : 'MMMM DD, YYYY';
-  const timeFormat = timeZoneCookie.istwentyFourHourTimeFormat
-    ? 'HH:mm'
-    : 'h:mm A';
-  const selectedTimeZone = timeZoneCookie.selectedTimeZone;
+  if (timeZoneCookie) {
+    const dateFormat = timeZoneCookie.isDayMonthYearDateFormat
+      ? 'DD MMMM, YYYY'
+      : 'MMMM DD, YYYY';
+    const timeFormat = timeZoneCookie.istwentyFourHourTimeFormat
+      ? 'HH:mm'
+      : 'h:mm A';
+    const selectedTimeZone = timeZoneCookie.selectedTimeZone;
 
-  // Convert UTC time string to moment object
-  const utcTime = moment.utc(utcTimeString);
-  let time = null;
-  if (selectedTimeZone) {
-    time = moment(utcTime)
-      .tz(selectedTimeZone)
-      .format(`${dateFormat} [at] ${timeFormat}`);
-    return time;
+    // Convert UTC time string to moment object
+    const utcTime = moment.utc(utcTimeString);
+    let time = null;
+    if (selectedTimeZone) {
+      time = moment(utcTime)
+        .tz(selectedTimeZone)
+        .format(`${dateFormat} [at] ${timeFormat}`);
+      return time;
+    } else {
+      const dateFormat = 'MMMM DD, YYYY';
+      const timeFormat = 'h:mm A';
+      const userLocalZone = moment.tz.guess();
+      const utcTime = moment.utc(utcTimeString);
+      const userLocalTime = utcTime.clone().tz(userLocalZone);
+      const formattedLocalTime = userLocalTime.format(
+        `${dateFormat} [at] ${timeFormat}`,
+      );
+      return formattedLocalTime;
+    }
   } else {
+    const dateFormat = 'MMMM DD, YYYY';
+    const timeFormat = 'h:mm A';
     const userLocalZone = moment.tz.guess();
     const utcTime = moment.utc(utcTimeString);
     const userLocalTime = utcTime.clone().tz(userLocalZone);
@@ -226,4 +240,11 @@ export const formatUtcToReadable = (utcString: string) => {
   const timezone = 'UTC';
   const format = 'YYYY-MM-DD HH:mm:ss z';
   return moment.utc(utcString).tz(timezone).format(format);
+};
+
+export const combineDateAndTime = (startDate: any, startTime: any) => {
+  const date = moment.utc(startDate).format('YYYY-MM-DD');
+  const time = moment.utc(startTime || startDate).format('HH:mm:ss');
+  const finalDate = `${date}T${time}Z`;
+  return finalDate;
 };

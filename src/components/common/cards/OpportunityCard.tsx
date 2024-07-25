@@ -34,7 +34,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
   const organizationDetails = useSelector((state: any) => state.userOrgReducer);
   const sameUserOpp =
     cookies?.userDetails?.id === opportunity.createdBy ||
-    opportunity?.createdBy === organizationDetails?.id;
+    organizationDetails.some((org: any) => org.id === opportunity.createdBy);
   return (
     <>
       <div className="flex justify-between items-center gap-2 absolute left-2.5 right-2.5 top-2.5 ">
@@ -50,7 +50,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               className={`${opportunity?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'} w-2 h-2 rounded-full`}
             ></span>{' '}
             {opportunity?.registrationType === 'SHOW_UP'
-              ? 'Show up'
+              ? 'Show Up'
               : 'Pre-Entry'}
           </div>
         )}
@@ -154,7 +154,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
               )}
             </div>
           )}
-          {pathname == '/activity' && eventsTab ? (
+          {pathname == '/activity' && eventsTab && opportunity.spots ? (
             <div className="flex gap-2 items-center text-base text-[#24181B]">
               <div className="flex gap-2">
                 <div className="flex">

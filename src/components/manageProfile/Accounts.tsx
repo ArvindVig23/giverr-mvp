@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import chevronDown from '/public/images/chevron-down.svg';
 import { useForm } from 'react-hook-form';
-import { fullNameregex } from '@/utils/regex';
+import {
+  fullNameregex,
+  passwordValidationPattern,
+  userNameRegex,
+} from '@/utils/regex';
 import { useCookies } from 'react-cookie';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 import { encodeUrl } from '@/services/frontend/commonServices';
@@ -14,6 +18,8 @@ import callApi from '@/services/frontend/callApiService';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
 import CommonDeleteModal from '../common/modal/CommonDeleteModal';
 import DeleteAcoountModalContent from '../common/settings/DeleteAcoountModalContent';
+import { auth } from '@/firebase/config';
+import { updatePassword } from 'firebase/auth';
 
 const OpportunitiesBanner: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
@@ -34,12 +40,24 @@ const OpportunitiesBanner: React.FC = () => {
       return;
     }
     dispatch(setLoader(true));
+
     if (profileFile) {
       const filePathName = `users/${profileFile.name}`;
       const pathOfFile = await uploadFile(profileFile, filePathName);
       data.profileUrl = `${pathOfFile}?alt=media`;
     }
     data.profileUrl = data.profileUrl || profileUrl;
+    if (data.password) {
+      try {
+        const user = auth.currentUser;
+        const updatepass = await updatePassword(user!, data.password);
+        console.log(updatepass, 'success');
+      } catch (error) {
+        sweetAlertToast('error', 'Error in updating details.');
+        dispatch(setLoader(false));
+        return;
+      }
+    }
     try {
       const response = await callApi('/update-profile', 'put', data);
       const { message } = response;
@@ -192,28 +210,44 @@ const OpportunitiesBanner: React.FC = () => {
 
           <div className="relative w-full">
             <input
-              disabled
-              defaultValue={username}
+              {...register('password', {
+                pattern: {
+                  value: passwordValidationPattern,
+                  message:
+                    'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+                },
+              })}
               type="password"
               id="password"
-              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer cursor-not-allowed"
-              placeholder=" "
+              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+              placeholder="********"
             />
             <label
               htmlFor="password"
-              className="absolute text-base text-[#1E1E1E80]  duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80]  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              className="absolute text-[12px] text-[#1E1E1E80] duration-300  top-[2px] z-10 origin-[0] start-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 translate-x-1/4 !left-[9px]"
             >
               Password
             </label>
+            {errors.password && (
+              <span className="text-red-500">
+                {(errors.password as { message: string }).message}
+              </span>
+            )}
           </div>
 
           <div className="relative w-full">
             <input
               defaultValue={username}
-              disabled
+              {...register('username', {
+                pattern: {
+                  value: userNameRegex,
+                  message:
+                    'Username should not contain spaces & must contain 4 characters',
+                },
+              })}
               type="text"
               id="username"
-              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer cursor-not-allowed"
+              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
               placeholder=" "
             />
             <label

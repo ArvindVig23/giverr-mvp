@@ -20,15 +20,34 @@ export const sendEmail = async (
   subject: string,
   text: string,
   html: string,
+  calendarObject?: any,
 ) => {
   try {
-    await transporter.sendMail({
+    const mailOptions: any = {
       from: process.env.SMTP_FROM, // sender address
       to: to.split(',').map((email) => email.trim()),
       subject: subject,
       text: text,
       html: html,
-    });
+    };
+
+    if (calendarObject) {
+      let alternatives = {
+        'Content-Type': 'text/calendar',
+        method: 'REQUEST',
+        content: Buffer.from(calendarObject.toString()),
+        component: 'VEVENT',
+        'Content-Class': 'urn:content-classes:calendarmessage',
+      };
+      mailOptions['alternatives'] = alternatives;
+      mailOptions['alternatives']['contentType'] = 'text/calendar';
+      mailOptions['alternatives']['content'] = Buffer.from(
+        calendarObject.toString(),
+      );
+    }
+
+    await transporter.sendMail(mailOptions);
+    console.log('Message sent successfully');
   } catch (error) {
     console.log(error, 'Error in sending email');
   }

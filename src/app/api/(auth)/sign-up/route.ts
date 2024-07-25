@@ -87,7 +87,8 @@ export async function POST(req: NextRequest) {
       userData = JSON.parse(userDetailsString);
     }
     const token: any = data.get('token');
-    const { email, isGoogleAuth, fullName, isEmailAuth } = userData;
+    const { email, isGoogleAuth, fullName, isEmailAuth, isAppleAuth } =
+      userData;
     // validation check for email & fullName
     const { error } = schema.validate(
       { email, fullName },
@@ -169,6 +170,55 @@ export async function POST(req: NextRequest) {
       }
       const user = await createUserService(userData, null);
       return user;
+    }
+
+    // sign up with apple
+    if (isAppleAuth) {
+      const usersRef = collection(db, 'users');
+      const findUserQuery = query(
+        usersRef,
+        where('email', '==', email.trim().toLowerCase()),
+      );
+      const existedUser = await getDocs(findUserQuery);
+      if (existedUser.empty) {
+        await createUserService(userData, token);
+      }
+      const userDoc = existedUser.docs[0]; // Get the first user document
+      if (userDoc) {
+        const userDocData = userDoc.data();
+        const userId = userDoc.id;
+        await updateDoc(doc(db, 'users', userId), {
+          isEmailAuth: false,
+          isGoogleAuth: false,
+          isAppleAuth: true,
+        });
+        //  get the notification settings details with user id
+        const notificationSetting = await getNotificationSettings(userId);
+
+        // get the category subscribe details on the basis of user ID
+        const categorySubscribe = await getSubscribeCategorySettings(userId);
+        // get user time zone setting
+        const timeZoneSettings = await getTimeZoneSettingAsPerUser(userId);
+
+        const userCookies: UserDetailsCookies = {
+          email: userDocData.email,
+          username: userDocData.username,
+          id: userDoc.id,
+          notificationSetting,
+          categorySubscribe,
+          timeZoneSettings,
+          loginAsOrg: false,
+        };
+        cookies().set('userDetails', JSON.stringify(userCookies));
+        cookies().set('userToken', token);
+      }
+      const response = responseHandler(
+        200,
+        true,
+        null,
+        'User with this email already exists. Sign in Successfully',
+      );
+      return response;
     }
   } catch (error) {
     console.log(error, 'Error in sign up');

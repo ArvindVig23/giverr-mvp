@@ -20,11 +20,19 @@ import { Tooltip } from '@material-tailwind/react';
 import { DOMAIN_URL } from '@/constants/constants';
 import { useForm } from 'react-hook-form';
 import { MemberProps } from '@/interface/organization';
+import {
+  getLoggedInOrgFromCookies,
+  getTheIndexOfOrg,
+} from '@/services/frontend/commonServices';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 
 const Members: React.FC<MemberProps> = ({
   inviteMembersModal,
   setInviteMembersModal,
 }) => {
+  const orgIdWhoseMembersShouldVisible = useSelector(
+    (state: any) => state.selectedOrgIdReducer,
+  );
   const { register, watch } = useForm();
   const searchMember = watch('searchMember');
   const [showCopiedTooltip, setShowCopiedTooltip] = useState<boolean>(false);
@@ -34,6 +42,9 @@ const Members: React.FC<MemberProps> = ({
   const [showDeleteMemberModal, setShowDeleteMemberModal] =
     useState<boolean>(false);
   const [removeMemberId, setRemoveMemberId] = useState<string>('');
+
+  // state in which we will set the memeber list on the basis of the org id whose members needs to be visible
+  const [currentVisibleMembers, setCurrentVisibleMember] = useState<any>();
 
   const openDeleteModal = (id: string) => {
     setShowDeleteMemberModal(true);
@@ -50,15 +61,28 @@ const Members: React.FC<MemberProps> = ({
   const removeMember = async () => {
     try {
       dispatch(setLoader(true));
-      const response = await removeMemberApi(removeMemberId, userOrgDetails.id);
-      const orgDetails = { ...userOrgDetails };
-      const members = [...orgDetails.members];
+      const response = await removeMemberApi(
+        removeMemberId,
+        orgIdWhoseMembersShouldVisible,
+      );
+      const orgDetails = [...userOrgDetails];
+      // find the index of the org from the global state
+      const indexOfOrg = getTheIndexOfOrg(
+        orgIdWhoseMembersShouldVisible,
+        userOrgDetails,
+      );
+      // clone the particular org
+      const orgWhoseMemberShouldRemove = { ...orgDetails[indexOfOrg] };
+      // find the members of that particular org
+      const members = [...orgWhoseMemberShouldRemove.members];
+      // find the index for  member that needs to be  removed
       const memberIndex = members.findIndex(
         (member: any) => member.id === removeMemberId,
       );
       if (memberIndex > -1) {
         members.splice(memberIndex, 1);
-        orgDetails.members = members;
+        orgWhoseMemberShouldRemove.members = members;
+        orgDetails[indexOfOrg] = orgWhoseMemberShouldRemove;
         dispatch(updateOrgDetails(orgDetails));
       }
       const { message } = response;
@@ -92,7 +116,7 @@ const Members: React.FC<MemberProps> = ({
       const data = {
         memId,
         userId,
-        orgId: userOrgDetails.id,
+        orgId: orgIdWhoseMembersShouldVisible,
       };
       const resend = await resendInviteEmail(data);
       const { message } = resend;
@@ -105,15 +129,13 @@ const Members: React.FC<MemberProps> = ({
     }
   };
 
-  const [filteredMembers, setFilteredMembers] = useState(
-    userOrgDetails?.members || [],
-  );
+  const [filteredMembers, setFilteredMembers] = useState<any>([]);
 
   useEffect(() => {
     if (!searchMember) {
-      setFilteredMembers(userOrgDetails?.members || []);
+      setFilteredMembers(currentVisibleMembers || []);
     } else {
-      const filtered = userOrgDetails.members.filter((member: any) => {
+      const filtered = currentVisibleMembers.filter((member: any) => {
         const fullName = member.userDetails?.fullName?.toLowerCase() || '';
         const username = member.userDetails?.username?.toLowerCase() || '';
         const searchTextLower = searchMember.trim().toLowerCase();
@@ -123,7 +145,7 @@ const Members: React.FC<MemberProps> = ({
         );
       });
       setFilteredMembers(filtered);
-    }
+    } // eslint-disable-next-line
   }, [searchMember, userOrgDetails]);
 
   useEffect(() => {
@@ -133,6 +155,27 @@ const Members: React.FC<MemberProps> = ({
       document.body.classList.remove('settings-modal-open');
     }
   }, [inviteMembersModal]);
+
+  useEffect(() => {
+    if (cookies.userDetails.loginAsOrg) {
+      dispatch(updateSelectedOrgIdForMembers(cookies.userDetails.orgId));
+    }
+    const findOrg = getLoggedInOrgFromCookies(
+      cookies.userDetails.orgId
+        ? cookies.userDetails.orgId
+        : orgIdWhoseMembersShouldVisible,
+      userOrgDetails,
+    );
+
+    if (findOrg) {
+      setCurrentVisibleMember(findOrg.members);
+      setFilteredMembers(findOrg.members);
+    } // eslint-disable-next-line
+  }, [
+    orgIdWhoseMembersShouldVisible,
+    cookies.userDetails.orgId,
+    userOrgDetails,
+  ]);
   return (
     <>
       <h3 className="member-heading text-[20px] md:text-[32px] font-medium mb-5 mt-0 leading-[36px] text-center md:text-left md:hidden block border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -189,7 +232,7 @@ const Members: React.FC<MemberProps> = ({
                         </Tooltip>
                       ) : member.status === 'PENDING' ? (
                         <div className="ml-auto flex gap-2 items-center">
-                          <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[109px]">
+                          <span className="inline-flex  text-[#02088B] border border-[#D5D7FD] bg-[#D5D7FD] py-1 px-2 text-sm gap-2.5 rounded-full min-w-[110px]">
                             Invite pending
                           </span>
                           <Menu

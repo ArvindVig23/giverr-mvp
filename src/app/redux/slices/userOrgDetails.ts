@@ -2,9 +2,9 @@ import { OrgDetails } from '@/interface/organization';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState: OrgDetails = defaultUserOrgDetail;
+const initialState: OrgDetails[] = defaultUserOrgDetail;
 export const userOrgDetail = createSlice({
-  name: 'eventList',
+  name: 'userOrgDetail',
   initialState: initialState,
   reducers: {
     updateOrgDetails: (state, action) => {

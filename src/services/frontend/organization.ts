@@ -77,10 +77,13 @@ export const updateOrgInviteStatus = async (status: string, token: string) => {
   }
 };
 
-export const switchToOrganisation = async (loginAsOrg: boolean) => {
+export const switchToOrganisation = async (
+  loginAsOrg: boolean,
+  orgId: string,
+) => {
   try {
     const response: any = await callApi(
-      `/switch-organization?loginAsOrg=${loginAsOrg}`,
+      `/switch-organization?loginAsOrg=${loginAsOrg}&orgId=${orgId}`,
     );
     return response;
   } catch (error: any) {

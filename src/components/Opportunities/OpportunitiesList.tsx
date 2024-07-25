@@ -56,6 +56,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const startDate = searchParams.get('startDate');
   const endDate = searchParams.get('endDate');
   const filterByOppType = searchParams.get('opportunity');
+  const locationType = searchParams.get('location');
+  const eventType = searchParams.get('event');
 
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
@@ -68,6 +70,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
           currrentPage,
           startDate ?? undefined,
           endDate ?? undefined,
+          locationType ?? undefined,
+          eventType ?? undefined,
         );
         const { opportunities, page, totalRecords } = getList;
         if (page > 1) {
@@ -92,6 +96,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     startDate,
     endDate,
     filterByOppType,
+    locationType,
+    eventType,
     // searchParams,
     // opportunityTypeList.length,
   ]);
@@ -119,6 +125,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     const params = new URLSearchParams(searchParams.toString());
     if (params.has('startDate')) params.delete('startDate');
     if (params.has('endDate')) params.delete('endDate');
+    if (params.has('location')) params.delete('location');
+    if (params.has('event')) params.delete('event');
     router.push(pathname + '?' + params.toString());
     setShowFilterModal(false);
   };

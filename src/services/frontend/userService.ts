@@ -6,6 +6,7 @@ import { updateOrganizationList } from '@/app/redux/slices/organizationSlice';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { defaultUserOrgDetail } from '@/utils/initialStates/userInitialStates';
 import { TimeZoneSettings } from '@/interface/settings';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 
 export const checkUsernameAndEmail = async (body: any) => {
   try {
@@ -25,6 +26,7 @@ export const logOut = async (router: any, dispatch: any) => {
     router.push('/');
     dispatch(updateOrganizationList([]));
     dispatch(updateOrgDetails(defaultUserOrgDetail));
+    dispatch(updateSelectedOrgIdForMembers(''));
   } catch (error: any) {
     const { message } = error.data;
     sweetAlertToast('error', message);

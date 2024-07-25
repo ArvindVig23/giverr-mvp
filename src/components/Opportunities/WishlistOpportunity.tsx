@@ -62,30 +62,31 @@ const WishlistOpportunity: React.FC = () => {
     <div>
       {' '}
       <div className="pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
-          {opportunityList && opportunityList.length > 0 ? (
-            opportunityList.map((opportunity: any, index: number) => {
-              return (
-                <div
-                  key={index}
-                  className={`relative group ${(opportunity?.status === 'PENDING' || opportunity?.status === 'REJECTED') && 'opacity-60'}`}
-                >
-                  <OpportunityCard
-                    opportunity={opportunity}
-                    addRemoveWishlist={addRemoveWishlist}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <span>No Opportunitites</span>
-          )}
-        </div>
-        {loading && (
+        {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 px-5 ">
             {cards.map((_, index) => (
               <CardSkeleton key={index} />
             ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-5 ">
+            {opportunityList && opportunityList.length > 0 ? (
+              opportunityList.map((opportunity: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className={`relative group ${(opportunity?.status === 'PENDING' || opportunity?.status === 'REJECTED') && 'opacity-60'}`}
+                  >
+                    <OpportunityCard
+                      opportunity={opportunity}
+                      addRemoveWishlist={addRemoveWishlist}
+                    />
+                  </div>
+                );
+              })
+            ) : (
+              <span>No Opportunitites</span>
+            )}
           </div>
         )}
         {opportunityList?.length ? (

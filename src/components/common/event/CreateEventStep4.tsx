@@ -13,6 +13,7 @@ import { CreateOppDetails } from '@/interface/opportunity';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { submitEventState } from '@/utils/initialStates/submitOppInitalState';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import moment from 'moment-timezone';
 
 const CreateEventStep4 = ({
   setThankYouModal,
@@ -65,7 +66,11 @@ const CreateEventStep4 = ({
         physicalLocations: removeExtraPhysicalLocation(
           eventDetails.physicalLocations,
         ),
-        selectedDate: eventDetails.selectedDate,
+        selectedDate: moment
+          .utc(eventDetails.selectedDate)
+          .startOf('day')
+          .toDate()
+          .toISOString(),
         minHour: eventDetails.minHour,
         maxHour: eventDetails.maxHour,
         startTime: eventDetails.startTime,
@@ -246,7 +251,7 @@ const CreateEventStep4 = ({
 
             <label className="relative w-full border-b border-[#1E1E1E0D] inline-flex p-4 d-flex items-center gap-5 cursor-pointer">
               <div>
-                <span className="text-[#24181B]">Just show up</span>
+                <span className="text-[#24181B]">Just Show Up</span>
                 <p className="text-[#24181B80]">There’s no limited space</p>
               </div>
               <input

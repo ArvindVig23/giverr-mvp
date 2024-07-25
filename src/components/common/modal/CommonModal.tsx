@@ -9,6 +9,7 @@ const CommonModal = ({
   setShowModal,
   children,
   closeModalOptional,
+  setSelectedOrganization,
 }: any) => {
   const [isEscPressed, setIsEscPressed] = useState<boolean>(false);
   useEffect(() => {
@@ -48,11 +49,21 @@ const CommonModal = ({
       if (closeModalOptional) {
         closeModalOptional();
       } else {
+        if (setSelectedOrganization) {
+          setSelectedOrganization(null);
+        }
         setShowModal(false);
         setIsEscPressed(false);
       }
     } // eslint-disable-next-line
   }, [isEscPressed, showModal]);
+
+  const closeModal = () => {
+    if (setSelectedOrganization) {
+      setSelectedOrganization(null);
+    }
+    setShowModal(false);
+  };
   return (
     <>
       {showModal && (
@@ -66,9 +77,7 @@ const CommonModal = ({
                 <button
                   className="w-[30px] h-[30px] ml-auto bg-[#24181B] hover:bg-[#454545] border-0 text-white rounded-[10px] flex items-center justify-center float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                   onClick={() =>
-                    closeModalOptional
-                      ? closeModalOptional()
-                      : setShowModal(false)
+                    closeModalOptional ? closeModalOptional() : closeModal()
                   }
                 >
                   <Image src={close} alt="close" />

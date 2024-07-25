@@ -20,7 +20,6 @@ import { compose } from '@reduxjs/toolkit';
 import { hocUserGuard } from '../hoc/HOCUserGuard';
 import { hocOrganizationGuard } from '../hoc/HOCOrganizationGuard';
 import CommonModal from '../common/modal/CommonModal';
-import { useSelector } from 'react-redux';
 import OrganizationForm from '../common/organization/OrganizationForm';
 import ModalInvite from '../common/organization/ModalInvite';
 
@@ -28,7 +27,7 @@ const ManageProfile: React.FC = () => {
   //  Moved these modals here to adjust the design on mobile
   const [showModal, setShowModal] = React.useState(false);
   const [inviteMembersModal, setInviteMembersModal] = useState<boolean>(false);
-  const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
+  // const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [tabSlideClass, setTabSlideClass] = useState<boolean>(false);
   const searchParams = useSearchParams();
   const eventsTab = searchParams.get('tab');
@@ -49,6 +48,16 @@ const ManageProfile: React.FC = () => {
   const toogleBodyOverFlow = () => {
     document.body.classList.remove('mobile-overflow');
     setTabSlideClass(false);
+  };
+
+  // state to keep the index of the selected organization
+  const [selectedOrganization, setSelectedOrganization] = useState<
+    number | null
+  >(null);
+
+  const editClick = (index: number) => {
+    setSelectedOrganization(index);
+    setShowModal(true);
   };
   return (
     <div className="md:border-t border-[#E6E3D6]">
@@ -284,6 +293,7 @@ const ManageProfile: React.FC = () => {
                         setShowModal={setShowModal}
                         inviteMembersModal={inviteMembersModal}
                         setInviteMembersModal={setInviteMembersModal}
+                        editClick={editClick}
                       />
                     ) : null}
                   </div>
@@ -315,14 +325,16 @@ const ManageProfile: React.FC = () => {
       {showModal && (
         <CommonModal
           heading={
-            userOrgDetails.id && userOrgDetails.status !== 'PENDING'
-              ? 'Update organization'
-              : 'Create organization'
+            selectedOrganization ? 'Update organization' : 'Create organization'
           }
           showModal={showModal}
           setShowModal={setShowModal}
+          setSelectedOrganization={setSelectedOrganization}
         >
-          <OrganizationForm setShowModal={setShowModal} />
+          <OrganizationForm
+            setShowModal={setShowModal}
+            index={selectedOrganization}
+          />
         </CommonModal>
       )}
 

@@ -60,7 +60,7 @@ const CommonStep1: React.FC = () => {
       <div className="max-w-[270px] sm:max-w-[484px] w-full py-2">
         <div className="flex flex-col gap-4">
           <button
-            onClick={() => handleAppleSignUp()}
+            onClick={() => handleAppleSignUp(user, router, dispatch)}
             className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
           >
             <Image src={apple} alt="Logo" /> Continue with Apple

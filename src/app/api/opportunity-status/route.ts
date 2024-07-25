@@ -80,7 +80,6 @@ export async function GET(req: NextRequest) {
         matchArrayOfOppTypeId,
         opportunityData.createdBy,
       );
-      console.log(usersSubscribeForOppType, 'usersSubscribeForOppType');
 
       if (usersSubscribeForOppType.length > 0) {
         const userIdsWithUpdatesAllowed = await Promise.all(
@@ -116,7 +115,7 @@ export async function GET(req: NextRequest) {
             (email) => email !== null,
           );
           const emailsString = filteredUserEmails.join();
-          console.log(emailsString, 'emailStrin');
+          console.log(emailsString, 'emailString');
           await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
         }
       }

@@ -146,11 +146,16 @@ const OpportunitiesDetail = ({
       sweetAlertToast('error', message);
     }
   };
+
+  const isCreatedByUserOrOrg =
+    cookies?.userDetails?.id === opportunityDetail?.createdBy ||
+    opportunityDetail?.alreadyJoined ||
+    userOrgDetails.some((org: any) => org.id === opportunityDetail?.createdBy);
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
-        <Link
-          href="/"
+        <button
+          onClick={() => router.back()}
           className="absolute top-5 z-10 left-5 w-[30px] h-[30px] md:w-11 md:h-11 md:min-w-11 border border-[#24181B] md:border-[#E6E3D6] rounded-xl flex justify-center items-center hover:!bg-[#24181B] bg-[#24181B] md:bg-transparent md:hover:!bg-[#EDEBE3]"
         >
           <Image
@@ -163,7 +168,7 @@ const OpportunitiesDetail = ({
             src={arrow}
             alt="arrow"
           ></Image>
-        </Link>
+        </button>
         <div className="w-full md:max-w-[652px] m-auto">
           <div className="w-full md:bg-white md:rounded-3xl relative overflow-hidden">
             <div className="flex justify-between items-center gap-2 absolute left-5 right-5 top-5">
@@ -172,11 +177,13 @@ const OpportunitiesDetail = ({
                   className={` w-2 h-2 rounded-full ${opportunityDetail?.registrationType === 'SHOW_UP' ? 'bg-[#0B9EDE]' : 'bg-[#FFC430]'}`}
                 ></span>{' '}
                 {opportunityDetail?.registrationType === 'SHOW_UP'
-                  ? 'Show up'
+                  ? 'Show Up'
                   : 'Pre-Entry'}
               </div>
               {opportunityDetail?.createdBy === cookies.userDetails?.id ||
-              opportunityDetail?.createdBy === userOrgDetails.id ? (
+              userOrgDetails.some(
+                (org: any) => org.id === opportunityDetail?.createdBy,
+              ) ? (
                 <div className="relative cursor-pointer ml-auto">
                   <button
                     onClick={openEditOppModal}
@@ -597,7 +604,7 @@ const OpportunitiesDetail = ({
                         : false
                     }
                     onClick={handleJoin}
-                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${(cookies?.userDetails?.id === opportunityDetail?.createdBy || opportunityDetail?.alreadyJoined || opportunityDetail?.createdBy === userOrgDetails.id) && 'cursor-not-allowed'}`}
+                    className={`text-base  w-full h-[58px] px-4 py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038] ${isCreatedByUserOrOrg && 'cursor-not-allowed'}`}
                   >
                     {opportunityDetail?.alreadyJoined
                       ? 'Already Joined'
@@ -656,7 +663,7 @@ const OpportunitiesDetail = ({
       )}
       {showEditModal && (
         <CreateEventModal
-          heading={'Update event'}
+          heading={'Update Event'}
           showModal={showEditModal}
           setShowModal={setShowEditModal}
           setStepValidationShouldCheck={setStepValidationShouldCheck}

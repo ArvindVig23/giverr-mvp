@@ -7,7 +7,7 @@ import plus from '/public/images/plus.svg';
 import minus from '/public/images/minus.svg';
 import herobg from '/public/images/hero-mb.svg';
 import Link from 'next/link';
-
+import faqJson from '@/utils/jsonData/faq.json';
 import {
   Accordion,
   AccordionHeader,
@@ -15,7 +15,7 @@ import {
 } from '@material-tailwind/react';
 
 const About: React.FC = () => {
-  const [open, setOpen] = React.useState<number>(1);
+  const [open, setOpen] = React.useState<number | null>(1);
   return (
     <div className="w-full">
       <div className="px-5 relative mb-5  overflow-hidden px-5">
@@ -118,92 +118,34 @@ const About: React.FC = () => {
           </h1>
 
           <>
-            <Accordion
-              open={open === 1}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              className="text-left"
-            >
-              <AccordionHeader
-                onClick={() => setOpen(1)}
+            {faqJson.map((faq, index) => (
+              <Accordion
+                key={faq.Q}
+                open={open === index + 1}
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
-                className={`flex flex-wrap p-5 pr-[45px] w-full hover:bg-[#EDEBE3] border-b text-base font-normal border-[#E6E3D6] hover:rounded-xl ${open === 1 ? '!bg-[#EDEBE3]  !rounded-xl !rounded-b-none border-0' : ''}`}
+                className="text-left"
               >
-                <span>How do I sign up as a volunteer on Giverr?</span>
-                <Image
-                  className="absolute right-5"
-                  src={open === 1 ? minus : plus}
-                  alt={open === 1 ? 'minus' : 'plus'}
-                />
-              </AccordionHeader>
-              <AccordionBody className="bg-[#EDEBE3] px-5 rounded-b-xl text-[#24181B80] pt-0 mb-5">
-                Signing up as a volunteer on Giverr is easy! Simply visit our
-                website and click on the Join now button. You will be guided
-                through the registration process, where you can create your
-                profile and start browsing volunteer opportunities.
-              </AccordionBody>
-            </Accordion>
-
-            <Accordion
-              open={open === 2}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              className="text-left"
-            >
-              <AccordionHeader
-                onClick={() => setOpen(2)}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                className={`flex flex-wrap p-5 pr-[45px] w-full hover:bg-[#EDEBE3] border-b text-base font-normal border-[#E6E3D6] hover:rounded-xl ${open === 2 ? '!bg-[#EDEBE3]  !rounded-xl !rounded-b-none border-0' : ''}`}
-              >
-                <span>How do I sign up as a volunteer on Giverr?</span>
-                <Image
-                  className="absolute right-5"
-                  src={open === 2 ? minus : plus}
-                  alt={open === 2 ? 'minus' : 'plus'}
-                />
-              </AccordionHeader>
-              <AccordionBody className="bg-[#EDEBE3] px-5 rounded-b-xl text-[#24181B80] pt-0 mb-5   ">
-                Signing up as a volunteer on Giverr is easy! Simply visit our
-                website and click on the Join now button. You will be guided
-                through the registration process, where you can create your
-                profile and start browsing volunteer opportunities.
-              </AccordionBody>
-            </Accordion>
-
-            <Accordion
-              open={open === 3}
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-              className="text-left"
-            >
-              <AccordionHeader
-                onClick={() => setOpen(3)}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                className={`flex flex-wrap p-5 pr-[45px] w-full hover:bg-[#EDEBE3] border-b text-base font-normal border-[#E6E3D6] hover:rounded-xl ${open === 3 ? '!bg-[#EDEBE3]  !rounded-xl !rounded-b-none border-0' : ''}`}
-              >
-                <span>How do I sign up as a volunteer on Giverr?</span>
-                <Image
-                  className="absolute right-5"
-                  src={open === 3 ? minus : plus}
-                  alt={open === 3 ? 'minus' : 'plus'}
-                />
-              </AccordionHeader>
-              <AccordionBody className="bg-[#EDEBE3] px-5 rounded-b-xl text-[#24181B80] pt-0 mb-5">
-                Signing up as a volunteer on Giverr is easy! Simply visit our
-                website and click on the Join now button. You will be guided
-                through the registration process, where you can create your
-                profile and start browsing volunteer opportunities.
-              </AccordionBody>
-            </Accordion>
+                <AccordionHeader
+                  onClick={() => setOpen(open === index + 1 ? null : index + 1)}
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                  className={`flex flex-wrap p-5 pr-[45px] w-full hover:bg-[#EDEBE3] border-b text-base font-normal border-[#E6E3D6] hover:rounded-xl ${open === index + 1 ? '!bg-[#EDEBE3]  !rounded-xl !rounded-b-none border-0' : ''}`}
+                >
+                  <span>{faq.Q}</span>
+                  <Image
+                    className="absolute right-5"
+                    src={open === index + 1 ? minus : plus}
+                    alt={open === index + 1 ? 'minus' : 'plus'}
+                  />
+                </AccordionHeader>
+                <AccordionBody className="bg-[#EDEBE3] px-5 rounded-b-xl text-[#24181B80] pt-0 mb-5">
+                  {faq.A}
+                </AccordionBody>
+              </Accordion>
+            ))}
           </>
 
           <div className="max-w-[300px] m-auto text-center inline-flex gap-5 flex-wrap items-center justify-center mt-5">

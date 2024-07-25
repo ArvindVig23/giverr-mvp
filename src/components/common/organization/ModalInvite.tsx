@@ -3,7 +3,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lightSearch from '/public/images/search-light.svg';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
-import { debounce, encodeUrl } from '@/services/frontend/commonServices';
+import {
+  debounce,
+  encodeUrl,
+  getTheIndexOfOrg,
+} from '@/services/frontend/commonServices';
 import { getMembersList, sendInvite } from '@/services/frontend/memberService';
 import cross from '/public/images/cross.svg';
 import MemberOption from './MemberOption';
@@ -16,6 +20,9 @@ import { getInitialOfEmail } from '@/services/frontend/userService';
 import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
 
 const ModalInvite = ({ setShowModal }: any) => {
+  const orgIdWhoseMembersShouldVisible = useSelector(
+    (state: any) => state.selectedOrgIdReducer,
+  );
   const [memberList, setMemberList] = useState<any[]>([]);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [cookies] = useCookies();
@@ -28,7 +35,10 @@ const ModalInvite = ({ setShowModal }: any) => {
   const fetchMembers = async (query: string) => {
     try {
       const response = await getMembersList(query);
-      const memberIds = userOrgDetails.members.map(
+      const index = userOrgDetails.findIndex(
+        (org: any) => org.id === orgIdWhoseMembersShouldVisible,
+      );
+      const memberIds = userOrgDetails[index].members.map(
         (member: any) => member.userId,
       );
 
@@ -89,7 +99,7 @@ const ModalInvite = ({ setShowModal }: any) => {
     if (memberList.length > 0) {
       dispatch(setLoader(true));
       const membersData: any = {
-        orgId: userOrgDetails.id,
+        orgId: orgIdWhoseMembersShouldVisible,
       };
       const filteredIds = memberList.map((member) => member.id);
       membersData.members = filteredIds;
@@ -98,8 +108,13 @@ const ModalInvite = ({ setShowModal }: any) => {
         const { message, data } = response;
         sweetAlertToast('success', message, 1000);
         setShowModal(false);
-        const updatedOrgData = { ...userOrgDetails, members: data.members };
-        dispatch(updateOrgDetails(updatedOrgData));
+        const updatedOrg = [...userOrgDetails];
+        const index = getTheIndexOfOrg(
+          orgIdWhoseMembersShouldVisible,
+          userOrgDetails,
+        );
+        updatedOrg[index] = { ...updatedOrg[index], members: data.members };
+        dispatch(updateOrgDetails(updatedOrg));
         dispatch(setLoader(false));
       } catch (error: any) {
         dispatch(setLoader(false));
@@ -108,6 +123,8 @@ const ModalInvite = ({ setShowModal }: any) => {
       }
     }
   };
+  console.log(searchResults, 'searchResults');
+
   return (
     <div className="flex w- flex-col" ref={dropdownRef}>
       <div className="px-5 py-5 max-h-modal overflow-auto">

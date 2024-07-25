@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InviteSection from './InviteSection';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -19,8 +19,10 @@ import { createOrg, updateOrg } from '@/services/frontend/organization';
 import { updateOrgDetails } from '@/app/redux/slices/userOrgDetails';
 import { useCookies } from 'react-cookie';
 import OrgSubmittedContent from './OrgSubmittedContent';
+import { updateSelectedOrgIdForMembers } from '@/app/redux/slices/selectedOrgIdForMembers';
 
-const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
+const OrganizationForm2: React.FC<any> = ({ setShowModal, index }) => {
+  const [defaultOrgDetail, setDefaultOrgDetails] = useState<any>(null);
   const [showOrgSubmitted, setShowOrgSubmitted] = useState<boolean>(false);
   const userOrgDetails = useSelector((state: any) => state.userOrgReducer);
   const [cookies]: any = useCookies();
@@ -35,14 +37,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   const [avatarFile, setAvatarFile] = useState<any>();
   const [avatarLink, setAvatarLink] = useState<string>('');
   const [avatarErr, setAvatarErr] = useState<string>('');
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+
   const dispatch = useDispatch();
-  const watchOrganizationName = watch('name');
 
   const handleSaveChanges = async (formData: any) => {
     formData.avatarLink = '';
@@ -60,6 +56,9 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
       dispatch(setLoader(false));
       setShowOrgSubmitted(true);
       dispatch(updateOrgDetails(data));
+      if (data.length) {
+        dispatch(updateSelectedOrgIdForMembers(data[0].id));
+      }
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error;
@@ -102,8 +101,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   // update form
   const handleUpdateOrg = async (formData: any) => {
     dispatch(setLoader(true));
-    formData.avatarLink = userOrgDetails.avatarLink || '';
-    formData.orgId = userOrgDetails.id;
+    formData.avatarLink = defaultOrgDetail.avatarLink || '';
+    formData.orgId = defaultOrgDetail.id;
     if (avatarFile) {
       dispatch(setLoader(true));
       const filePathName = `organizations/${avatarFile.name}`;
@@ -113,17 +112,62 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
     try {
       const response = await updateOrg(formData);
       const { message, data } = response;
+      // Clone the userOrgDetails
+      const updatedUserOrgDetails = [...userOrgDetails];
+      // Find the index of the organization to update
+      const orgIndex = updatedUserOrgDetails.findIndex(
+        (org) => org.id === data.id,
+      );
+      if (orgIndex !== -1) {
+        // Replace the organization at the found index with the new data
+        updatedUserOrgDetails[orgIndex] = {
+          ...updatedUserOrgDetails[orgIndex],
+          ...data,
+        };
+      }
+      // Dispatch the updated userOrgDetails
+      dispatch(updateOrgDetails(updatedUserOrgDetails));
+      dispatch(setLoader(false));
       sweetAlertToast('success', message, 1000);
       setShowModal(false);
-      const updatedData = { ...userOrgDetails, ...data };
-      dispatch(updateOrgDetails(updatedData));
-      dispatch(setLoader(false));
     } catch (error: any) {
       dispatch(setLoader(false));
       const { message } = error;
       sweetAlertToast('error', message);
     }
   };
+
+  //   new flow for the multiple organization***************************
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: defaultOrgDetail?.name || '',
+      username: defaultOrgDetail?.username || '',
+      website: defaultOrgDetail?.website || '',
+    },
+  });
+  useEffect(() => {
+    if (index || index === 0) {
+      setDefaultOrgDetails(userOrgDetails[index]);
+      const newDefaultValues = {
+        name: userOrgDetails[index]?.name || '',
+        username: userOrgDetails[index]?.username || '',
+        website: userOrgDetails[index]?.website || '',
+      };
+
+      // Reset the form with new default values
+      reset(newDefaultValues);
+    } // eslint-disable-next-line
+  }, [index]);
+
+  const watchOrganizationName = watch('name');
+
   return (
     <>
       {showOrgSubmitted ? (
@@ -135,21 +179,21 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
         <form
           className="flex  w-full flex-col relative"
           onSubmit={handleSubmit(
-            userOrgDetails.id ? handleUpdateOrg : handleSaveChanges,
+            defaultOrgDetail?.id ? handleUpdateOrg : handleSaveChanges,
           )}
         >
           <div className="max-h-modal overflow-auto flex gap-5 w-full flex-col  p-5">
             <h4 className="text-[#24181B] text-2xl font-medium">Details</h4>
             <div className="inline-flex w-full items-center rounded-2xl bg-[#EDEBE3] p-5 border border-[#E6E3D6] gap-5 ">
               <div className="w-16 h-16 min-w-16 md:w-20 md:min-w-20 md:h-20 rounded-full bg-[#BAA388] flex items-center justify-center text-3xl text-[#24181B] overflow-hidden">
-                {avatarLink || userOrgDetails?.avatarLink ? (
+                {avatarLink || defaultOrgDetail?.avatarLink ? (
                   <Image
                     width={20}
                     height={20}
                     src={
                       avatarLink
                         ? avatarLink
-                        : `${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(userOrgDetails?.avatarLink)}`
+                        : `${FIRESTORE_IMG_BASE_START_URL}${encodeUrl(defaultOrgDetail?.avatarLink)}`
                     }
                     alt="profile"
                     className="w-full h-full object-cover"
@@ -158,8 +202,8 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
                   getInitialOfEmail(
                     watchOrganizationName
                       ? watchOrganizationName
-                      : userOrgDetails.name
-                        ? userOrgDetails.name
+                      : defaultOrgDetail?.name
+                        ? defaultOrgDetail?.name
                         : 'O',
                   )
                 )}
@@ -182,7 +226,6 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
             {avatarErr && <span className="text-red-500">{avatarErr}</span>}
             <div className="relative w-full">
               <input
-                defaultValue={userOrgDetails.name}
                 {...register('name', {
                   required: 'Organization Name is required',
                   min: {
@@ -214,7 +257,6 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
 
             <div className="relative w-full">
               <input
-                defaultValue={userOrgDetails.username}
                 {...register('username', {
                   required: 'Username is required',
                   pattern: {
@@ -243,7 +285,6 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
 
             <div className="relative w-full">
               <input
-                defaultValue={userOrgDetails.website}
                 {...register('website', {
                   required: 'Website link is required.',
                   pattern: {
@@ -268,7 +309,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
                 </span>
               )}
             </div>
-            {!userOrgDetails.id ? (
+            {!defaultOrgDetail?.id ? (
               <InviteSection
                 memberList={memberList}
                 setMemberList={setMemberList}
@@ -280,7 +321,7 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
               className="text-base  w-full h-[60px] py-3 flex justify-center items-center bg-[#E60054] rounded-[20px] font-medium text-white hover:bg-[#C20038]"
               type="submit"
             >
-              {userOrgDetails.id ? 'Update' : 'Create'} Organization
+              {defaultOrgDetail?.id ? 'Update' : 'Create'} Organization
             </button>
           </div>
         </form>
@@ -289,4 +330,4 @@ const OrganizationForm: React.FC<any> = ({ setShowModal }) => {
   );
 };
 
-export default OrganizationForm;
+export default OrganizationForm2;
