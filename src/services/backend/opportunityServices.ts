@@ -113,6 +113,8 @@ export const createOpportunity = async (opportunity: any) => {
             city: location.city,
             province: location.province,
             postalCode: location.postalCode,
+            lat: location.lat,
+            long: location.long,
             createdAt: currentUtcDate,
             updatedAt: currentUtcDate,
           });

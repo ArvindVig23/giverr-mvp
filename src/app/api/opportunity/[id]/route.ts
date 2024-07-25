@@ -512,6 +512,8 @@ export async function PUT(req: NextRequest, { params }: any) {
             city: location.city,
             province: location.province,
             postalCode: location.postalCode,
+            lat: location.lat,
+            long: location.long,
             updatedAt: currentUtcDate,
           });
         } else {

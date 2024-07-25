@@ -1,15 +1,13 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import chevronDown from '/public/images/chevron-down.svg';
-import Image from 'next/image';
 import { websiteLinkRegex } from '@/utils/regex';
 import { CreateEventStep2Form, SearchParam } from '@/interface/opportunity';
 import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
-import { useLoadScript, Autocomplete } from '@react-google-maps/api';
+import { useLoadScript, Autocomplete, Libraries } from '@react-google-maps/api';
 import { NEXT_PUBLIC_GOOGLE_MAPS_API_KEY } from '@/constants/constants';
 
 const CreateEventStep2 = ({
@@ -75,7 +73,15 @@ const CreateEventStep2 = ({
     }
     if (locationType === 'VIRTUAL') {
       setValue('physicalLocations', [
-        { address: '', city: '', province: '', postalCode: '' },
+        {
+          address: '',
+          city: '',
+          province: '',
+          postalCode: '',
+          locationName: '',
+          lat: null,
+          long: null,
+        },
       ]);
     }
     //eslint-disable-next-line
@@ -108,7 +114,15 @@ const CreateEventStep2 = ({
     }
 
     if (!hasError) {
-      append({ address: '', city: '', province: '', postalCode: '' });
+      append({
+        address: '',
+        city: '',
+        province: '',
+        postalCode: '',
+        locationName: '',
+        lat: null,
+        long: null,
+      });
       setAutocompletes([...autocompletes, null]);
     }
   };
@@ -124,16 +138,29 @@ const CreateEventStep2 = ({
   }, [stepValidationShouldCheck]);
 
   //  google api
+  // google api load and autocomplete state
   const [autocompletes, setAutocompletes] = useState<any>([]);
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: ['places'],
-  });
+
+  // to resolve the warning from console useMemo to memoize both the libraries array and the options object
+  const libraries = useMemo<Libraries>(() => ['places'], []);
+
+  const { isLoaded } = useLoadScript(
+    useMemo(
+      () => ({
+        googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: libraries,
+      }),
+      [libraries],
+    ),
+  );
+
   const handlePlaceSelect = (index: number) => {
     const place = autocompletes[index].getPlace();
+
     if (place.address_components) {
       let city = '';
       let postalCode = '';
+      let province = '';
 
       place.address_components.forEach((component: any) => {
         if (component.types.includes('locality')) {
@@ -142,7 +169,13 @@ const CreateEventStep2 = ({
         if (component.types.includes('postal_code')) {
           postalCode = component.long_name;
         }
+        if (component.types.includes('administrative_area_level_1')) {
+          province = component.short_name; // Using short_name for province abbreviation
+        }
       });
+
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
 
       setValue(
         `physicalLocations.${index}.address`,
@@ -150,8 +183,30 @@ const CreateEventStep2 = ({
       );
       setValue(`physicalLocations.${index}.city`, city);
       setValue(`physicalLocations.${index}.postalCode`, postalCode);
+      setValue(`physicalLocations.${index}.province`, province);
+      setValue(`physicalLocations.${index}.lat`, lat);
+      setValue(`physicalLocations.${index}.long`, lng);
+
+      trigger(`physicalLocations.${index}.postalCode`);
+      trigger(`physicalLocations.${index}.city`);
+      trigger(`physicalLocations.${index}.province`);
     }
   };
+
+  useEffect(() => {
+    // Initialize or update autocompletes array when fields change
+    setAutocompletes((prevAutocompletes: any) => {
+      const newAutocompletes = new Array(fields.length).fill(null);
+      // Preserve existing autocomplete instances
+      prevAutocompletes.forEach((autocomplete: any, index: number) => {
+        if (index < newAutocompletes.length) {
+          newAutocompletes[index] = autocomplete;
+        }
+      });
+      return newAutocompletes;
+    });
+  }, [fields.length]);
+
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -182,49 +237,39 @@ const CreateEventStep2 = ({
                 className="physical-location-group flex flex-col gap-5"
               >
                 <div className="relative w-full">
-                  {/* <input
-                    {...register(`physicalLocations.${index}.address`, {
-                      required:
-                        locationType === 'PHYSICAL'
-                          ? 'Address is required'
-                          : false,
-                      onChange: () =>
-                        trigger(`physicalLocations.${index}.address`),
-                    })}
-                    type="text"
-                    id={`address-${index}`}
-                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                    placeholder=" "
-                  />
-                  <label
-                    htmlFor={`address-${index}`}
-                    className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-                  >
-                    Address
-                  </label> */}
                   {isLoaded ? (
                     <Autocomplete
                       onLoad={(autocomplete) => {
-                        const newAutocompletes = [...autocompletes];
-                        newAutocompletes[index] = autocomplete;
-                        setAutocompletes(newAutocompletes);
+                        setAutocompletes((prev: any) => {
+                          const newAutocompletes = [...prev];
+                          newAutocompletes[index] = autocomplete;
+                          return newAutocompletes;
+                        });
                       }}
                       onPlaceChanged={() => handlePlaceSelect(index)}
                     >
-                      <input
-                        {...register(`physicalLocations.${index}.address`, {
-                          required:
-                            locationType === 'PHYSICAL'
-                              ? 'Address is required'
-                              : false,
-                          onChange: () =>
-                            trigger(`physicalLocations.${index}.address`),
-                        })}
-                        type="text"
-                        id={`address-${index}`}
-                        className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                        placeholder=" "
-                      />
+                      <div className="relative">
+                        <input
+                          {...register(`physicalLocations.${index}.address`, {
+                            required:
+                              locationType === 'PHYSICAL'
+                                ? 'Address is required'
+                                : false,
+                            onChange: () =>
+                              trigger(`physicalLocations.${index}.address`),
+                          })}
+                          type="text"
+                          id={`address-${index}`}
+                          className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor={`address-${index}`}
+                          className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[18px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+                        >
+                          Address
+                        </label>
+                      </div>
                     </Autocomplete>
                   ) : (
                     <input
@@ -275,24 +320,20 @@ const CreateEventStep2 = ({
                     </span>
                   )}
                 </div>
-                <div className="relative w-full mt-1">
-                  <label className="text-xs text-[#24181B80] absolute top-[10px] left-5">
+                <div className="relative w-full">
+                  <input
+                    {...register(`physicalLocations.${index}.province`)}
+                    type="text"
+                    id={`province-${index}`}
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                    placeholder=" "
+                  />
+                  <label
+                    htmlFor={`province-${index}`}
+                    className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+                  >
                     Province (optional)
                   </label>
-                  <select
-                    {...register(`physicalLocations.${index}.province`)}
-                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                  >
-                    <option>Province</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                  </select>
-                  <Image
-                    src={chevronDown}
-                    alt="arrow"
-                    className="absolute top-[17px] right-4 pointer-events-none"
-                  />
                 </div>
                 <div className="relative w-full">
                   <input

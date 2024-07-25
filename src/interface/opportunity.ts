@@ -99,6 +99,9 @@ export interface Location {
   province: string;
   postalCode: string;
   id?: string;
+  locationName: string;
+  lat: null | number;
+  long: null | number;
 }
 export interface CreateEventStep2Form {
   physicalLocations: Location[];
