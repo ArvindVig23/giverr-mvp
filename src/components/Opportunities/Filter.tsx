@@ -42,9 +42,14 @@ const Filter = (props: {
     setFirstTime(false);
     setDateRange(range);
   };
+
+  const lat = searchParams.get('lat');
+  const long = searchParams.get('long');
   useEffect(() => {
     if (!firstTime) {
       (async () => {
+        console.log(eventType, 'eventType');
+
         try {
           dispatch(setLoader(true));
           const getList = await getOpportunityList(
@@ -54,6 +59,8 @@ const Filter = (props: {
             dateRange?.endDate?.length ? dateRange.endDate : undefined,
             locationType.length ? locationType.join(',') : undefined,
             eventType.length ? eventType.join(',') : undefined,
+            lat ?? undefined,
+            long ?? undefined,
           );
           const { opportunities, page, totalRecords } = getList;
           setOpportunities(opportunities);

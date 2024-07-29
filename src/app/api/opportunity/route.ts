@@ -10,6 +10,9 @@ import {
   limit as firestoreLimit,
   startAfter,
   orderBy,
+  startAt,
+  endAt,
+  documentId,
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { eventValidationSchema } from '@/utils/joiSchema';
@@ -20,6 +23,7 @@ import {
 } from '@/services/backend/opportunityServices';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import moment from 'moment-timezone';
+import * as geoFire from 'geofire-common';
 // import { cookies } from 'next/headers';
 
 /**
@@ -177,10 +181,65 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get('endDate') || 'undefined';
     const locationType = searchParams.get('locationType') || 'undefined';
     const eventType = searchParams.get('eventType') || 'undefined';
+    const lat = searchParams.get('lat') || 'undefined';
+    const long = searchParams.get('long') || 'undefined';
+
+    let opportunityIds = [];
+
+    // // If latitude and longitude are provided, perform geospatial query first
+    if (lat != 'undefined' && long != 'undefined') {
+      const center = [+lat, +long] as [number, number];
+      const radiusInKm = 10;
+      console.log(typeof +lat, 'lat');
+      console.log(long, 'lng');
+
+      const bounds = geoFire.geohashQueryBounds(center, radiusInKm * 1000);
+      const geoPromises = [];
+
+      for (const b of bounds) {
+        const geoQuery = query(
+          collection(db, 'opportunityLocations'),
+          orderBy('geoHash'),
+          startAt(b[0]),
+          endAt(b[1]),
+        );
+        geoPromises.push(getDocs(geoQuery));
+      }
+
+      const geoSnapshots = await Promise.all(geoPromises);
+
+      for (const snap of geoSnapshots) {
+        for (const doc of snap.docs) {
+          const locationLat = doc.get('lat');
+          const locationLng = doc.get('long');
+
+          const distanceInKm = geoFire.distanceBetween(
+            [locationLat, locationLng],
+            center,
+          );
+          if (distanceInKm <= radiusInKm) {
+            opportunityIds.push(doc.get('opportunityId'));
+          }
+        }
+      }
+    }
+
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
       orderBy('createdAt', 'desc'),
     );
+
+    // If we have opportunityIds from geospatial query, add it to the main query
+    if (opportunityIds.length) {
+      const uniqueOpportunityIds = Array.from(new Set(opportunityIds));
+
+      console.log(uniqueOpportunityIds, 'here if');
+
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where(documentId(), 'in', uniqueOpportunityIds),
+      );
+    }
     if (startDate != 'undefined' && endDate != 'undefined') {
       opportunitiesQuery = query(
         opportunitiesQuery,
@@ -194,11 +253,14 @@ export async function GET(req: NextRequest) {
     }
 
     if (eventType != 'undefined') {
-      const eventTypes = eventType.split(',');
+      const eventTypes = eventType.split(',').map((item) => item.trim());
+      console.log(eventTypes, 'eventTypes');
 
       if (eventTypes.includes('SHOW_UP') && eventTypes.includes('PRE_ENTERY')) {
         // If both types are present, we don't need to add any filter
       } else if (eventTypes.includes('SHOW_UP')) {
+        console.log('else if show up');
+
         opportunitiesQuery = query(
           opportunitiesQuery,
           where('registrationType', '==', 'SHOW_UP'),
@@ -212,7 +274,8 @@ export async function GET(req: NextRequest) {
     }
 
     if (locationType !== 'undefined') {
-      const locationTypes = locationType.split(',');
+      const locationTypes = locationType.split(',').map((item) => item.trim());
+      console.log(locationTypes, 'locationTypes');
 
       if (
         locationTypes.includes('VIRTUAL') &&
@@ -220,6 +283,8 @@ export async function GET(req: NextRequest) {
       ) {
         // If both types are present, we don't need to add any filter
       } else if (locationTypes.includes('VIRTUAL')) {
+        console.log('inside the virtual else if=======');
+
         opportunitiesQuery = query(
           opportunitiesQuery,
           where('registrationWebsiteLink', '>', ''),

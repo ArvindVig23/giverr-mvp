@@ -48,10 +48,13 @@ export const getOpportunityList = async (
   endDate?: string,
   locationType?: string,
   eventType?: string,
+  lat?: string,
+  long?: string,
 ) => {
   try {
     const response = await callApi(
-      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}&startDate=${startDate}&endDate=${endDate}&locationType=${locationType}&eventType=${eventType}`,
+      `/opportunity?page=${currrentPage}&opportunity=${opportunityIds}&startDate=${startDate}&endDate=${endDate}&locationType=${locationType}&eventType=${eventType}
+      &lat=${lat}&long=${long}`,
       'get',
     );
     return response.data;

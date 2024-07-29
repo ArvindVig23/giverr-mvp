@@ -58,6 +58,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
   const filterByOppType = searchParams.get('opportunity');
   const locationType = searchParams.get('location');
   const eventType = searchParams.get('event');
+  const lat = searchParams.get('lat');
+  const long = searchParams.get('long');
 
   useEffect(() => {
     const opportunityIds: string = createQueryParams();
@@ -72,6 +74,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
           endDate ?? undefined,
           locationType ?? undefined,
           eventType ?? undefined,
+          lat ?? undefined,
+          long ?? undefined,
         );
         const { opportunities, page, totalRecords } = getList;
         if (page > 1) {
@@ -98,6 +102,8 @@ const OpportunitiesList: React.FC<CurrentPage> = ({
     filterByOppType,
     locationType,
     eventType,
+    lat,
+    long,
     // searchParams,
     // opportunityTypeList.length,
   ]);

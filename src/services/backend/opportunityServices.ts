@@ -28,6 +28,7 @@ import {
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 import { Location } from '@/interface/opportunity';
 import { getIcalObjectInstance } from '@/utils/calendar/icallObject';
+import * as geofire from 'geofire-common';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -115,6 +116,13 @@ export const createOpportunity = async (opportunity: any) => {
             postalCode: location.postalCode,
             lat: location.lat,
             long: location.long,
+            geoHash:
+              location.lat && location.long
+                ? geofire.geohashForLocation([
+                    location.lat || 0,
+                    location.long || 0,
+                  ])
+                : null,
             createdAt: currentUtcDate,
             updatedAt: currentUtcDate,
           });

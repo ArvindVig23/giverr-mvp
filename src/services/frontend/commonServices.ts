@@ -321,3 +321,21 @@ export const calculateCenter = (locations: any) => {
 
   return { lat: centerLat, lng: centerLng };
 };
+
+//  set lat long to the search params
+// export update searchparams for create event
+export const addLatLngParams = (
+  searchParams: URLSearchParams,
+  pathname: string,
+  router: any,
+  params: SearchParam[],
+) => {
+  const current = new URLSearchParams(searchParams.toString());
+  params.forEach((param) => {
+    current.set(param.key, param.value);
+  });
+
+  const search = current.toString();
+  const query = search ? `?${search}` : '';
+  router.push(`${pathname}${query}`);
+};
