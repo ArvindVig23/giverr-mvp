@@ -189,7 +189,7 @@ const OpportunitiesDetail = ({
       const newCenter = calculateCenter(opportunityDetail.physicalLocations);
       setCenter(newCenter);
       console.log();
-    }
+    } //eslint-disable-next-line
   }, [opportunityDetail?.physicalLocations?.length]);
   return (
     <div className="relative border-t border-[#E6E3D6]">

@@ -190,8 +190,6 @@ export async function GET(req: NextRequest) {
     if (lat != 'undefined' && long != 'undefined') {
       const center = [+lat, +long] as [number, number];
       const radiusInKm = 10;
-      console.log(typeof +lat, 'lat');
-      console.log(long, 'lng');
 
       const bounds = geoFire.geohashQueryBounds(center, radiusInKm * 1000);
       const geoPromises = [];
@@ -224,31 +222,40 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    let idFromDateRange = [];
+    if (startDate != 'undefined' && endDate != 'undefined') {
+      const opportunityCommitmentQuery = query(
+        collection(db, 'opportunityCommitment'),
+        where('selectedDate', '>=', startDate),
+        where(
+          'selectedDate',
+          '<=',
+          moment(endDate, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
+        ),
+      );
+
+      const querySnapshot = await getDocs(opportunityCommitmentQuery);
+      idFromDateRange = querySnapshot.docs.map(
+        (doc) => doc.data().opportunityId,
+      );
+    }
+
     let opportunitiesQuery = query(
       collection(db, 'opportunities'),
       orderBy('createdAt', 'desc'),
     );
 
     // If we have opportunityIds from geospatial query, add it to the main query
-    if (opportunityIds.length) {
-      const uniqueOpportunityIds = Array.from(new Set(opportunityIds));
+    if (opportunityIds.length || idFromDateRange.length) {
+      // Merge the two arrays
+      const combinedIds = [...opportunityIds, ...idFromDateRange];
 
-      console.log(uniqueOpportunityIds, 'here if');
+      // Create a Set to ensure uniqueness, then convert it back to an array
+      const uniqueOpportunityIds = Array.from(new Set(combinedIds));
 
       opportunitiesQuery = query(
         opportunitiesQuery,
         where(documentId(), 'in', uniqueOpportunityIds),
-      );
-    }
-    if (startDate != 'undefined' && endDate != 'undefined') {
-      opportunitiesQuery = query(
-        opportunitiesQuery,
-        where('createdAt', '>=', startDate),
-        where(
-          'createdAt',
-          '<=',
-          moment(endDate, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
-        ),
       );
     }
 
@@ -265,7 +272,7 @@ export async function GET(req: NextRequest) {
       } else if (eventTypes.includes('PRE_ENTERY')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationType', '!=', 'SHOW_UP'),
+          where('registrationType', 'in', ['GIVER_PLATFORM', 'WEBSITE_LINK']),
         );
       }
     }
@@ -281,12 +288,12 @@ export async function GET(req: NextRequest) {
       } else if (locationTypes.includes('VIRTUAL')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('virtualLocationLink', '>', ''),
+          where('locationType', '==', 'VIRTUAL'),
         );
       } else if (locationTypes.includes('PHYSICAL')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('virtualLocationLink', 'in', ['', null]),
+          where('locationType', '==', 'PHYSICAL'),
         );
       }
     }

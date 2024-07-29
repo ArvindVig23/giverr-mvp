@@ -63,7 +63,7 @@ const Header: React.FC = () => {
       const search = current.toString();
       const query = search ? `?${search}` : '';
       router.push(`${window.location.pathname}${query}`);
-    }
+    } //eslint-disable-next-line
   }, [searchValue]);
 
   const pathname = usePathname();
@@ -90,6 +90,33 @@ const Header: React.FC = () => {
     }
   };
 
+  const lat = searchParams.get('lat');
+  const long = searchParams.get('long');
+  const reverseGeocode = async (lat: string | null, long: string | null) => {
+    if (!lat || !long) return;
+
+    const geocoder = new window.google.maps.Geocoder();
+    const latlng = { lat: +lat, lng: +long };
+
+    try {
+      const response = await geocoder.geocode({ location: latlng });
+      if (response.results[0]) {
+        return response.results[0].formatted_address;
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoaded && lat && long) {
+      reverseGeocode(lat, long).then((address) => {
+        if (address) {
+          setValue('search', address);
+        }
+      });
+    } //eslint-disable-next-line
+  }, [lat, long]);
   return (
     <header className="hidden md:block">
       <nav className=" px-4 md:px-5 py-5">

@@ -77,6 +77,7 @@ export const createOpportunity = async (opportunity: any) => {
       virtualLocationLink,
       createdBy,
       imageLink,
+      locationType,
       status: 'PENDING',
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
