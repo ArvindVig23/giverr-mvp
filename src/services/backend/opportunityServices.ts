@@ -299,6 +299,8 @@ export const joinOpportunity = async (
     await addDoc(collection(db, 'opportunityMembers'), {
       userId: id,
       opportunityId: oppId,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
     });
     const getNotificationSetting: any = await getNotificationSettingsById(id);
     if (getNotificationSetting && getNotificationSetting.allowUpdates) {
