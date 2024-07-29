@@ -10,7 +10,17 @@ export const submitEventState: CreateOppDetails = {
   volunteerRequirements: '',
   thumbnailFile: null,
   virtualLocationLink: '',
-  physicalLocations: [{ address: '', city: '', province: '', postalCode: '' }],
+  physicalLocations: [
+    {
+      address: '',
+      city: '',
+      province: '',
+      postalCode: '',
+      locationName: '',
+      lat: null,
+      long: null,
+    },
+  ],
   registrationType: 'GIVER_PLATFORM',
   registrationWebsiteLink: '',
   spots: '',

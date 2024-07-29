@@ -254,13 +254,10 @@ export async function GET(req: NextRequest) {
 
     if (eventType != 'undefined') {
       const eventTypes = eventType.split(',').map((item) => item.trim());
-      console.log(eventTypes, 'eventTypes');
 
       if (eventTypes.includes('SHOW_UP') && eventTypes.includes('PRE_ENTERY')) {
         // If both types are present, we don't need to add any filter
       } else if (eventTypes.includes('SHOW_UP')) {
-        console.log('else if show up');
-
         opportunitiesQuery = query(
           opportunitiesQuery,
           where('registrationType', '==', 'SHOW_UP'),
@@ -275,7 +272,6 @@ export async function GET(req: NextRequest) {
 
     if (locationType !== 'undefined') {
       const locationTypes = locationType.split(',').map((item) => item.trim());
-      console.log(locationTypes, 'locationTypes');
 
       if (
         locationTypes.includes('VIRTUAL') &&
@@ -283,16 +279,14 @@ export async function GET(req: NextRequest) {
       ) {
         // If both types are present, we don't need to add any filter
       } else if (locationTypes.includes('VIRTUAL')) {
-        console.log('inside the virtual else if=======');
-
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationWebsiteLink', '>', ''),
+          where('virtualLocationLink', '>', ''),
         );
       } else if (locationTypes.includes('PHYSICAL')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationWebsiteLink', 'in', ['', null]),
+          where('virtualLocationLink', 'in', ['', null]),
         );
       }
     }
