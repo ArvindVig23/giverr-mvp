@@ -80,6 +80,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -95,6 +96,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -109,6 +111,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -124,6 +127,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
