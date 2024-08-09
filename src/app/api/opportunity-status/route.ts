@@ -12,6 +12,9 @@ import {
   getUserDetailsById,
   sendEmailsForSubscribeCatUser,
 } from '@/services/backend/opportunityServices';
+import { sendEmail } from '@/services/backend/emailService';
+import { compileEmailTemplate } from '@/services/backend/handlebars';
+import { opportunityStatus } from '@/utils/templates/opportunityStatus';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -124,6 +127,32 @@ export async function GET(req: NextRequest) {
         status === 'APPROVED'
           ? 'Opportunity status updated to Approved'
           : 'Opportunity status updated to Rejected';
+
+      //  send email to the user about the status
+      const { createdBy } = opportunityData;
+      const userNotificationSettings =
+        await getNotificationSettingsById(createdBy);
+      if (userNotificationSettings) {
+        console.log(userNotificationSettings, 'userNotificationSettings');
+        const { allowUpdates, acceptSubmission } = userNotificationSettings;
+        if (allowUpdates && acceptSubmission) {
+          const userDetails = await getUserDetailsById(createdBy);
+          const { email } = userDetails;
+
+          const emailData = {
+            name: opportunityData.name,
+            description: opportunityData.description,
+            status,
+          };
+          const template = compileEmailTemplate(opportunityStatus, emailData);
+          await sendEmail(
+            email,
+            'Status update on opportunity',
+            'Status update on opportunity',
+            template,
+          );
+        }
+      }
       const response = responseHandler(200, true, null, message);
       return response;
     } catch (err) {
