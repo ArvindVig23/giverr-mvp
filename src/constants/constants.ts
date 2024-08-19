@@ -28,3 +28,10 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const CRON_SECRET = process.env.CRON_SECRET;
 export const NEXT_PUBLIC_GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL;
+export const TEMPLATE_LOGO = process.env.TEMPLATE_LOGO;
+export const ILLUSTATION_IMAGE = process.env.ILLUSTATION_IMAGE;
+export const EVENT_REJECTED = process.env.EVENT_REJECTED;
+export const INSTAGRAM_IMAGE = process.env.INSTAGRAM_IMAGE;
+export const LINKDIN_IMAGE = process.env.LINKDIN_IMAGE;
+export const x_IMAGE = process.env.x_IMAGE;
