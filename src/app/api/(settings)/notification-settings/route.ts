@@ -1,6 +1,7 @@
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import {
+  getNotificationSettings,
   getSubscribeCategorySettings,
   getUserDetailsCookie,
   setUserDetailsCookie,
@@ -236,6 +237,34 @@ export async function DELETE(req: NextRequest) {
       false,
       null,
       'Error in updating notification settings.',
+    );
+    return response;
+  }
+}
+
+//  get the notification settings on the basis of logged in user
+export async function GET() {
+  try {
+    const userDetails = await getUserDetailsCookie();
+    const convertString = JSON.parse(userDetails.value);
+    const { id } = convertString;
+    const notificationSetting = await getNotificationSettings(id);
+    console.log(notificationSetting, 'notificationSetting');
+
+    const response = responseHandler(
+      200,
+      false,
+      notificationSetting,
+      'Notification settings fetched successfully.',
+    );
+    return response;
+  } catch (error) {
+    console.log(error, 'Error in Removing getting notification settings');
+    const response = responseHandler(
+      500,
+      false,
+      null,
+      'Error in getting notification settings',
     );
     return response;
   }

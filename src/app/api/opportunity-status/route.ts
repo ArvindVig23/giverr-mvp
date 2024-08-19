@@ -1,4 +1,13 @@
-import { TOKEN_SECRET } from '@/constants/constants';
+import {
+  DOMAIN_URL,
+  ILLUSTATION_IMAGE,
+  INSTAGRAM_IMAGE,
+  LINKDIN_IMAGE,
+  SUPPORT_EMAIL,
+  TEMPLATE_LOGO,
+  TOKEN_SECRET,
+  x_IMAGE,
+} from '@/constants/constants';
 import responseHandler from '@/lib/responseHandler';
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
@@ -14,7 +23,8 @@ import {
 } from '@/services/backend/opportunityServices';
 import { sendEmail } from '@/services/backend/emailService';
 import { compileEmailTemplate } from '@/services/backend/handlebars';
-import { opportunityStatus } from '@/utils/templates/opportunityStatus';
+// import { opportunityStatus } from '@/utils/templates/opportunityStatus';
+import { acceptedOpportunity } from '@/utils/templates/acceptedOpportunity';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -119,7 +129,9 @@ export async function GET(req: NextRequest) {
           );
           const emailsString = filteredUserEmails.join();
           console.log(emailsString, 'emailString');
-          await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
+          if (emailsString) {
+            await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
+          }
         }
       }
 
@@ -133,24 +145,49 @@ export async function GET(req: NextRequest) {
       const userNotificationSettings =
         await getNotificationSettingsById(createdBy);
       if (userNotificationSettings) {
-        console.log(userNotificationSettings, 'userNotificationSettings');
         const { allowUpdates, acceptSubmission } = userNotificationSettings;
         if (allowUpdates && acceptSubmission) {
           const userDetails = await getUserDetailsById(createdBy);
-          const { email } = userDetails;
+          const { email, fullName } = userDetails;
 
-          const emailData = {
-            name: opportunityData.name,
-            description: opportunityData.description,
-            status,
-          };
-          const template = compileEmailTemplate(opportunityStatus, emailData);
-          await sendEmail(
-            email,
-            'Status update on opportunity',
-            'Status update on opportunity',
-            template,
-          );
+          // const emailData = {
+          //   name: opportunityData.name,
+          //   description: opportunityData.description,
+          //   status,
+          // };
+          //  if status is approved
+          if (status === 'APPROVED') {
+            const emailData = {
+              userName: fullName || email,
+              oppName: opportunityData.name,
+              oppLink: `${DOMAIN_URL}opportunity/${docSnap.id}`,
+              supportEmail: SUPPORT_EMAIL,
+              templateLogo: TEMPLATE_LOGO,
+              instagram: INSTAGRAM_IMAGE,
+              xImage: x_IMAGE,
+              linkdin: LINKDIN_IMAGE,
+              ilustration: ILLUSTATION_IMAGE,
+              privacyPolicy: `${DOMAIN_URL}/privacy-policy`,
+              termsCondition: `${DOMAIN_URL}/terms-conditions`,
+            };
+            const template = compileEmailTemplate(
+              acceptedOpportunity,
+              emailData,
+            );
+            await sendEmail(
+              email,
+              'Status update on opportunity',
+              'Status update on opportunity',
+              template,
+            );
+          }
+          // const template = compileEmailTemplate(opportunityStatus, emailData);
+          // await sendEmail(
+          //   email,
+          //   'Status update on opportunity',
+          //   'Status update on opportunity',
+          //   template,
+          // );
         }
       }
       const response = responseHandler(200, true, null, message);

@@ -14,15 +14,16 @@ import {
   createSubscribeCat,
   deleteSubscribeCat,
 } from '@/services/frontend/notificationService';
+import callApi from '@/services/frontend/callApiService';
 
 const Notifications: React.FC = () => {
   const [cookies] = useCookies();
   const existingSubscribeCat = cookies.userDetails.categorySubscribe;
   const existingSetting = cookies.userDetails.notificationSetting;
   const [notificationValues, setNotificationValues] = useState<any>({
-    allowUpdates: existingSetting.allowUpdates,
-    acceptSubmission: existingSetting.acceptSubmission,
-    allowVolunteeringUpdates: existingSetting.allowVolunteeringUpdates,
+    allowUpdates: false,
+    acceptSubmission: false,
+    allowVolunteeringUpdates: false,
   });
   const defaultOption = { label: 'All Categories', value: '0' };
   // for category dropdown
@@ -154,6 +155,24 @@ const Notifications: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const notificationSetting = await callApi(
+          '/notification-settings',
+          'get',
+        );
+        console.log(notificationSetting.data, 'notificationSetting');
+        setNotificationValues(notificationSetting.data);
+      } catch (error: any) {
+        console.log(error, 'error');
+
+        const { message } = error;
+        console.log(message);
+      }
+    })();
+  }, [existingSetting]);
+
   return (
     <div className="w-full">
       <h3 className="text-[20px] md:text-[32px] font-medium md:mb-5 mt-0 leading-[36px] text-center md:text-left border-b-[0.5px] border-[#E6E3D6] py-4 md:py-0 md:border-none">
@@ -173,7 +192,7 @@ const Notifications: React.FC = () => {
             <div className="relative">
               <input
                 onChange={handleCheckboxChange}
-                defaultChecked={notificationValues?.allowUpdates}
+                checked={notificationValues?.allowUpdates}
                 type="checkbox"
                 name={'allowUpdates'}
                 className="peer sr-only"
@@ -193,7 +212,7 @@ const Notifications: React.FC = () => {
             <div className="relative">
               <input
                 disabled={!notificationValues.allowUpdates}
-                defaultChecked={notificationValues?.acceptSubmission}
+                checked={notificationValues?.acceptSubmission}
                 onChange={handleCheckboxChange}
                 name={'acceptSubmission'}
                 type="checkbox"
@@ -223,7 +242,7 @@ const Notifications: React.FC = () => {
             <div className="relative">
               <input
                 disabled={!notificationValues.allowUpdates}
-                defaultChecked={notificationValues?.allowVolunteeringUpdates}
+                checked={notificationValues?.allowVolunteeringUpdates}
                 type="checkbox"
                 name={'allowVolunteeringUpdates'}
                 onChange={handleCheckboxChange}

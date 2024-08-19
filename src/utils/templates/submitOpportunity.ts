@@ -191,7 +191,9 @@ export const submitOpportunity = `
                                                                 </tr>
                                                                 <tr><td height="48"></td></tr>
                                                                 <tr>
-                                                                    <td align="center"><a href="#" style="font-size: 14px; color:#E60054; text-decoration: none;">Unsubscribe</a></td>
+                                                                    <td align="center"><a 
+                                                                    target="_blank"
+                                                                    href={{unsubscribeUrl}} style="font-size: 14px; color:#E60054; text-decoration: none;">Unsubscribe</a></td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
