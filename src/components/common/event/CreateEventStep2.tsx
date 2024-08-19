@@ -9,6 +9,7 @@ import { updateSearchParams } from '@/services/frontend/commonServices';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
+import { provincesOptions } from '@/utils/staticDropdown/dropdownOptions';
 
 const CreateEventStep2 = ({
   stepValidationShouldCheck,
@@ -120,6 +121,13 @@ const CreateEventStep2 = ({
     } //eslint-disable-next-line
   }, [stepValidationShouldCheck]);
 
+  const handlePostalCodeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    setValue(`physicalLocations.${index}.postalCode`, value);
+  };
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -211,10 +219,20 @@ const CreateEventStep2 = ({
                     {...register(`physicalLocations.${index}.province`)}
                     className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                   >
-                    <option>Province</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
+                    <option value="" disabled hidden>
+                      Select Provience
+                    </option>
+                    {provincesOptions.length > 0 ? (
+                      provincesOptions.map((option) => {
+                        return (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        );
+                      })
+                    ) : (
+                      <option disabled>No options to choose</option>
+                    )}
                   </select>
                   <Image
                     src={chevronDown}
@@ -229,10 +247,12 @@ const CreateEventStep2 = ({
                         locationType === 'PHYSICAL'
                           ? 'Postal Code is required'
                           : false,
-                      onChange: () =>
-                        trigger(`physicalLocations.${index}.postalCode`),
+                      onChange: (e) => {
+                        handlePostalCodeChange(e, index);
+                        trigger(`physicalLocations.${index}.postalCode`);
+                      },
                     })}
-                    type="number"
+                    type="text"
                     id={`postalCode-${index}`}
                     className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                     placeholder=" "

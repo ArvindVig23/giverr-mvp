@@ -390,15 +390,13 @@ const OpportunitiesDetail = ({
               {opportunityDetail?.physicalLocations &&
               opportunityDetail?.physicalLocations.length > 0
                 ? opportunityDetail?.physicalLocations.map(
-                    (location: Location, index: number) => (
+                    (location: Location) => (
                       <div
                         key={location.id}
                         className="flex gap-2 items-center text-base text-[#24181B]"
                       >
                         <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
-                          {index === 0 ? (
-                            <Image src={locationImage} alt="location" />
-                          ) : null}
+                          <Image src={locationImage} alt="location" />
                         </div>
                         {`${location.address}, ${location.city}, ${location.postalCode}`}
                       </div>
