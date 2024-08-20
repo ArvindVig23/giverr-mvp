@@ -1,5 +1,6 @@
 import {
   DOMAIN_URL,
+  EVENT_REJECTED,
   ILLUSTATION_IMAGE,
   INSTAGRAM_IMAGE,
   LINKDIN_IMAGE,
@@ -25,11 +26,13 @@ import { sendEmail } from '@/services/backend/emailService';
 import { compileEmailTemplate } from '@/services/backend/handlebars';
 // import { opportunityStatus } from '@/utils/templates/opportunityStatus';
 import { acceptedOpportunity } from '@/utils/templates/acceptedOpportunity';
+import { rejectedOpportunity } from '@/utils/templates/rejectedOpportunity';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const token: any = searchParams.get('token');
     const status = searchParams.get('status');
+    const reason = searchParams.get('reason');
     if (!token || !status) {
       const response = responseHandler(
         400,
@@ -63,7 +66,6 @@ export async function GET(req: NextRequest) {
       const docRef = doc(opportunitiesRef, opportunityId);
       const docSnap = await getDoc(docRef);
       const opportunityData: any = docSnap.data();
-      console.log(opportunityData, 'opportunityData');
 
       if (!opportunityData) {
         const response = responseHandler(
@@ -84,7 +86,11 @@ export async function GET(req: NextRequest) {
         );
         return response;
       }
-      const updatedData = { ...opportunityData, status }; // Efficiently merge data
+      const updatedData = {
+        ...opportunityData,
+        status,
+        reasonForRejection: reason ? reason : '',
+      }; // Efficiently merge data
       await updateDoc(docRef, updatedData);
 
       // send email to the user who have subscribe for this category or to all category
@@ -113,7 +119,6 @@ export async function GET(req: NextRequest) {
         const filteredUserIds = userIdsWithUpdatesAllowed.filter(
           (userId) => userId !== null,
         );
-        console.log(filteredUserIds, 'filteredUserIds');
 
         if (filteredUserIds.length > 0) {
           const userEmails = await Promise.all(
@@ -128,7 +133,6 @@ export async function GET(req: NextRequest) {
             (email) => email !== null,
           );
           const emailsString = filteredUserEmails.join();
-          console.log(emailsString, 'emailString');
           if (emailsString) {
             await sendEmailsForSubscribeCatUser(opportunityData, emailsString);
           }
@@ -156,7 +160,6 @@ export async function GET(req: NextRequest) {
           //   status,
           // };
           //  if status is approved
-          console.log(status, 'here===========');
           if (status === 'APPROVED') {
             const emailData = {
               userName: fullName || email,
@@ -174,6 +177,31 @@ export async function GET(req: NextRequest) {
             };
             const template = compileEmailTemplate(
               acceptedOpportunity,
+              emailData,
+            );
+            await sendEmail(
+              email,
+              'Status update on opportunity',
+              'Status update on opportunity',
+              template,
+            ); // else for if admin rejects the event
+          } else {
+            const emailData = {
+              userName: fullName || email,
+              reason: reason,
+              oppName: opportunityData.name,
+              supportEmail: SUPPORT_EMAIL,
+              templateLogo: TEMPLATE_LOGO,
+              instagram: INSTAGRAM_IMAGE,
+              xImage: x_IMAGE,
+              linkdin: LINKDIN_IMAGE,
+              ilustration: EVENT_REJECTED,
+              privacyPolicy: `${DOMAIN_URL}/privacy-policy`,
+              termsCondition: `${DOMAIN_URL}/terms-conditions`,
+              unsubscribeUrl: `${DOMAIN_URL}/profile?tab=notification&redirect=/profile?tab=notification`,
+            };
+            const template = compileEmailTemplate(
+              rejectedOpportunity,
               emailData,
             );
             await sendEmail(

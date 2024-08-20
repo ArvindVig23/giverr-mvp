@@ -40,9 +40,6 @@ const CommonStep1: React.FC = () => {
       });
 
       const { redirectUrl } = responseForRedirectionLink.data;
-      console.log(redirectUrl, 'redirectUrl inside the commonstep 1');
-      console.log(redirect, 'redirect inside the commonstep 1');
-
       if (redirectUrl.includes('sign-in')) {
         if (redirect) {
           router.push(
@@ -82,7 +79,7 @@ const CommonStep1: React.FC = () => {
           </button>
           <button
             className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
-            onClick={() => handleGoogleSignUp(user, router, dispatch)}
+            onClick={() => handleGoogleSignUp(user, router, dispatch, redirect)}
           >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>

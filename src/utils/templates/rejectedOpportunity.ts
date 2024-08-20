@@ -35,7 +35,7 @@ border-spacing:0;
 
 <body text="#000000" bgcolor="#E60054">
 
-        <center style="padding:0 10px;">
+        <center style="padding:0 10px; background-color: #E60054;">
 		<table>
 			<tbody>
 				<tr><td height="32"></td></tr>
@@ -75,24 +75,24 @@ border-spacing:0;
 							
 							<tr>
 								<td>
-									<table width="100%" style="font-size: 16px; line-height: 24px;">
+									<table width="100%" style="font-size: 16px; line-height: 24px; color: #000;">
 										<tbody>
 											<tr> 
 												<td align="left">
-													Dear [User's Name],
+													Dear {{userName}},
 												</td> 
 											</tr>
 											<tr><td height="20"></td></tr>
 											<tr> 
 												<td align="left">
-													Thank you for submitting your event, [Event Name], to Giverr. After careful consideration, we regret to inform you that your event has not been accepted at this time. [Custom explanation text] We encourage you to review our submission guidelines and consider resubmitting in the future. 
+													Thank you for submitting your event, {{oppName}}, to Giverr. After careful consideration, we regret to inform you that your event has not been accepted at this time. {{reason}} We encourage you to review our submission guidelines and consider resubmitting in the future. 
 												</td> 
 											</tr>
 											<tr><td height="20"></td></tr>
 																						
 											<tr> 
 												<td align="left">
-													If you have any questions or need further clarification, please contact us at [support email]. 
+													If you have any questions or need further clarification, please contact us at {{supportEmail}}. 
 												</td> 
 											</tr>
 											<tr><td height="20"></td></tr>
@@ -209,7 +209,7 @@ border-spacing:0;
 															
 															<tr><td height="48"></td></tr>
 															<tr>
-																<td align="center"><a href="#" style="font-size: 14px; color:#E60054; text-decoration: none;">Unsubscribe</a></td>
+																<td align="center"><a href={{unsubscribeUrl}} style="font-size: 14px; color:#E60054; text-decoration: none;">Unsubscribe</a></td>
 															</tr>
 														</tbody>
 													</table>

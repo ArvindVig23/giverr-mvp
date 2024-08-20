@@ -75,7 +75,7 @@ border-spacing:0;
 							
 							<tr>
 								<td>
-									<table width="100%" style="font-size: 16px; olor: #000; line-height: 24px;">
+									<table width="100%" style="font-size: 16px; color: #000; line-height: 24px;">
 										<tbody>
 											<tr> 
 												<td align="left">

@@ -16,6 +16,7 @@ export const handleGoogleSignUp = async (
   userDetails: userDetail,
   router: any,
   dispatch: any,
+  redirect: any,
 ) => {
   const googleProvider = new GoogleAuthProvider();
   try {
@@ -35,13 +36,17 @@ export const handleGoogleSignUp = async (
     formData.append('token', token);
     await callApi('sign-up', 'post', formData);
     sweetAlertToast('success', 'Login Successfull', 1000);
-    router.push('/');
     dispatch(updateUserDetails(resetGlobalState));
+    if (redirect) {
+      router.push(redirect);
+    } else {
+      router.push('/');
+    }
     dispatch(setLoader(false));
   } catch (error: any) {
     console.log('Error in sign up with google', error);
     const { message } = error.data;
-    sweetAlertToast('error', message);
+    sweetAlertToast('error', message || 'Error occured');
     dispatch(setLoader(false));
   }
 };

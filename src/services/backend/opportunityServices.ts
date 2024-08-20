@@ -124,6 +124,7 @@ export const createOpportunity = async (opportunity: any) => {
             city: location.city,
             province: location.province,
             postalCode: location.postalCode,
+            reasonForRejection: '',
             createdAt: currentUtcDate,
             updatedAt: currentUtcDate,
           });
@@ -240,7 +241,7 @@ export const sendEmailForApproval = async (
       expiresIn: '1w',
     });
     const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=APPROVED`;
-    const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=REJECTED`;
+    const rejectUrl = `${DOMAIN_URL}/opportunity-status?token=${token}`;
     // convert to local time string
     const userDetail = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetail.value);
