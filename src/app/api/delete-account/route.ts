@@ -63,7 +63,6 @@ export async function DELETE() {
     const organizationIds: any[] = []; // Array to store organization IDs
     organizationsSnapshot.forEach((doc) => {
       batch.delete(doc.ref);
-      console.log(doc.id);
 
       organizationIds.push(doc.id);
     });
