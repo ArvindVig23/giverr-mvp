@@ -156,6 +156,7 @@ export async function GET(req: NextRequest) {
           //   status,
           // };
           //  if status is approved
+          console.log(status, 'here===========');
           if (status === 'APPROVED') {
             const emailData = {
               userName: fullName || email,
@@ -169,6 +170,7 @@ export async function GET(req: NextRequest) {
               ilustration: ILLUSTATION_IMAGE,
               privacyPolicy: `${DOMAIN_URL}/privacy-policy`,
               termsCondition: `${DOMAIN_URL}/terms-conditions`,
+              unsubscribeUrl: `${DOMAIN_URL}/profile?tab=notification&redirect=/profile?tab=notification`,
             };
             const template = compileEmailTemplate(
               acceptedOpportunity,

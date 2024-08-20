@@ -12,7 +12,7 @@ import rightshape from '/public/images/login-right-shape-1.svg';
 import { handleAppleSignUp, handleGoogleSignUp } from '@/utils/signUpEvent';
 import { useForm } from 'react-hook-form';
 import { emailregex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
@@ -29,6 +29,8 @@ const CommonStep1: React.FC = () => {
     formState: { errors },
   } = useForm();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect');
   const continueButton = async (data: any) => {
     dispatch(setLoader(true));
     dispatch(updateUserDetails({ ...user, email: data.email }));
@@ -38,7 +40,20 @@ const CommonStep1: React.FC = () => {
       });
 
       const { redirectUrl } = responseForRedirectionLink.data;
-      router.push(redirectUrl);
+      console.log(redirectUrl, 'redirectUrl inside the commonstep 1');
+      console.log(redirect, 'redirect inside the commonstep 1');
+
+      if (redirectUrl.includes('sign-in')) {
+        if (redirect) {
+          router.push(
+            `${redirectUrl}&redirect=${encodeURIComponent(redirect)}`,
+          );
+        } else {
+          router.push(redirectUrl);
+        }
+      } else {
+        router.push(redirectUrl);
+      }
       dispatch(setLoader(false));
     } catch (error: any) {
       const { message } = error;

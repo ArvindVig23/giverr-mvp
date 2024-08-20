@@ -534,7 +534,6 @@ export const emailOfOppSubmit = async (createdBy: string) => {
     let userNameOrEmail = '';
     const user = await getUserDetailsById(createdBy);
     userNameOrEmail = user ? user.fullName || user.email : '';
-    const token = jwt.sign({ userId: createdBy }, TOKEN_SECRET!);
     const emailData = {
       name: userNameOrEmail,
       supportEmail: SUPPORT_EMAIL,
@@ -545,7 +544,7 @@ export const emailOfOppSubmit = async (createdBy: string) => {
       ilustration: ILLUSTATION_IMAGE,
       privacyPolicy: `${DOMAIN_URL}/privacy-policy`,
       termsCondition: `${DOMAIN_URL}/terms-conditions`,
-      unsubscribeUrl: `${DOMAIN_URL}/api/unsubscribe-notification/?token=${token}`,
+      unsubscribeUrl: `${DOMAIN_URL}/profile?tab=notification&redirect=/profile?tab=notification`,
     };
     const template = compileEmailTemplate(submitOpportunity, emailData);
     await sendEmail(
