@@ -1,4 +1,4 @@
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
@@ -19,13 +19,22 @@ export const hocAuth = (OriginalComponent: any) => {
 
     const isPublicPath = publicPaths.includes(pathName);
     const isProtectedPath = protectedPaths.includes(pathName);
-
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get('redirect');
     useEffect(() => {
       if (isPublicPath && userToken) {
-        router.push('/');
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push('/');
+        }
       } else if (isProtectedPath && !userToken) {
-        router.push('/sign-in');
-      }
+        if (redirectUrl) {
+          router.push(`/sign-in?redirect=${encodeURIComponent(redirectUrl)}`);
+        } else {
+          router.push('/sign-in');
+        }
+      } //eslint-disable-next-line
     }, [isPublicPath, isProtectedPath, userToken, router, pathName]);
 
     if ((isPublicPath && userToken) || (isProtectedPath && !userToken)) {

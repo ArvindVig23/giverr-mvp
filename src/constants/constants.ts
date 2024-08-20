@@ -28,3 +28,16 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const CRON_SECRET = process.env.CRON_SECRET;
 export const NEXT_PUBLIC_GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL;
+export const TEMPLATE_LOGO =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Fgiverr.png?alt=media';
+export const ILLUSTATION_IMAGE =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Fillustration.png?alt=media';
+export const EVENT_REJECTED =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Fevent-rejected.png?alt=media';
+export const INSTAGRAM_IMAGE =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Finstagram.png?alt=media';
+export const LINKDIN_IMAGE =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Flinkedin.png?alt=media';
+export const x_IMAGE =
+  'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Fx.png?alt=media';
