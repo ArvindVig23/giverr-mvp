@@ -50,8 +50,7 @@ const OpportunitiesBanner: React.FC = () => {
     if (data.password) {
       try {
         const user = auth.currentUser;
-        const updatepass = await updatePassword(user!, data.password);
-        console.log(updatepass, 'success');
+        await updatePassword(user!, data.password);
       } catch (error) {
         sweetAlertToast('error', 'Error in updating details.');
         dispatch(setLoader(false));
