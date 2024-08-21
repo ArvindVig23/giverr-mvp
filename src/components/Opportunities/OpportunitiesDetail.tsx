@@ -45,6 +45,7 @@ import CreateEventModal from '../common/modal/CreateEventModal';
 import { Location, SearchParam } from '@/interface/opportunity';
 import { addRemoveWishlistService } from '@/services/frontend/wishlistService';
 import { getInitialOfEmail } from '@/services/frontend/userService';
+import { provincesOptions } from '@/utils/staticDropdown/dropdownOptions';
 
 const OpportunitiesDetail = ({
   opportunityDetail,
@@ -398,7 +399,11 @@ const OpportunitiesDetail = ({
                         <div className="w-9 h-9 min-w-9 border border-[#EAE7DC] md:border-[#F5F3EF] flex items-center justify-center rounded-[10px]">
                           <Image src={locationImage} alt="location" />
                         </div>
-                        {`${location.address}, ${location.city}, ${location.postalCode}`}
+                        {`${location.address}, ${location.city}, ${
+                          location.province
+                            ? `${provincesOptions.find((option) => option.value === location.province)?.label},`
+                            : ''
+                        } ${location.postalCode}`}
                       </div>
                     ),
                   )

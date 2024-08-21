@@ -125,7 +125,7 @@ const CreateEventStep2 = ({
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
-    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    const value = e.target.value.replace(/[^a-zA-Z0-9\s]/g, '');
     setValue(`physicalLocations.${index}.postalCode`, value);
   };
   return (
