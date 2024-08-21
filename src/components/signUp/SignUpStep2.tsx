@@ -8,7 +8,7 @@ import mobleftshape from '/public/images/left-mob-shape1.svg';
 import mobrightshape from '/public/images/right-mob-shape1.svg';
 import leftshape from '/public/images/login-left-shape-1.svg';
 import rightshape from '/public/images/login-right-shape-1.svg';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import {
   fullNameregex,
@@ -31,6 +31,7 @@ const SignUpStep2: React.FC = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm();
   const user: any = useSelector((state: any) => state.userDetailReducer);
@@ -186,8 +187,10 @@ const SignUpStep2: React.FC = () => {
           </div>
 
           <div className="relative w-full">
-            <input
-              {...register('fullName', {
+            <Controller
+              name="fullName"
+              control={control}
+              rules={{
                 required: 'Fullname is required',
                 pattern: {
                   value: fullNameregex,
@@ -195,14 +198,29 @@ const SignUpStep2: React.FC = () => {
                     'Full name must contain only alphabets and be at least 3 characters long.',
                 },
                 minLength: {
-                  value: 3, // Minimum length you desire
+                  value: 3,
                   message: 'Fullname must be at least 3 characters long.',
                 },
-              })}
-              type="text"
-              id="fullName"
-              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-              placeholder=" "
+                validate: (value) =>
+                  value.trim().length >= 3 ||
+                  'Fullname must be at least 3 characters long.',
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="text"
+                  id="fullName"
+                  className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  placeholder=" "
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    value = value.replace(/\s{2,}/g, ' ');
+                    value = value.replace(/^\s+/, '');
+                    e.target.value = value;
+                    field.onChange(value);
+                  }}
+                />
+              )}
             />
             <label
               htmlFor="fullName"

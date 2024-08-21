@@ -220,7 +220,7 @@ const CreateEventStep2 = ({
                     className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                   >
                     <option value="" disabled hidden>
-                      Select Provience
+                      Select Province
                     </option>
                     {provincesOptions.length > 0 ? (
                       provincesOptions.map((option) => {

@@ -5,7 +5,7 @@ export const passwordValidationPattern =
 
 export const userNameRegex = /^(?=.*[a-zA-Z\d])(?!.*\s)[a-zA-Z\d@$!%*?&]{4,}$/;
 
-export const fullNameregex = /^\s*(?=.{3,}$)[a-zA-Z'-]+(?:\s[a-zA-Z'-]+)?\s*$/;
+export const fullNameregex = /^\s*(?=.{1,}$)[a-zA-Z'-]+(?:\s[a-zA-Z'-]+)*\s*$/;
 
 export const min4CharWithoutSpace = /^(.*\S.*){4,}$/;
 
