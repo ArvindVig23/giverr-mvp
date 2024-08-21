@@ -85,7 +85,7 @@ border-spacing:0;
 											<tr><td height="20"></td></tr>
 											<tr> 
 												<td align="left">
-													We are excited to inform you that your event, {{oppName}}, has been accepted and is now live on Giverr! Thank you for contributing to our community and helping make a difference. You can view your event at <a href={{oppLink}} target="_blank"> Event Link</a>. 
+													We are excited to inform you that your event, {{oppName}}, has been accepted and is now live on Giverr! Thank you for contributing to our community and helping make a difference. You can view your event at <a style=" color:#E60054;" href={{oppLink}} target="_blank"> {{oppName}}</a>. 
 												</td> 
 											</tr>
 											<tr><td height="20"></td></tr>
