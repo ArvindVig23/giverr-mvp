@@ -44,7 +44,6 @@ const Organizations: React.FC = () => {
     try {
       dispach(setLoader(true));
       const response = await updateOrgInviteStatus(status, token);
-      console.log(response, 'response');
       const { message } = response;
       sweetAlertToast('success', message, 1000);
       setRefetchList(!refetchList);

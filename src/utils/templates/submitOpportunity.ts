@@ -77,7 +77,7 @@ export const submitOpportunity = `
                                                 <tr><td height="20"></td></tr>
                                                 <tr> 
                                                     <td align="left">
-                                                        Thank you for submitting your event to Giverr! We have received your submission and are currently reviewing the details. You will be notified of our decision within 1 week.
+                                                        Thank you for submitting your event to Giverr! We have received your submission and are currently reviewing the details. You will be notified of our decision within 1-3 days.
                                                     </td> 
                                                 </tr>
                                                 <tr><td height="20"></td></tr>

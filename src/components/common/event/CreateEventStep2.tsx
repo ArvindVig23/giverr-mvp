@@ -10,7 +10,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { provincesOptions } from '@/utils/staticDropdown/dropdownOptions';
-
+import cross from '/public/images/cross.svg';
 const CreateEventStep2 = ({
   stepValidationShouldCheck,
   setStepValidationShouldCheck,
@@ -34,7 +34,7 @@ const CreateEventStep2 = ({
     },
   });
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'physicalLocations',
   });
@@ -128,6 +128,7 @@ const CreateEventStep2 = ({
     const value = e.target.value.replace(/[^a-zA-Z0-9\s]/g, '');
     setValue(`physicalLocations.${index}.postalCode`, value);
   };
+
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -155,8 +156,28 @@ const CreateEventStep2 = ({
             fields.map((field, index) => (
               <div
                 key={field.id}
-                className="physical-location-group flex flex-col gap-5"
+                className="physical-location-group flex flex-col gap-5 relative"
               >
+                {fields.length > 1 ? (
+                  <div className="flex justify-between items-center">
+                    <label className="text-base text-[#24181B]">
+                      Physical location {index + 1}
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute right-2 p-2 z-10 hover:bg-white hover:rounded-full "
+                    >
+                      <Image
+                        className="brightness-0 group-hover:brightness-0 group-hover:invert"
+                        src={cross}
+                        alt="close"
+                      />
+                    </button>
+                  </div>
+                ) : null}
+
                 <div className="relative w-full">
                   <input
                     {...register(`physicalLocations.${index}.address`, {
