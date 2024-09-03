@@ -86,7 +86,6 @@ export async function PUT(req: NextRequest) {
         selectedTimeZoneInMilisecond,
       },
     };
-    console.log(updatedCookies, 'updated');
 
     setUserDetailsCookie(updatedCookies);
     const response = responseHandler(

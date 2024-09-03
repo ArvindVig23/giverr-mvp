@@ -5,6 +5,7 @@ import {
   where,
   limit as firestoreLimit,
   startAfter,
+  orderBy,
 } from 'firebase/firestore';
 import responseHandler from '../../../../../lib/responseHandler';
 import { db } from '@/firebase/config';
@@ -68,13 +69,18 @@ export async function GET(req: NextRequest) {
     const searchText = searchParams.get('searchText')?.trim() || '';
     const organizationsRef = collection(db, 'organizations');
     let querySnapshot = await getDocs(
-      query(organizationsRef, where('status', '==', 'APPROVED')),
+      query(
+        organizationsRef,
+        where('status', '==', 'APPROVED'),
+        orderBy('createdAt', 'desc'),
+      ),
     );
     if (searchText?.length > 0) {
       querySnapshot = await getDocs(
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -90,6 +96,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -104,6 +111,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -119,6 +127,7 @@ export async function GET(req: NextRequest) {
         query(
           organizationsRef,
           where('status', '==', 'APPROVED'),
+          orderBy('createdAt', 'desc'),
           where('nameLowerCase', '>=', searchText.toLocaleLowerCase()),
           where(
             'nameLowerCase',
@@ -131,30 +140,21 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const organizationIds = querySnapshot.docs.map((doc) => doc.id);
-
-    const opportunitiesRef = collection(db, 'opportunities');
-    let opportunitiesQuery = query(opportunitiesRef);
-    if (organizationIds.length > 0) {
-      opportunitiesQuery = query(
-        opportunitiesRef,
-        where('organizationId', 'in', organizationIds),
-      );
-    }
-    const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
-
-    const organizations: any = [];
-    await Promise.all(
+    const organizations = await Promise.all(
       querySnapshot.docs.map(async (doc) => {
         const organizationData = doc.data();
         const organizationId = doc.id;
 
-        const organizationOpportunities = opportunitiesSnapshot.docs.filter(
-          (opportunityDoc) =>
-            opportunityDoc.data().organizationId === organizationId,
+        // Fetch opportunities for this organization
+        const opportunitiesRef = collection(db, 'opportunities');
+        const opportunitiesQuery = query(
+          opportunitiesRef,
+          where('organizationId', '==', organizationId),
         );
+        const opportunitiesSnapshot = await getDocs(opportunitiesQuery);
+
         const organizationWithOpportunities = await Promise.all(
-          organizationOpportunities.map(async (opportunityDoc) => {
+          opportunitiesSnapshot.docs.map(async (opportunityDoc) => {
             const opportunityData = opportunityDoc.data();
             opportunityData.id = opportunityDoc.id;
             let oppLocation: any = [];
@@ -201,7 +201,7 @@ export async function GET(req: NextRequest) {
         organizationData.id = organizationId;
         organizationData.opportunities = organizationWithOpportunities;
 
-        organizations.push(organizationData);
+        return organizationData;
       }),
     );
 

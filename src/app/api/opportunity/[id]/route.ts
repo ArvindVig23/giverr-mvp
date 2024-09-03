@@ -30,7 +30,6 @@ import {
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import * as geofire from 'geofire-common';
 
 export async function GET(request: NextRequest, { params }: any) {
   try {
@@ -502,44 +501,29 @@ export async function PUT(req: NextRequest, { params }: any) {
         batch.delete(doc.ref);
       });
     } else if (physicalLocations.length > 0) {
+      // First Delete related records from opportunityLocations
+      const locationsQuery = query(
+        collection(db, 'opportunityLocations'),
+        where('opportunityId', '==', id),
+      );
+      const locationsSnapshot = await getDocs(locationsQuery);
+      locationsSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
       const opportunityLocationsRef = collection(db, 'opportunityLocations');
 
       for (const location of physicalLocations) {
-        if (location.id) {
-          // Update existing document
-          console.log(location, 'location');
-
-          const locationDocRef = doc(opportunityLocationsRef, location.id);
-          batch.update(locationDocRef, {
-            opportunityId: id,
-            address: location.address,
-            city: location.city,
-            province: location.province,
-            postalCode: location.postalCode,
-            lat: location.lat,
-            long: location.long,
-            geoHash:
-              location.lat && location.long
-                ? geofire.geohashForLocation([
-                    location.lat || 0,
-                    location.long || 0,
-                  ])
-                : null,
-            updatedAt: currentUtcDate,
-          });
-        } else {
-          // Create new document
-          const newLocationRef = doc(opportunityLocationsRef);
-          batch.set(newLocationRef, {
-            opportunityId: id,
-            address: location.address,
-            city: location.city,
-            province: location.province,
-            postalCode: location.postalCode,
-            createdAt: currentUtcDate,
-            updatedAt: currentUtcDate,
-          });
-        }
+        // Create new document
+        const newLocationRef = doc(opportunityLocationsRef);
+        batch.set(newLocationRef, {
+          opportunityId: id,
+          address: location.address,
+          city: location.city,
+          province: location.province,
+          postalCode: location.postalCode,
+          createdAt: currentUtcDate,
+          updatedAt: currentUtcDate,
+        });
       }
     }
 
@@ -589,7 +573,7 @@ export async function PUT(req: NextRequest, { params }: any) {
 
     const response = responseHandler(
       200,
-      false,
+      true,
       null,
       'Opportunity updated successfully',
     );

@@ -43,6 +43,7 @@ const Organization: React.FC<{
     (state: any) => state.organizationReducer,
   );
   const searchParams = useSearchParams();
+  const name = searchParams.get('name');
   useEffect(() => {
     (async () => {
       try {
@@ -82,7 +83,7 @@ const Organization: React.FC<{
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchParams]);
+  }, [currentPage, name]);
   const addRemoveWishlist = async (oppId: string, organizationId: string) => {
     try {
       dispatch(setLoader(true));

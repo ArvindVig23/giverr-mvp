@@ -14,6 +14,7 @@ const AppWrapper = ({ children }: any) => {
     '/forgot-password',
     '/api-doc',
     '/reset-password',
+    '/opportunity-status',
   ];
 
   const pathName = usePathname();

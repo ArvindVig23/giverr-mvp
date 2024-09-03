@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import chevronDown from '/public/images/chevron-down.svg';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import {
   fullNameregex,
   passwordValidationPattern,
@@ -56,6 +56,7 @@ const OpportunitiesBanner: React.FC = () => {
     trigger,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
@@ -74,8 +75,7 @@ const OpportunitiesBanner: React.FC = () => {
     if (data.password) {
       try {
         const user = auth.currentUser;
-        const updatepass = await updatePassword(user!, data.password);
-        console.log(updatepass, 'success');
+        await updatePassword(user!, data.password);
       } catch (error) {
         sweetAlertToast('error', 'Error in updating details.');
         dispatch(setLoader(false));
@@ -199,27 +199,41 @@ const OpportunitiesBanner: React.FC = () => {
           </div>
           {fileError && <span className="text-red-500">{fileError}</span>}
           <div className="relative w-full">
-            <input
-              defaultValue={fullName}
-              {...register('fullName', {
+            <Controller
+              name="fullName"
+              control={control}
+              rules={{
                 required: 'Fullname is required',
-                min: {
-                  value: 3,
-                  message: 'Minimum 3 characters required.',
-                },
                 pattern: {
                   value: fullNameregex,
-                  message: 'Full name must contain only alphabets.',
+                  message:
+                    'Full name must contain only alphabets and be at least 3 characters long.',
                 },
                 minLength: {
-                  value: 3, // Minimum length you desire
+                  value: 3,
                   message: 'Fullname must be at least 3 characters long.',
                 },
-              })}
-              type="text"
-              id="fullname"
-              className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3]  border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-              placeholder=" "
+                validate: (value) =>
+                  value.trim().length >= 3 ||
+                  'Fullname must be at least 3 characters long.',
+              }}
+              render={({ field }) => (
+                <input
+                  defaultValue={fullName}
+                  {...field}
+                  type="text"
+                  id="fullName"
+                  className="block rounded-2xl px-5 pb-3 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  placeholder=" "
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    value = value.replace(/\s{2,}/g, ' ');
+                    value = value.replace(/^\s+/, '');
+                    e.target.value = value;
+                    field.onChange(value);
+                  }}
+                />
+              )}
             />
             <label
               htmlFor="fullname"

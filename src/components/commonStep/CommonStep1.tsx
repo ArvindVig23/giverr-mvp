@@ -12,7 +12,7 @@ import rightshape from '/public/images/login-right-shape-1.svg';
 import { handleAppleSignUp, handleGoogleSignUp } from '@/utils/signUpEvent';
 import { useForm } from 'react-hook-form';
 import { emailregex } from '@/utils/regex';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserDetails } from '@/app/redux/slices/userDetailSlice';
 import { sweetAlertToast } from '@/services/frontend/toastServices';
@@ -29,6 +29,8 @@ const CommonStep1: React.FC = () => {
     formState: { errors },
   } = useForm();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect');
   const continueButton = async (data: any) => {
     dispatch(setLoader(true));
     dispatch(updateUserDetails({ ...user, email: data.email }));
@@ -38,7 +40,17 @@ const CommonStep1: React.FC = () => {
       });
 
       const { redirectUrl } = responseForRedirectionLink.data;
-      router.push(redirectUrl);
+      if (redirectUrl.includes('sign-in')) {
+        if (redirect) {
+          router.push(
+            `${redirectUrl}&redirect=${encodeURIComponent(redirect)}`,
+          );
+        } else {
+          router.push(redirectUrl);
+        }
+      } else {
+        router.push(redirectUrl);
+      }
       dispatch(setLoader(false));
     } catch (error: any) {
       const { message } = error;
@@ -67,7 +79,7 @@ const CommonStep1: React.FC = () => {
           </button>
           <button
             className="w-full flex items-center justify-center gap-2 bg-[#EDEBE3] hover:bg-[#E6E3D6] rounded-2xl border border-[#E6E3D6] py-4 text-black"
-            onClick={() => handleGoogleSignUp(user, router, dispatch)}
+            onClick={() => handleGoogleSignUp(user, router, dispatch, redirect)}
           >
             <Image src={google} alt="Logo" /> Continue with Google
           </button>

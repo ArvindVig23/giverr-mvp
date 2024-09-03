@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import chevronDown from '/public/images/chevron-down.svg';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { websiteLinkRegex } from '@/utils/regex';
 import { CreateEventStep2Form, SearchParam } from '@/interface/opportunity';
@@ -10,6 +11,9 @@ import { updateSubmitOppDetails } from '@/app/redux/slices/submitOpportunity';
 import { useLoadScript, Autocomplete, Libraries } from '@react-google-maps/api';
 import { NEXT_PUBLIC_GOOGLE_MAPS_API_KEY } from '@/constants/constants';
 
+import { provincesOptions } from '@/utils/staticDropdown/dropdownOptions';
+import cross from '/public/images/cross.svg';
+import Image from 'next/image';
 const CreateEventStep2 = ({
   stepValidationShouldCheck,
   setStepValidationShouldCheck,
@@ -33,7 +37,7 @@ const CreateEventStep2 = ({
     },
   });
   const submitButtonRef = useRef<HTMLButtonElement | null>(null);
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'physicalLocations',
   });
@@ -207,6 +211,14 @@ const CreateEventStep2 = ({
     });
   }, [fields.length]);
 
+  const handlePostalCodeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9\s]/g, '');
+    setValue(`physicalLocations.${index}.postalCode`, value);
+  };
+
   return (
     <form className="" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex  w-full py-5 flex-col relative px-5 max-h-modal overflow-auto">
@@ -234,8 +246,28 @@ const CreateEventStep2 = ({
             fields.map((field, index) => (
               <div
                 key={field.id}
-                className="physical-location-group flex flex-col gap-5"
+                className="physical-location-group flex flex-col gap-5 relative"
               >
+                {fields.length > 1 ? (
+                  <div className="flex justify-between items-center">
+                    <label className="text-base text-[#24181B]">
+                      Physical location {index + 1}
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute right-2 p-2 z-10 hover:bg-white hover:rounded-full "
+                    >
+                      <Image
+                        className="brightness-0 group-hover:brightness-0 group-hover:invert"
+                        src={cross}
+                        alt="close"
+                      />
+                    </button>
+                  </div>
+                ) : null}
+
                 <div className="relative w-full">
                   {isLoaded ? (
                     <Autocomplete
@@ -321,12 +353,29 @@ const CreateEventStep2 = ({
                   )}
                 </div>
                 <div className="relative w-full">
-                  <input
+                  <select
                     {...register(`physicalLocations.${index}.province`)}
-                    type="text"
-                    id={`province-${index}`}
-                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
-                    placeholder=" "
+                    className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+                  >
+                    <option value="" disabled hidden>
+                      Select Province
+                    </option>
+                    {provincesOptions.length > 0 ? (
+                      provincesOptions.map((option) => {
+                        return (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        );
+                      })
+                    ) : (
+                      <option disabled>No options to choose</option>
+                    )}
+                  </select>
+                  <Image
+                    src={chevronDown}
+                    alt="arrow"
+                    className="absolute top-[17px] right-4 pointer-events-none"
                   />
                   <label
                     htmlFor={`province-${index}`}
@@ -342,10 +391,12 @@ const CreateEventStep2 = ({
                         locationType === 'PHYSICAL'
                           ? 'Postal Code is required'
                           : false,
-                      onChange: () =>
-                        trigger(`physicalLocations.${index}.postalCode`),
+                      onChange: (e) => {
+                        handlePostalCodeChange(e, index);
+                        trigger(`physicalLocations.${index}.postalCode`);
+                      },
                     })}
-                    type="number"
+                    type="text"
                     id={`postalCode-${index}`}
                     className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#1E1E1E] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
                     placeholder=" "

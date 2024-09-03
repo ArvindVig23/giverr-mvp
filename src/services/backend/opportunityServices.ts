@@ -1,4 +1,14 @@
-import { ADMIN_EMAIL, DOMAIN_URL, TOKEN_SECRET } from '@/constants/constants';
+import {
+  ADMIN_EMAIL,
+  DOMAIN_URL,
+  ILLUSTATION_IMAGE,
+  INSTAGRAM_IMAGE,
+  LINKDIN_IMAGE,
+  SUPPORT_EMAIL,
+  TEMPLATE_LOGO,
+  TOKEN_SECRET,
+  x_IMAGE,
+} from '@/constants/constants';
 import { db } from '@/firebase/config';
 import responseHandler from '@/lib/responseHandler';
 import {
@@ -29,6 +39,7 @@ import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscrib
 import { Location } from '@/interface/opportunity';
 import { getIcalObjectInstance } from '@/utils/calendar/icallObject';
 import * as geofire from 'geofire-common';
+import { submitOpportunity } from '@/utils/templates/submitOpportunity';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
 
@@ -124,6 +135,7 @@ export const createOpportunity = async (opportunity: any) => {
                     location.long || 0,
                   ])
                 : null,
+            reasonForRejection: '',
             createdAt: currentUtcDate,
             updatedAt: currentUtcDate,
           });
@@ -149,6 +161,9 @@ export const createOpportunity = async (opportunity: any) => {
       opportunityType,
       createdBy,
     );
+
+    //  send email to the user
+    await emailOfOppSubmit(createdBy);
     const response = responseHandler(
       200,
       true,
@@ -237,7 +252,7 @@ export const sendEmailForApproval = async (
       expiresIn: '1w',
     });
     const approvalUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=APPROVED`;
-    const rejectUrl = `${DOMAIN_URL}/api/opportunity-status?token=${token}&status=REJECTED`;
+    const rejectUrl = `${DOMAIN_URL}/opportunity-status?token=${token}`;
     // convert to local time string
     const userDetail = await getUserDetailsCookie();
     const convertString = JSON.parse(userDetail.value);
@@ -525,4 +540,35 @@ export const getOppWithCommitments = async (id: string) => {
     opportunity.commitment = await getOppCommitmentByOppId(id);
   }
   return opportunity;
+};
+
+//  send email to user who created the opportunity
+export const emailOfOppSubmit = async (createdBy: string) => {
+  try {
+    let userNameOrEmail = '';
+    const user = await getUserDetailsById(createdBy);
+    userNameOrEmail = user ? user.fullName || user.email : '';
+    const emailData = {
+      name: userNameOrEmail,
+      supportEmail: SUPPORT_EMAIL,
+      templateLogo: TEMPLATE_LOGO,
+      instagram: INSTAGRAM_IMAGE,
+      xImage: x_IMAGE,
+      linkdin: LINKDIN_IMAGE,
+      ilustration: ILLUSTATION_IMAGE,
+      privacyPolicy: `${DOMAIN_URL}/privacy-policy`,
+      termsCondition: `${DOMAIN_URL}/terms-conditions`,
+      unsubscribeUrl: `${DOMAIN_URL}/profile?tab=notification&redirect=/profile?tab=notification`,
+    };
+    const template = compileEmailTemplate(submitOpportunity, emailData);
+    await sendEmail(
+      user.email,
+      'Opportunity Submitted',
+      'Opportunity Submitted',
+      template,
+    );
+    console.log('email sent to user');
+  } catch (error) {
+    console.log(error, 'Error in sending email to user');
+  }
 };
