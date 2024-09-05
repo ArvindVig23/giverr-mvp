@@ -28,6 +28,8 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const CRON_SECRET = process.env.CRON_SECRET;
 export const NEXT_PUBLIC_GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+export const NEXT_PUBLIC_MAP_MARKER_ICON =
+  process.env.NEXT_PUBLIC_MAP_MARKER_ICON;
 export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL;
 export const TEMPLATE_LOGO =
   'https://firebasestorage.googleapis.com/v0/b/giverr-84eea.appspot.com/o/template_images%2Fgiverr.png?alt=media';

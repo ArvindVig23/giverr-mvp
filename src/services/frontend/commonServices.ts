@@ -295,3 +295,47 @@ export const getTheIndexOfOrg = (id: string, userOrgList: OrgDetails[]) => {
   const index = userOrgList.findIndex((org: any) => org.id === id);
   return index;
 };
+
+export const calculateCenter = (locations: any) => {
+  let totalLat = 0;
+  let totalLng = 0;
+  let validLocationCount = 0;
+
+  // Check if locations have valid lat and lng properties
+  locations.forEach((location: any) => {
+    if (location.lat && location.long) {
+      totalLat += location.lat;
+      totalLng += location.long;
+      validLocationCount++;
+    }
+  });
+
+  // Handle empty list of valid locations
+  if (validLocationCount === 0) {
+    return { lat: 45.52159, lng: -73.5619 };
+  }
+
+  // Calculate average latitude and longitude
+  const centerLat = totalLat / validLocationCount;
+  const centerLng = totalLng / validLocationCount;
+
+  return { lat: centerLat, lng: centerLng };
+};
+
+//  set lat long to the search params
+// export update searchparams for create event
+export const addLatLngParams = (
+  searchParams: URLSearchParams,
+  pathname: string,
+  router: any,
+  params: SearchParam[],
+) => {
+  const current = new URLSearchParams(searchParams.toString());
+  params.forEach((param) => {
+    current.set(param.key, param.value);
+  });
+
+  const search = current.toString();
+  const query = search ? `?${search}` : '';
+  router.push(`${pathname}${query}`);
+};

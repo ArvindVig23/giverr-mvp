@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import category from '/public/images/category.svg';
 import time from '/public/images/one-time.svg';
 import volunteer from '/public/images/organizations.svg';
+import {
+  GoogleMap,
+  Libraries,
+  Marker,
+  useLoadScript,
+} from '@react-google-maps/api';
 
 // import dogIcon from '/public/images/dog-icon.svg';
 import heart from '/public/images/heart.svg';
@@ -18,6 +24,7 @@ import virutalLeft from '/public/images/virtual-left.svg';
 import virutalRight from '/public/images/virtual-right.svg';
 import Link from 'next/link';
 import {
+  calculateCenter,
   convertToLocalDateWithDay,
   encodeUrl,
   findCommitment,
@@ -25,7 +32,11 @@ import {
   pickColor,
   updateSearchParams,
 } from '@/services/frontend/commonServices';
-import { FIRESTORE_IMG_BASE_START_URL } from '@/constants/constants';
+import {
+  FIRESTORE_IMG_BASE_START_URL,
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  NEXT_PUBLIC_MAP_MARKER_ICON,
+} from '@/constants/constants';
 import { useCookies } from 'react-cookie';
 import {
   deleteOppApi,
@@ -152,6 +163,35 @@ const OpportunitiesDetail = ({
     cookies?.userDetails?.id === opportunityDetail?.createdBy ||
     opportunityDetail?.alreadyJoined ||
     userOrgDetails.some((org: any) => org.id === opportunityDetail?.createdBy);
+
+  const mapStyles = {
+    height: '400px',
+    width: '100%',
+  };
+
+  const libraries = useMemo<Libraries>(
+    () => ['places', 'marker', 'geometry'],
+    [],
+  );
+
+  const { isLoaded } = useLoadScript(
+    useMemo(
+      () => ({
+        googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: libraries,
+      }),
+      [libraries],
+    ),
+  );
+
+  const [center, setCenter] = useState({ lat: 48.6300448, lng: 8.034704 });
+  useEffect(() => {
+    if (opportunityDetail?.physicalLocations) {
+      const newCenter = calculateCenter(opportunityDetail.physicalLocations);
+      setCenter(newCenter);
+      console.log();
+    } //eslint-disable-next-line
+  }, [opportunityDetail?.physicalLocations?.length]);
   return (
     <div className="relative border-t border-[#E6E3D6]">
       <div className="md:p-5 w-full relative pb-44 md:pb-24 border-b border-[#E6E3D6]">
@@ -452,12 +492,25 @@ const OpportunitiesDetail = ({
             </div>
             {opportunityDetail?.physicalLocations.length ? (
               <div className="w-full rounded-xl overflow-hidden my-10">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d114964.39567879181!2d-80.31185925136802!3d25.782538872180993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0xff96f271ddad4f65!2sMiami%2C%20FL%2C%20USA!5e0!3m2!1sen!2sin!4v1715846922507!5m2!1sen!2sin"
-                  width="100%"
-                  height="450"
-                  loading="lazy"
-                ></iframe>
+                {isLoaded && (
+                  <GoogleMap
+                    mapContainerStyle={mapStyles}
+                    zoom={10}
+                    center={center}
+                  >
+                    {opportunityDetail?.physicalLocations?.map(
+                      (location: any, index: number) =>
+                        location.lat &&
+                        location.long && (
+                          <Marker
+                            icon={NEXT_PUBLIC_MAP_MARKER_ICON}
+                            key={index}
+                            position={{ lat: location.lat, lng: location.long }}
+                          />
+                        ),
+                    )}
+                  </GoogleMap>
+                )}
               </div>
             ) : null}
 

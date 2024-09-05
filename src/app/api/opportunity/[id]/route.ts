@@ -470,6 +470,7 @@ export async function PUT(req: NextRequest, { params }: any) {
       opportunityType,
       virtualLocationLink,
       createdBy,
+      locationType,
       imageLink,
       lowercaseName: name.toLowerCase().trim(),
       updatedAt: currentUtcDate,

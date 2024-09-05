@@ -96,6 +96,9 @@ export async function POST(req: NextRequest) {
       categorySubscribe,
       timeZoneSettings,
       loginAsOrg: false,
+      locationName: userData.locationName,
+      lat: userData.lat,
+      long: userData.long,
     };
     cookies().set({
       name: 'userDetails',

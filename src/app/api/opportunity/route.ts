@@ -10,6 +10,9 @@ import {
   limit as firestoreLimit,
   startAfter,
   orderBy,
+  startAt,
+  endAt,
+  documentId,
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { eventValidationSchema } from '@/utils/joiSchema';
@@ -20,6 +23,7 @@ import {
 } from '@/services/backend/opportunityServices';
 import { getUserDetailsCookie } from '@/services/backend/commonServices';
 import moment from 'moment-timezone';
+import * as geoFire from 'geofire-common';
 // import { cookies } from 'next/headers';
 
 /**
@@ -177,24 +181,86 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get('endDate') || 'undefined';
     const locationType = searchParams.get('locationType') || 'undefined';
     const eventType = searchParams.get('eventType') || 'undefined';
-    let opportunitiesQuery = query(
-      collection(db, 'opportunities'),
-      orderBy('createdAt', 'desc'),
-    );
+    const lat = searchParams.get('lat') || 'undefined';
+    const long = searchParams.get('long') || 'undefined';
+
+    let opportunityIds = [];
+
+    // // If latitude and longitude are provided, perform geospatial query first
+    if (lat != 'undefined' && long != 'undefined') {
+      const center = [+lat, +long] as [number, number];
+      const radiusInKm = 10;
+
+      const bounds = geoFire.geohashQueryBounds(center, radiusInKm * 1000);
+      const geoPromises = [];
+
+      for (const b of bounds) {
+        const geoQuery = query(
+          collection(db, 'opportunityLocations'),
+          orderBy('geoHash'),
+          startAt(b[0]),
+          endAt(b[1]),
+        );
+        geoPromises.push(getDocs(geoQuery));
+      }
+
+      const geoSnapshots = await Promise.all(geoPromises);
+
+      for (const snap of geoSnapshots) {
+        for (const doc of snap.docs) {
+          const locationLat = doc.get('lat');
+          const locationLng = doc.get('long');
+
+          const distanceInKm = geoFire.distanceBetween(
+            [locationLat, locationLng],
+            center,
+          );
+          if (distanceInKm <= radiusInKm) {
+            opportunityIds.push(doc.get('opportunityId'));
+          }
+        }
+      }
+    }
+
+    let idFromDateRange = [];
     if (startDate != 'undefined' && endDate != 'undefined') {
-      opportunitiesQuery = query(
-        opportunitiesQuery,
-        where('createdAt', '>=', startDate),
+      const opportunityCommitmentQuery = query(
+        collection(db, 'opportunityCommitment'),
+        where('selectedDate', '>=', startDate),
         where(
-          'createdAt',
+          'selectedDate',
           '<=',
           moment(endDate, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD'),
         ),
       );
+
+      const querySnapshot = await getDocs(opportunityCommitmentQuery);
+      idFromDateRange = querySnapshot.docs.map(
+        (doc) => doc.data().opportunityId,
+      );
+    }
+
+    let opportunitiesQuery = query(
+      collection(db, 'opportunities'),
+      orderBy('createdAt', 'desc'),
+    );
+
+    // If we have opportunityIds from geospatial query, add it to the main query
+    if (opportunityIds.length || idFromDateRange.length) {
+      // Merge the two arrays
+      const combinedIds = [...opportunityIds, ...idFromDateRange];
+
+      // Create a Set to ensure uniqueness, then convert it back to an array
+      const uniqueOpportunityIds = Array.from(new Set(combinedIds));
+
+      opportunitiesQuery = query(
+        opportunitiesQuery,
+        where(documentId(), 'in', uniqueOpportunityIds),
+      );
     }
 
     if (eventType != 'undefined') {
-      const eventTypes = eventType.split(',');
+      const eventTypes = eventType.split(',').map((item) => item.trim());
 
       if (eventTypes.includes('SHOW_UP') && eventTypes.includes('PRE_ENTERY')) {
         // If both types are present, we don't need to add any filter
@@ -206,13 +272,13 @@ export async function GET(req: NextRequest) {
       } else if (eventTypes.includes('PRE_ENTERY')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationType', '!=', 'SHOW_UP'),
+          where('registrationType', 'in', ['GIVER_PLATFORM', 'WEBSITE_LINK']),
         );
       }
     }
 
     if (locationType !== 'undefined') {
-      const locationTypes = locationType.split(',');
+      const locationTypes = locationType.split(',').map((item) => item.trim());
 
       if (
         locationTypes.includes('VIRTUAL') &&
@@ -222,12 +288,12 @@ export async function GET(req: NextRequest) {
       } else if (locationTypes.includes('VIRTUAL')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationWebsiteLink', '>', ''),
+          where('locationType', '==', 'VIRTUAL'),
         );
       } else if (locationTypes.includes('PHYSICAL')) {
         opportunitiesQuery = query(
           opportunitiesQuery,
-          where('registrationWebsiteLink', 'in', ['', null]),
+          where('locationType', '==', 'PHYSICAL'),
         );
       }
     }

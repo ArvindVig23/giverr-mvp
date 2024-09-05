@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
 import logo from '/public/images/logo.svg';
 import lightSearch from '/public/images/search-light.svg';
@@ -8,6 +8,10 @@ import ProfileDropdown from './ProfileDropdown';
 import { useCookies } from 'react-cookie';
 import SubmitEvents from '../../manageProfile/SubmitEvents';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Autocomplete, Libraries, useLoadScript } from '@react-google-maps/api';
+import { NEXT_PUBLIC_GOOGLE_MAPS_API_KEY } from '@/constants/constants';
+import { useForm } from 'react-hook-form';
+import { addLatLngParams } from '@/services/frontend/commonServices';
 const Header: React.FC = () => {
   const [cookies] = useCookies();
   const pathName = usePathname();
@@ -36,6 +40,83 @@ const Header: React.FC = () => {
     // eslint-disable-next-line
   }, [searchOrg]);
 
+  const libraries = useMemo<Libraries>(() => ['places'], []);
+  const [autocompletes, setAutocompletes] = useState<any>([]);
+  const { register, setValue, watch } = useForm();
+  const searchValue = watch('search');
+  const { isLoaded } = useLoadScript(
+    useMemo(
+      () => ({
+        googleMapsApiKey: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        libraries: libraries,
+      }),
+      [libraries],
+    ),
+  );
+
+  useEffect(() => {
+    if (!searchValue) {
+      // Remove lat and lng from searchParams when input is cleared
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      current.delete('lat');
+      current.delete('long');
+      const search = current.toString();
+      const query = search ? `?${search}` : '';
+      router.push(`${window.location.pathname}${query}`);
+    } //eslint-disable-next-line
+  }, [searchValue]);
+
+  const pathname = usePathname();
+  const onPlaceChanged: any = () => {
+    const place = autocompletes.getPlace();
+    if (place.geometry) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+
+      // Update form value
+      setValue('search', place.formatted_address);
+
+      const params: any = [
+        {
+          key: 'lat',
+          value: lat,
+        },
+        {
+          key: 'long',
+          value: lng,
+        },
+      ];
+      addLatLngParams(searchParams, pathname, router, params);
+    }
+  };
+
+  const lat = searchParams.get('lat');
+  const long = searchParams.get('long');
+  const reverseGeocode = async (lat: string | null, long: string | null) => {
+    if (!lat || !long) return;
+
+    const geocoder = new window.google.maps.Geocoder();
+    const latlng = { lat: +lat, lng: +long };
+
+    try {
+      const response = await geocoder.geocode({ location: latlng });
+      if (response.results[0]) {
+        return response.results[0].formatted_address;
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoaded && lat && long) {
+      reverseGeocode(lat, long).then((address) => {
+        if (address) {
+          setValue('search', address);
+        }
+      });
+    } //eslint-disable-next-line
+  }, [lat, long]);
   return (
     <header className="hidden md:block">
       <nav className=" px-4 md:px-5 py-5">
@@ -75,7 +156,24 @@ const Header: React.FC = () => {
                     className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
                   />
                 )}
-                {pathName === '/' && (
+                {pathName === '/' && isLoaded ? (
+                  <Autocomplete
+                    className="w-full"
+                    onLoad={(autocomplete: any) => {
+                      let obj = { ...autocompletes };
+                      let newAutocompletes: any = [obj];
+                      newAutocompletes = autocomplete;
+                      setAutocompletes(newAutocompletes);
+                    }}
+                    onPlaceChanged={onPlaceChanged}
+                  >
+                    <input
+                      {...register('search')}
+                      placeholder={'Search opportunities'}
+                      className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"
+                    />
+                  </Autocomplete>
+                ) : (
                   <input
                     placeholder={'Search opportunities'}
                     className="placeholder-[#24181B80] h-full w-full rounded-xl px-4 pl-10 focus:outline-0 bg-transparent"

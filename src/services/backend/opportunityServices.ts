@@ -38,6 +38,7 @@ import {
 import { eventAddedToSubscribeCat } from '@/utils/templates/eventAddedToSubscribeCat';
 import { Location } from '@/interface/opportunity';
 import { getIcalObjectInstance } from '@/utils/calendar/icallObject';
+import * as geofire from 'geofire-common';
 import { submitOpportunity } from '@/utils/templates/submitOpportunity';
 //  current date to utc format
 export const currentUtcDate = moment().tz('UTC').toDate().toISOString();
@@ -87,6 +88,7 @@ export const createOpportunity = async (opportunity: any) => {
       virtualLocationLink,
       createdBy,
       imageLink,
+      locationType,
       status: 'PENDING',
       lowercaseName: name.toLowerCase().trim(),
       createdAt: currentUtcDate,
@@ -124,6 +126,15 @@ export const createOpportunity = async (opportunity: any) => {
             city: location.city,
             province: location.province,
             postalCode: location.postalCode,
+            lat: location.lat,
+            long: location.long,
+            geoHash:
+              location.lat && location.long
+                ? geofire.geohashForLocation([
+                    location.lat || 0,
+                    location.long || 0,
+                  ])
+                : null,
             reasonForRejection: '',
             createdAt: currentUtcDate,
             updatedAt: currentUtcDate,
@@ -303,6 +314,8 @@ export const joinOpportunity = async (
     await addDoc(collection(db, 'opportunityMembers'), {
       userId: id,
       opportunityId: oppId,
+      createdAt: currentUtcDate,
+      updatedAt: currentUtcDate,
     });
     const getNotificationSetting: any = await getNotificationSettingsById(id);
     if (getNotificationSetting && getNotificationSetting.allowUpdates) {
