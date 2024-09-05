@@ -24,6 +24,7 @@ import DeleteAcoountModalContent from '../common/settings/DeleteAcoountModalCont
 import { auth } from '@/firebase/config';
 import { updatePassword } from 'firebase/auth';
 import { Autocomplete, Libraries, useLoadScript } from '@react-google-maps/api';
+import { provincesOptions } from '@/utils/staticDropdown/dropdownOptions';
 
 const OpportunitiesBanner: React.FC = () => {
   // google api load and autocomplete state
@@ -48,8 +49,16 @@ const OpportunitiesBanner: React.FC = () => {
   const [fileError, setFileError] = useState<string>('');
 
   const [cookies] = useCookies();
-  const { email, profileUrl, fullName, username, locationName } =
-    cookies.userDetails;
+  const {
+    email,
+    profileUrl,
+    fullName,
+    username,
+    locationName,
+    province,
+    lat,
+    long,
+  } = cookies.userDetails;
   const {
     register,
     handleSubmit,
@@ -58,7 +67,19 @@ const OpportunitiesBanner: React.FC = () => {
     watch,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email,
+      profileUrl,
+      fullName,
+      username,
+      locationName,
+      province,
+      password: '',
+      lat,
+      long,
+    },
+  });
   const dispatch = useDispatch();
   const updateDetails = async (data: any) => {
     if (fileError) {
@@ -365,6 +386,39 @@ const OpportunitiesBanner: React.FC = () => {
                 />
               </>
             )}
+          </div>
+          <div className="relative w-full">
+            <select
+              defaultValue={province ? province : ''}
+              {...register('province')}
+              className="block rounded-2xl px-5 pb-2.5 pt-6 w-full text-base text-[#24181B] bg-[#EDEBE3] border border-[#E6E3D6] appearance-none focus:outline-none focus:ring-0 focus:border-[#E60054] peer"
+            >
+              <option value="" disabled hidden>
+                Select Province
+              </option>
+              {provincesOptions.length > 0 ? (
+                provincesOptions.map((option) => {
+                  return (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  );
+                })
+              ) : (
+                <option disabled>No options to choose</option>
+              )}
+            </select>
+            <Image
+              src={chevronDown}
+              alt="arrow"
+              className="absolute top-[17px] right-4 pointer-events-none"
+            />
+            <label
+              htmlFor="province"
+              className="absolute text-base text-[#1E1E1E80] duration-300 transform -translate-y-4 scale-75 top-[21px] placeholder-shown:top-[17px] peer-placeholder-shown:top-[17px] peer-focus:top-[21px] z-10 origin-[0] start-5 peer-focus:text-[#1E1E1E80] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+            >
+              Province (optional)
+            </label>
           </div>
           <button
             type="submit"
