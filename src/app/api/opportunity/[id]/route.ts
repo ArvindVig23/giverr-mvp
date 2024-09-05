@@ -30,6 +30,7 @@ import {
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
+import * as geofire from 'geofire-common';
 
 export async function GET(request: NextRequest, { params }: any) {
   try {
@@ -523,6 +524,15 @@ export async function PUT(req: NextRequest, { params }: any) {
           postalCode: location.postalCode,
           createdAt: currentUtcDate,
           updatedAt: currentUtcDate,
+          lat: location.lat,
+          long: location.long,
+          geoHash:
+            location.lat && location.long
+              ? geofire.geohashForLocation([
+                  location.lat || 0,
+                  location.long || 0,
+                ])
+              : null,
         });
       }
     }
