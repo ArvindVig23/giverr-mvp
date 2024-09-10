@@ -425,7 +425,7 @@ const CreateEventStep2 = ({
               className="cursor-pointer text-base h-[60px] px-4 py-3 inline-flex justify-center items-center border border-[#ff000040] bg-inherit rounded-2xl font-medium text-[#E60054] hover:bg-[#ff000017]"
               type="button"
             >
-              Add location
+              Add Another Location
             </button>
           )}
         </div>

@@ -178,3 +178,25 @@ export const userSettingsSchema = Joi.object({
     'string.required': 'User settings Id is required',
   }),
 });
+
+export const contactUsSchema = Joi.object({
+  fullName: Joi.string()
+    .required()
+    .trim()
+    .pattern(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
+    .messages({
+      'string.empty': 'Full Name is required',
+      'string.pattern.base':
+        'Full Name should only contain alphabets and spaces',
+    }),
+  email: Joi.string().email().required().trim().messages({
+    'string.empty': 'Email is required',
+    'string.email': 'Enter a valid email',
+  }),
+  phone: Joi.string().required().trim().messages({
+    'string.empty': 'Phone number is required',
+  }),
+  message: Joi.string().required().trim().messages({
+    'string.empty': 'Message is required',
+  }),
+});

@@ -155,7 +155,7 @@ const About: React.FC = () => {
             </label>
 
             <Link
-              href={'#'}
+              href={'/contact-us'}
               className="text-base  w-auto h-11 px-4 py-2.5 inlineflex justify-center items-center bg-[#E60054] rounded-2xl font-medium text-white hover:bg-[#C20038]"
             >
               Contact us

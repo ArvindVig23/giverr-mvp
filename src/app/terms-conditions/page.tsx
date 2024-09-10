@@ -1,8 +1,15 @@
 'use client';
 import React from 'react';
 import termsConditions from '@/utils/jsonData/termsConditions.json';
+import { replaceFromJson } from '@/services/frontend/commonServices';
+import { SUPPORT_EMAIL } from '@/constants/constants';
 
 const TermsConditions = () => {
+  const processedData = replaceFromJson(
+    termsConditions,
+    /{{SUPPORT_EMAIL}}/g,
+    SUPPORT_EMAIL,
+  );
   return (
     <div className="w-full md:border-t border-[#E6E3D6] md:p-5 ">
       <div className="max-w-2xl mx-auto px-4">
@@ -16,13 +23,13 @@ const TermsConditions = () => {
         </div>
 
         <div className="mt-6">
-          {termsConditions.map((section, index) => (
+          {processedData.map((section: any, index: number) => (
             <div key={index} className="mb-6">
               <h3 className="font-2xl text-base font-medium text-xl mb-3">
                 {index + 1}. {section.heading}
               </h3>
               <div className="mb-[50px]">
-                {section.description.map((item, itemIndex) => (
+                {section.description.map((item: any, itemIndex: number) => (
                   <div key={itemIndex} className="mb-5">
                     {item.headerName ? (
                       <p className="text-base">

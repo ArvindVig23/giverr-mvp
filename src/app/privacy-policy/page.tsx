@@ -1,7 +1,16 @@
 'use client';
 import React from 'react';
 import privacyPolicies from '@/utils/jsonData/privacy-policy.json';
+import { SUPPORT_EMAIL } from '@/constants/constants';
+import { replaceFromJson } from '@/services/frontend/commonServices';
 const PrivactPolicy = () => {
+  console.log(SUPPORT_EMAIL, 'SUPPORT_EMAIL');
+
+  const processedData = replaceFromJson(
+    privacyPolicies,
+    /{{SUPPORT_EMAIL}}/g,
+    SUPPORT_EMAIL,
+  );
   return (
     <div className="w-full md:border-t border-[#E6E3D6] md:p-5 ">
       <div className="max-w-2xl mx-auto px-4">
@@ -14,7 +23,7 @@ const PrivactPolicy = () => {
           </p>
         </div>
         <div className="mt-6">
-          {privacyPolicies.map((section: any, index: number) => (
+          {processedData.map((section: any, index: number) => (
             <div key={index} className="mb-[50px]">
               <h3 className="font-2xl text-base font-medium text-xl mb-1">
                 {index + 1}. {section.heading}
