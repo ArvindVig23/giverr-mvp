@@ -150,7 +150,7 @@
       },
       {
         "itemName": "",
-        "itemDescription": "To exercise any of these rights, please contact us at arvind@giverr.org"
+        "itemDescription": "To exercise any of these rights, please contact us at {{SUPPORT_EMAIL}}"
       }
     ]
   },
@@ -177,7 +177,7 @@
     "description": [
       {
         "itemName": "",
-        "itemDescription": "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at arvind@giverr.org."
+        "itemDescription": "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at {{SUPPORT_EMAIL}}."
       }
     ]
   }

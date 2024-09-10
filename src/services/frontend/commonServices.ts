@@ -339,3 +339,16 @@ export const addLatLngParams = (
   const query = search ? `?${search}` : '';
   router.push(`${pathname}${query}`);
 };
+
+export const replaceFromJson = (
+  jsonData: any,
+  fieldToReplaced: any,
+  replacedWith: any,
+) => {
+  const processedData = JSON.stringify(jsonData).replace(
+    fieldToReplaced,
+    replacedWith,
+  );
+  const finalPrivacyPolicyData = JSON.parse(processedData);
+  return finalPrivacyPolicyData;
+};
