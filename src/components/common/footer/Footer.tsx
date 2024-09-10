@@ -6,18 +6,25 @@ import insta from '/public/images/instagram.svg';
 import twitter from '/public/images/twitter.svg';
 import linkedin from '/public/images/linkedin.svg';
 import link from '/public/images/external-link.svg';
+import { usePathname } from 'next/navigation';
 
 const Footer: React.FC = () => {
+  const pathname = usePathname();
+  console.log(pathname, 'pathname');
+
   return (
     <div className="bg-[#E60054] text-center flex  items-center flex-col gap-10 pt-[100px] pb-16 md:pb-12 px-10 relative before:content-[''] before:h-6 before:rounded-b-[16px] md:before:rounded-b-[24px] before:w-full before:absolute before:top-0 before:bg-[#F5F3EF]">
       <div className="flex flex-col gap-2.5">
         <h4 className="text-[#FFF3D680]">Company</h4>
-        <Link href="/about" className="text-[#FFF3D6]  hover:underline">
+        <Link
+          href="/about"
+          className={`text-[#FFF3D6]  hover:underline ${pathname === '/about' ? 'underline' : ''}`}
+        >
           About
         </Link>
         <Link
           href="/contact-us"
-          className="text-[#FFF3D6] inline-flex  hover:underline"
+          className={`text-[#FFF3D6] inline-flex  hover:underline ${pathname === '/contact-us' ? 'underline' : ''}`}
         >
           Contact <Image src={link} alt="Link" />
         </Link>
@@ -27,13 +34,13 @@ const Footer: React.FC = () => {
         <h4 className="text-[#FFF3D680]">Legal</h4>
         <Link
           href="/terms-conditions"
-          className="text-[#FFF3D6] hover:underline"
+          className={`text-[#FFF3D6] inline-flex  hover:underline ${pathname === '/terms-conditions' ? 'underline' : ''}`}
         >
           Terms & Conditions
         </Link>
         <Link
           href="/privacy-policy"
-          className="text-[#FFF3D6]  hover:underline"
+          className={`text-[#FFF3D6] inline-flex  hover:underline ${pathname === '/privacy-policy' ? 'underline' : ''}`}
         >
           Privacy Policy
         </Link>
