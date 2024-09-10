@@ -15,7 +15,10 @@ const Footer: React.FC = () => {
         <Link href="/about" className="text-[#FFF3D6]  hover:underline">
           About
         </Link>
-        <Link href="#" className="text-[#FFF3D6] inline-flex  hover:underline">
+        <Link
+          href="/contact-us"
+          className="text-[#FFF3D6] inline-flex  hover:underline"
+        >
           Contact <Image src={link} alt="Link" />
         </Link>
       </div>
