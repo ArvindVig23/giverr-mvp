@@ -30,17 +30,17 @@ const Footer: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 justify-center">
         <h4 className="text-[#FFF3D680]">Legal</h4>
         <Link
           href="/terms-conditions"
-          className={`text-[#FFF3D6] inline-flex  hover:underline ${pathname === '/terms-conditions' ? 'underline' : ''}`}
+          className={`text-[#FFF3D6] inline-flex justify-center  hover:underline ${pathname === '/terms-conditions' ? 'underline' : ''}`}
         >
           Terms & Conditions
         </Link>
         <Link
           href="/privacy-policy"
-          className={`text-[#FFF3D6] inline-flex  hover:underline ${pathname === '/privacy-policy' ? 'underline' : ''}`}
+          className={`text-[#FFF3D6] inline-flex justify-center  hover:underline ${pathname === '/privacy-policy' ? 'underline' : ''}`}
         >
           Privacy Policy
         </Link>

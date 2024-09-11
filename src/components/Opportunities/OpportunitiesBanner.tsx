@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image'; // Import Image from next/image
-import bannerBg from '/public/images/hero-bg.png';
+import bannerBg from '/public/images/hero-bg.svg';
 
 const OpportunitiesBanner: React.FC = () => {
   return (
