@@ -36,6 +36,7 @@ import {
   FIRESTORE_IMG_BASE_START_URL,
   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   NEXT_PUBLIC_MAP_MARKER_ICON,
+  SUPPORT_EMAIL,
 } from '@/constants/constants';
 import { useCookies } from 'react-cookie';
 import {
@@ -574,7 +575,7 @@ const OpportunitiesDetail = ({
                       If you can&apos;t attend, email us at
                       <Link className="text-[#E60054] hover:underline" href="#">
                         {' '}
-                        events@giverr.com.
+                        {SUPPORT_EMAIL}.{' '}
                       </Link>
                       so we can offer your spot to another eager volunteer.
                     </p>
@@ -616,7 +617,7 @@ const OpportunitiesDetail = ({
                       an email to
                       <Link className="text-[#E60054] hover:underline" href="#">
                         {' '}
-                        events@giverr.com.
+                        {SUPPORT_EMAIL}.{' '}
                       </Link>
                       This will allow us to open up your spot to another eager
                       volunteer.
