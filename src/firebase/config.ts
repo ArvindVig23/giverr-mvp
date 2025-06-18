@@ -6,9 +6,11 @@ import {
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 } from '@/constants/constants';
 import { getStorage } from '@firebase/storage';
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -36,6 +38,7 @@ const firebaseConfig = transformFirebaseConfig({
   storageBucket: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   DATABASE_URL: DATABASE_URL,
 });
 
@@ -43,5 +46,5 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth();
 const db = getFirestore(app);
 const storage = getStorage(app);
-
-export { app, auth, db, storage };
+const analytics = typeof window !== 'undefined' ? getAnalytics(app) : undefined;
+export { app, auth, db, storage, analytics };
